@@ -1,0 +1,230 @@
+<%- include('../partials/header'); -%>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+
+  <a class="navbar-brand" href="#"><img class="mb-4" src="/images/faviconwhite.ico" alt="" width="42" height="42">
+    Project Management System</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/projects">Projects <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/profile">Profile</a>
+      </li>
+
+
+    </ul>
+
+    <a href="/logout" class="btn btn-logout btn-lg btn-danger my-2 my-sm-0"> logout</a>
+
+
+  </div>
+</nav>
+
+<section id="filter">
+  <h1 class="title">PROJECTS</h1>
+
+  <div class="container container-card">
+    <div class="card card-filter mx-auto">
+      <h5 class="card-header card-header-filter">
+        <div class="title-filter">
+          <h5>Filter</h5>
+        </div>
+        <div class="card-body">
+          <form class="form-filter" action="/projects" method="GET">
+            <!-- id -->
+            <div class="form-group row">
+              <label for="inputId" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxId"
+                  class="form-check-input" />ID</label>
+              <div class="col-sm-8">
+                <input type="text" id="inpuId" name="projectid" class="form-control" placeholder="ID">
+              </div>
+            </div>
+
+            <!-- name -->
+            <div class="form-group row">
+              <label for="inputName" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxName"
+                  class="form-check-input" />Name</label>
+              <div class="col-sm-8">
+                <input type="text" id="inputName" name="projectname" class="form-control" placeholder="Name">
+              </div>
+            </div>
+
+            <!-- member -->
+            <div class="form-group row">
+              <label for="inputMember" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxMember"
+                  class="form-check-input" />Member</label>
+              <div class="col-sm-8">
+                <select name="member" class="custom-select" id="inputMember">
+                  <option selected>Open this select menu</option>
+
+                  <% fullnames.forEach(obj=>{ %>
+                  <option value="<%= obj.fullname %>"><%= obj.fullname %></option>
+                    
+                  <%})%>
+
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group row container-search">
+              <button type="submit" name="fiturBrowser" value="yes"
+                class=" btn btn-success btn-lg btn-search">Search</button>
+            </div>
+
+          </form>
+
+        </div>
+    </div>
+  </div>
+
+</section>
+
+
+<section id="optional">
+<form action="/projects" method="POST">
+  <div class="container container-optional">
+    <div class="row optional-row ">
+      <div class="col-sm-12">
+        <button class="btn btn-lg btn-success btn-title" type="button">Option</button>
+    </div>
+      <div class="optional-col col-sm-12">
+          <p>Column</p>
+      </div>
+      <% const{checkId,checkName,checkMember}=optionCheckBox %>
+      <div class="col-sm-12">
+        <label class=" col-form-label"><input type="checkbox" name="checkboxId" <%= checkId ? "checked" : " "%> />ID</label>
+      </div>
+      <div class="col-sm-12">
+        <label class=" col-form-label"><input type="checkbox" name="checkboxName" <%= checkName? "checked" : " "%> />Name</label>
+      </div>
+      <div class="col-sm-12">
+        <label class=" col-form-label"><input type="checkbox" name="checkboxMember" <%= checkMember ? "checked" : " "%>/>Member</label>
+      </div>
+      <div class="col-sm-12">
+        <button type="submit" name="option" value="clicked"
+              class="btn-apply btn btn-primary btn-optional">Apply</button>
+      </div>
+    
+    </div>
+  </div>
+</form>
+</section>
+
+
+<section id="table-pagi">
+
+  <div class="container">
+    <div class="card card-tables mx-auto">
+      <h5 class="card-header">
+        <div class="title-filter">
+          <h5 class="pagi">LIST</h5>
+        </div>
+        <div class="card-body">
+          <form class="form-add" method="POST" action="/projects">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col" <%= checkId ? " " : "hidden"%>>ID</th>
+                  <th scope="col" <%= checkName? " " : "hidden"%>>Project Name</th>
+                  <th scope="col" <%= checkMember ? " " : "hidden"%> >Members</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <%  data.forEach(e=>{ %>
+                <% let {projectid,name,members}= e  %>
+                
+                <tr>
+                  <th scope="row" <%= checkId ? " " : "hidden"%> ><a class="to-overview" href="projects/overview/<%=projectid%>"><%= projectid %></a></th>
+                  <td <%= checkName? " " : "hidden"%> ><%= name %></td>
+                  <td <%= checkMember ? " " : "hidden"%> ><%= members %></td>
+
+                  <td>
+                    <a href="projects/edit/<%=projectid%>" name='button-edit' value='ok' class="btn-edit btn btn-success btn-sm">Edit</a>
+                    <button class="btn-delete btn btn-danger btn-sm" type="submit" name="delete"
+                      value="<%=projectid%>">Delete </button>
+
+                  </td>
+                </tr>
+                <%  }) %>
+             
+              </tbody>
+            </table>
+          </form>
+        </div>
+    </div>
+  </div>
+</section>
+
+<section id="paginations">
+  <form action="/projects" method="GET">
+    <div class="container container-pagi">
+      <nav aria-label="Page navigation ">
+        <ul class="pagination">
+
+          <% if(currentPage==1) { %>
+          <li class="page-item  disabled">
+            <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)-1 %>"
+              class="page-link ">Previous</button>
+          </li>
+          <% }else{ %>
+          <li class="page-item">
+            <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)-1 %>"
+              class="page-link ">Previous</button>
+          </li>
+          <%}%>
+
+            <% for(let index=1; index<= totalPage;index++){ %>
+
+          <%  if(currentPage == index){ %>
+          <li class="page-item active">
+            <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
+              class="page-link "><%= index %></button>
+          </li>
+          <% } else { %>
+          <li class="page-item">
+            <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
+              class="page-link "><%= index %></button>
+          </li>
+          <% } %>
+
+
+          <!-- <a class="page-link bg-dark" href="#"><%= index %></a> -->
+
+          <% } %>
+          <% if(currentPage == totalPage){ %>
+          <li class="page-item  disabled">
+            <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)+1 %>"
+              class="page-link ">Next</button>
+
+          </li>
+          <% } else { %>
+          <li class="page-item">
+            <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)+1 %>"
+              class="page-link ">Next</button>
+
+          </li>
+          <% } %>
+        </ul>
+      </nav>
+    </div>
+  </form>
+
+</section>
+
+<a href="projects/add" name="search" value="clicked" class=" btn btn-success btn-lg btn-projects-add ">
+  Add</a>
+
+
+
+
+
+<%- include('../partials/footer'); -%>

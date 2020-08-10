@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<!-- saved from url=(0051)https://getbootstrap.com/docs/4.4/examples/sign-in/ -->
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Project Management System</title>
+
+    <!-- Bootstrap core CSS -->
+
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet" />
+
+
+    <!-- Favicons -->
+
+    <link rel="icon" href="/images/favicon.ico">
+
+
+    <style>
+        .text-center {
+            background-color: black;
+            font-family: ubuntu, Geneva, Helvetica, sans-serif
+        }
+
+        .text-center h1 {
+            font-size: 1.5rem;
+
+        }
+
+        .card {
+            margin: 0 auto;
+            /* Added */
+            float: none;
+            /* Added */
+            margin-bottom: 10px;
+            background-color: white;
+            border-radius: 50px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, .75), 0 0 5px 5px rgba(255, 254, 254, 0.5);
+            transition: .3s;
+
+            /* Added */
+        }
+
+        .card:hover {
+            margin-bottom: 40px;
+
+            /* Added */
+        }
+
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%
+            }
+
+            50% {
+                background-position: 100% 50%
+            }
+
+            100% {
+                background-position: 0% 50%
+            }
+        }
+
+        .btn {
+
+            width: 50%;
+            border-radius: 30px;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            background-color: #fff;
+            border: 0;
+            outline: 0;
+            box-shadow: 0 5px 10px 0 rgba(205, 209, 215, 0.8);
+            background: linear-gradient(to right, #CB3066, #16BFFD);
+            color: #fff;
+            animation: gradient 2.5s ease infinite;
+            box-sizing: border-box;
+            background-size: 300% 300%;
+        }
+
+        .remember {
+            margin-top: 20px;
+        }
+
+
+        #inputEmail,
+        #inputPassword {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-radius: 20px;
+        }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="/stylesheets/signin.css" rel="stylesheet">
+</head>
+
+<body class="text-center">
+
+
+
+
+    <div class="card text-center ">
+
+        <div class="card-body ">
+
+            <form class="form-signin" action="/login" method="POST">
+                <img class="mb-4" src="/images/logologin.png" alt="" width="72" height="72">
+                <h1 class="h3 mb-3 font-weight-normal">Project Management System</h1>
+                <label for="inputEmail" class="sr-only">Username</label>
+                <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required=""
+                    autofocus="" name="email">
+                <label for="inputPassword" class="sr-only">Password</label>
+                <input type="password" id="inputPassword" class="form-control" placeholder="Password" required=""
+                    name="password">
+                <div class="checkbox mb-3">
+                    <label>
+                        <input class="remember" type="checkbox" value="remember-me"> Remember me
+                    </label>
+                </div>
+                <button class="btn btn-lg btn-success btn-block" type="submit">Sign in</button>
+                <% if(pesanKesalahan.length>0){ %>
+                <div class="alert alert-danger" role="alert">
+                    <%= pesanKesalahan%>
+                </div>
+                <% } %>
+
+            </form>
+
+        </div>
+    </div>
+
+
+</body>
+
+</html>

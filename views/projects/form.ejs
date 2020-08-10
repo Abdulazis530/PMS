@@ -1,0 +1,115 @@
+<%- include('../partials/header'); -%>
+<nav class="navbar navbar-expand-lg navbar-dark">
+
+    <a class="navbar-brand" href="#"><img class="mb-4" src="/images/faviconwhite.ico" alt="" width="42" height="42">
+        Project Management System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/projects">Projects</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/profile">Profile <span class="sr-only">(current)</span></a>
+            </li>
+
+
+        </ul>
+        <a href="/logout" class="btn btn-logout btn-lg btn-danger my-2 my-sm-0"> logout</a>
+    </div>
+</nav>
+
+<section id="filter">
+
+  <h1 class="title"><%=typeof projectName !='undefined' ? "EDIT PROJECT" :"ADD PROJECT"%></h1>
+    <% if(pesanKesalahan.length>0){%>
+    <div class="container container-alertsc">
+        <div class="alert-bad alert-good alert alert-danger" role="alert">
+            <a class="btn-bad btn-bad" href="/projects/<%= typeof projectName !='undefined' ? page : 'add' %>">X</a>
+            <h4 class="alert-heading">Something went wrong!</h4>
+            <%=pesanKesalahan %>
+        </div>
+    </div>
+    <% } %>
+
+    <% if(pesanKeberhasilan.length>0){%>
+    <div class="container container-alertsc">
+        <div class="alert-good alert alert-success" role="alert">
+            <a class="btn-good" href="/projects/<%= typeof projectName !='undefined' ? page : 'add' %>">X</a>
+            <h4 class="alert-heading">Succces!</h4>
+            <%=pesanKeberhasilan %>
+        </div>
+    </div>
+    <% } %>
+    <div class="container">
+        <div class="card card-filter mx-auto">
+            <h5 class="card-header card-header-filter">
+                <div class="title-filter">
+                    <h5><%=typeof projectName !='undefined' ? "Edit" :"Add"%></h5>
+                </div>
+                <div class="card-body">
+                    <form class="form-filter" method="POST">
+
+                        <!--Name -->
+                        <div class="form-group row">
+                            <label for="newProject" class="col-sm-2 col-form-label col-form-label-lg">Name</label>
+                            <div class="col-sm-8 ">
+                                <input type="text" id="newProject" class="form-control form-control-lg" name="project"
+                                    placeholder=" <%= typeof members !='undefined' ? projectName :'Project Name'%>">
+                            </div>
+                        </div>
+
+                        <!-- Members -->
+
+                        <div class="form-group row add-form">
+                            <div class="col-sm-2">Members</div>
+                            <div class="col-sm-10">
+                                <% data.forEach(obj=>{ %>
+                                    <% if(typeof members == "undefined"){ %>
+                                <div class="form-check container-cbx">
+                                    <input class="form-check-input cbx-add " type="checkbox" name="cb"
+                                        value="<%=obj.userid %>">
+                                    <label class="form-check-label label-add" for="gridCheck1">
+                                        <%= obj.fullname %>
+                                    </label>
+                                </div>
+                            <% } else { %>
+                                <div class="form-check container-cbx">
+                                    <input class="form-check-input cbx-add " type="checkbox" name="cb"
+                                        value="<%=obj.userid %>" <%= members.includes(obj.userid) ? "checked" : "" %> >
+                                    <label class="form-check-label label-add" for="gridCheck1">
+                                        <%= obj.fullname %>
+                                    </label>
+                                </div>
+
+                           <% } %>
+
+                                <%}) %>
+
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row container-search">
+                            <button type="submit" name="search" value="clicked"
+                                class=" btn btn-success btn-lg btn-search btn-projects-add-updt"><%=typeof projectName !='undefined' ? "Edit" :"Update"%></button>
+                            <a href="/projects" name="kembali" value="clicked"
+                                class=" btn btn-primary btn-lg btn-projects-back">
+                                Kembali</a>
+                        </div>
+
+
+
+                    </form>
+
+                </div>
+        </div>
+    </div>
+
+</section>
+
+<%- include('../partials/footer'); -%>

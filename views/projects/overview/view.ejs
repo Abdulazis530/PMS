@@ -1,0 +1,106 @@
+<%- include('../../partials/header'); -%>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+
+  <a class="navbar-brand" href="#"><img class="mb-4" src="/images/faviconwhite.ico" alt="" width="42" height="42">
+    Project Management System</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/projects">Projects <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/profile">Profile</a>
+      </li>
+
+
+    </ul>
+
+    <a href="/logout" class="btn btn-logout btn-lg btn-danger my-2 my-sm-0"> logout</a>
+
+
+  </div>
+</nav>
+<div class="sidebar-custom container-fluid">
+  <div class="row">
+    <nav class="box-sidebar col-md-2 d-none d-md-block bg-light sidebar">
+      <div class="sidebar-sticky">
+        <ul class="nav flex-column">
+
+          <li class="nav-item active-custom">
+            <a class="text-sidebar nav-link " href="/projects/overview/<%= url %>">
+              <span data-feather="shopping-cart"></span>
+              Overview
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class=" text-sidebar nav-link" href="#">
+              <span data-feather="users"></span>
+              Activity
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class=" text-sidebar nav-link" href="/projects/members/<%= url %>">
+              <span data-feather="bar-chart-2"></span>
+              Members
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class=" text-sidebar nav-link" href="#">
+              <span data-feather="layers"></span>
+              Integrations
+            </a>
+          </li>
+        </ul>
+
+
+
+      </div>
+    </nav>
+
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+      <h1 class="title-overview">Overview</h1>
+      <h2 class='sub-title-overview' style="color: white;">Lybrary system</h2>
+      <div class="container my-4 text-overview ">
+        <h3 class="h3-overview">Issue Tracking</h3>
+        <ul>
+          <li>Bug: 0 Open / 0</li>
+          <li>Feature: 2 Open / 6</li>
+          <li>Support:1 Open / 1</li> 
+        </ul>
+      </div>
+      <div class="container my-4 text-overview ">
+        <h3 class="h3-overview">Members</h3>
+        <ul>
+
+         <% members.forEach(member=>{ %>
+          <li><%= member.fullname %></li>
+          <%}) %>
+         
+        </ul>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<footer>
+  <section class="overview ">
+    <div class="footer-container container-fluid">
+      <p class="copy-right text-center text-md-center">
+        Projects System Management 2020 ©
+      </p>
+      <i class="social-icon fab fa-facebook-f"></i>
+      <i class="social-icon fab fa-twitter"></i>
+      <i class="social-icon fab fa-instagram"></i>
+      <i class="social-icon fas fa-envelope"></i>
+    </div>
+  </section>
+</footer>
+
+</html>
