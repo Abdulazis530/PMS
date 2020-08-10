@@ -7,7 +7,7 @@ let optionCheckBox = {
     checkId: true,
     checkName: true,
     checkMember: true,
-    checkIdUsers: true,
+    checkIdMembers: true,
     checkNameUsers: true,
     checkRoleUsers: true
 }
@@ -234,7 +234,7 @@ module.exports = (db) => {
             let currentPage = req.query.pageBrowseUsers || 1
             let page = "pageBrowseUsers"
             console.log(req.params.projectid)
-            if (req.query.checkboxIdUsers === "on" && req.query.inputIdUsers.length !== 0) conditionUser.push(`users.userid = ${Number(req.query.inputIdUsers)}`)
+            if (req.query.checkboxIdUsers === "on" && req.query.inputIdUsers.length !== 0) conditionUser.push(`members.id = ${Number(req.query.inputIdUsers)}`)
             if (req.query.checkboxNameUsers === "on" && req.query.inputNameUsers.length !== 0) conditionUser.push(`CONCAT(firstname, ' ', lastname) ILIKE '%${req.query.inputNameUsers}%'`)
             if (req.query.checkboxRoleUsers === "on" && req.query.inputRoleUsers.length !== 0 && req.query.inputRoleUsers !== 'Open this select menu') conditionUser.push(`members.role= '${req.query.inputRoleUsers}'`)
             console.log(conditionUser)
@@ -245,17 +245,17 @@ module.exports = (db) => {
                 conditionUser = []
                 try {
                     let numberOfusers = `SELECT COUNT(users.userid) FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 AND (${conditionsUser}) `
-                    let users = `SELECT users.userid, CONCAT(firstname, ' ', lastname) AS fullname, members.role AS position FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 AND (${conditionsUser}) LIMIT ${limit} OFFSET ${currentPage * limit - limit}`
+                    let members = `SELECT members.id, CONCAT(firstname, ' ', lastname) AS fullname, members.role AS position FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 AND (${conditionsUser}) LIMIT ${limit} OFFSET ${currentPage * limit - limit}`
                     let queryPosition = `SELECT DISTINCT role as Position FROM members`
 
                     const getNumberOfUsers = await db.query(numberOfusers, [req.params.projectid])
-                    const getUsers = await db.query(users, [req.params.projectid])
+                    const getMembers = await db.query(members, [req.params.projectid])
                     const optionRole = await db.query(queryPosition)
                     const selectRoles = optionRole.rows
                     const totalData = getNumberOfUsers.rows[0].count
                     const totalPage = Math.ceil(Number(totalData) / limit)
 
-                    res.render('projects/members/view', { url: req.params.projectid, data: getUsers.rows, currentPage, totalPage, nameOfPage: page, selectRoles, optionCheckBox })
+                    res.render('projects/members/view', { url: req.params.projectid, data: getMembers.rows, currentPage, totalPage, nameOfPage: page, selectRoles, optionCheckBox })
 
                 } catch (error) {
                     console.log(error)
@@ -270,50 +270,49 @@ module.exports = (db) => {
             let currentPage = req.query.pageMember || 1
             let page = "pageMember"
             let numberOfusers = `SELECT COUNT(users.userid) FROM ((projects  JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 `
-            let users = `SELECT users.userid, CONCAT(firstname, ' ', lastname) AS fullname, members.role AS position FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 LIMIT ${limit} OFFSET ${currentPage * limit - limit}`
+            let members = `SELECT members.id, CONCAT(firstname, ' ', lastname) AS fullname, members.role AS position FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 LIMIT ${limit} OFFSET ${currentPage * limit - limit}`
             let queryPosition = `SELECT DISTINCT role as Position FROM members`
             try {
                 const getNumberOfUsers = await db.query(numberOfusers, [req.params.projectid])
-                const getUsers = await db.query(users, [req.params.projectid])
+                const getMembers = await db.query(members, [req.params.projectid])
                 const optionRole = await db.query(queryPosition)
                 const selectRoles = optionRole.rows
                 const totalData = getNumberOfUsers.rows[0].count
                 const totalPage = Math.ceil(Number(totalData) / limit)
 
-                res.render('projects/members/view', { url: req.params.projectid, data: getUsers.rows, currentPage, totalPage, nameOfPage: page, selectRoles, optionCheckBox })
+                res.render('projects/members/view', { url: req.params.projectid, data: getMembers.rows, currentPage, totalPage, nameOfPage: page, selectRoles, optionCheckBox })
             } catch (error) {
                 console.log(error)
                 res.status(500).json({ error: true, message: error })
             }
-        }
+        }   
 
     });
 
     router.post('/members/:projectid', helpers.isLogIn, async (req, res, next) => {
-        console.log(req.body)
-        
-        // checkIdUsers: true,
-        // checkNameUsers: true,
-        // checkRoleUsers: true
+
         if (req.body.optionUsers) {
-            typeof req.body.checkOptionIdUsers === "undefined" ? optionCheckBox.checkIdUsers = false : optionCheckBox. checkIdUsers = true
+            typeof req.body.checkOptionIdUsers === "undefined" ? optionCheckBox.checkIdMembers = false : optionCheckBox.checkIdMembers = true
             typeof req.body.checkOptionNameUsers === "undefined" ? optionCheckBox.checkNameUsers = false : optionCheckBox.checkNameUsers = true
             typeof req.body.checkOptionRoleUsers === "undefined" ? optionCheckBox.checkRoleUsers = false : optionCheckBox.checkRoleUsers = true
             res.redirect(req.body.optionUsers)
-        } 
-        // else {
-        //     const delDataMembers = 'DELETE FROM members WHERE projectid=$1'
-        //     const delDataProject = 'DELETE FROM projects WHERE projectid=$1'
-        //     try {
-        //         await db.query(delDataMembers, [req.body.delete])
-        //         await db.query(delDataProject, [req.body.delete])
-        //         res.redirect('/projects')
-        //     } catch (error) {
-        //         console.log(error)
-        //         res.status(500).json({ error: true, message: error })
-        //     }
+        }
+        else {
+            
+            const delDataMembers = 'DELETE FROM members WHERE projectid=$1 AND id=$2'
+            console.log(typeof Number(req.body.delete))
+            console.log(typeof Number(req.params.projectid))
+            console.log(req.body.delete)
+            console.log(req.params.projectid)
+            try {
+                await db.query(delDataMembers, [Number(req.params.projectid), Number(req.body.delete)])
+                res.redirect(req.params.projectid)
+            } catch (error) {
+                console.log(error)
+                res.status(500).json({ error: true, message: error })
+            }
 
-        // }
+        }
     })
 
 
