@@ -16,6 +16,7 @@ module.exports = (db) => {
 
     let condition = []
     let conditionUser = []
+    let conditionAddMembers = []
     router.get('/', helpers.isLogIn, async (req, res, next) => {
         console.log(optionCheckBox)
         const limit = 5
@@ -285,7 +286,7 @@ module.exports = (db) => {
                 console.log(error)
                 res.status(500).json({ error: true, message: error })
             }
-        }   
+        }
 
     });
 
@@ -298,12 +299,11 @@ module.exports = (db) => {
             res.redirect(req.body.optionUsers)
         }
         else {
-            
+
             const delDataMembers = 'DELETE FROM members WHERE projectid=$1 AND id=$2'
             console.log(typeof Number(req.body.delete))
             console.log(typeof Number(req.params.projectid))
-            console.log(req.body.delete)
-            console.log(req.params.projectid)
+
             try {
                 await db.query(delDataMembers, [Number(req.params.projectid), Number(req.body.delete)])
                 res.redirect(req.params.projectid)
@@ -357,14 +357,54 @@ module.exports = (db) => {
     // });
 
     // // localhost:3000/projects/members/1/add
-    // router.get('/members/:projectid/add', helpers.isLogIn, function (req, res, next) {
-    //     res.render('projects/members/add')
-    // });
+    router.get('/members/:projectid/add', helpers.isLogIn, async (req, res, next) => {
+        const url = req.params.projectid
+        try {
+            let queryPosition = `SELECT DISTINCT role as Position FROM members`
+            const optionRole = await db.query(queryPosition)
+            const selectRoles = optionRole.rows
 
-    // // localhost:3000/projects/members/1/add method:post
-    // router.post('/members/:projectid/add', helpers.isLogIn, function (req, res, next) {
-    //     res.redirect(`/projects/members/${req.params.projectid}`)
-    // });
+            const userInmember = `SELECT userid FROM members WHERE projectid =$1`
+            const alreadyMember = await db.query(userInmember, [req.params.projectid])
+        
+            const userMember = alreadyMember.rows
+            userMember.forEach(e => {
+                conditionAddMembers.push(`users.userid != ${e.userid}`)
+            })
+
+            const conditionsAddMembers = conditionAddMembers.join(" AND ")
+            let getUser = `SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE ${conditionsAddMembers} `
+            const users = await db.query(getUser)
+
+            res.render('projects/members/add', { url, data: users.rows,selectRoles })
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
+        }
+    });
+
+    // localhost:3000/projects/members/1/add method:post
+    router.post('/members/:projectid/add', helpers.isLogIn, async (req, res, next) => {
+        console.log(req.body)
+        const idUser=Number(req.body.inputIdMembers)
+        const inputRole=req.body.inputRoleMembers
+        console.log(req.params.projectid)
+        console.log(idUser)
+        if(idUser ==NaN || inputRole=='Open this select menu'){
+            res.redirect('add')
+        }
+
+        try {
+            let queryAdd = `INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`
+            await db.query(queryAdd,[inputRole,idUser,req.params.projectid,'fulltime'])
+            res.redirect(`/projects/members/${req.params.projectid}`)
+            
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
+        }
+       
+    });
 
     // // localhost:3000/projects/members/1/edit/2
     // router.get('/members/:projectid/edit/:memberid', helpers.isLogIn, function (req, res, next) {

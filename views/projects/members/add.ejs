@@ -1,0 +1,150 @@
+<%- include('../../partials/header'); -%>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+
+  <a class="navbar-brand" href="#"><img class="mb-4" src="/images/faviconwhite.ico" alt="" width="42" height="42">
+    Project Management System</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/projects">Projects <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/profile">Profile</a>
+      </li>
+
+
+    </ul>
+
+    <a href="/logout" class="btn btn-logout btn-lg btn-danger my-2 my-sm-0"> logout</a>
+
+
+  </div>
+</nav>
+<div class="sidebar-custom container-fluid">
+  <div class="row">
+    <nav class="box-sidebar col-md-2 d-none d-md-block bg-light sidebar">
+      <div class="sidebar-sticky">
+        <ul class="nav flex-column">
+
+          <li class="nav-item ">
+            <a class="text-sidebar nav-link " href="/projects/overview/<%= url %>">
+              <span data-feather="shopping-cart"></span>
+              Overview
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class=" text-sidebar nav-link" href="#">
+              <span data-feather="users"></span>
+              Activity
+            </a>
+          </li>
+          <li class="nav-item active-custom">
+            <a class=" text-sidebar nav-link" href="/projects/members/<%= url %>">
+              <span data-feather="bar-chart-2"></span>
+              Members
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class=" text-sidebar nav-link" href="#">
+              <span data-feather="layers"></span>
+              Integrations
+            </a>
+          </li>
+        </ul>
+
+      </div>
+    </nav>
+
+    <main role="main" class=" filter-members col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+      <section id="filter">
+        <h1 class="title"><%=typeof projectName !='undefined' ? "EDIT PROJECT" :"ADD MEMBERS"%></h1>
+        <div class="container">
+          <div class="card card-filter mx-auto">
+            <h5 class="card-header card-header-filter">
+              <div class="title-filter">
+                <h5><%=typeof projectName !='undefined' ? "Edit" :"Add"%></h5>
+              </div>
+              <div class="card-body">
+                <form class="form-filter" method="POST">
+
+                  <!--Name -->
+                  <div class="form-group row">
+                    <label for="inputIdMembers"
+                      class=" add-overview-members col-sm-2 col-form-label col-form-label-lg">Name</label>
+                    <div class="col-sm-8 ">
+                      <select name="inputIdMembers" style="height: 100%; font-size: 1.2rem;"
+                      class="custom-select form-control form-control-lg" id="inputIdMembers">
+                      <option selected>Open this select menu</option>
+
+                      <% data.forEach(e=>{ %>
+                      <option value="<%= e.userid %>"><%=e.fullname %></option>
+
+                      <%})%>
+
+                    </select>
+                    </div>
+                  </div>
+
+              
+                  <!-- SELECT ROLE MEMBERS -->
+                  <div class="form-group row">
+                    <label for="inputRoleMembers" class="col-sm-2 col-form-label">Position</label>
+                    <div class="col-sm-8">
+                      <select name="inputRoleMembers" style="height: 100%; font-size: 1.2rem;"
+                        class="custom-select form-control form-control-lg" id="inputRoleMembers">
+                        <option selected>Open this select menu</option>
+
+                        <% selectRoles.forEach(selectRole=>{ %>
+                        <option value="<%= selectRole.position %>"><%= selectRole.position %></option>
+
+                        <%})%>
+
+                      </select>
+                    </div>
+                  </div>
+                  <!-- END OF ROLE MEMBERS -->
+                  <!-- Members -->
+
+                  <div class="form-group row container-search">
+                    <button type="submit" name="search" value="clicked"
+                      class=" btn btn-success btn-lg btn-search btn-projects-add-updt"><%=typeof projectName !='undefined' ? "Edit" :"Update"%></button>
+                    <a href="/projects/members/<%= url %>" name="kembali" value="clicked"
+                      class=" btn btn-primary btn-lg btn-projects-back">
+                      Kembali</a>
+                  </div>
+                </form>
+
+              </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+
+
+  </div>
+</div>
+
+<footer>
+  <section class="overview ">
+    <div class="footer-container container-fluid">
+      <p class="copy-right text-center text-md-center">
+        Projects System Management 2020 ©
+      </p>
+      <i class="social-icon fab fa-facebook-f"></i>
+      <i class="social-icon fab fa-twitter"></i>
+      <i class="social-icon fab fa-instagram"></i>
+      <i class="social-icon fas fa-envelope"></i>
+    </div>
+  </section>
+</footer>
+
+</html>
