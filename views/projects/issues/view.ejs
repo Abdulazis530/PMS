@@ -1,0 +1,539 @@
+<%- include('../../partials/header'); -%>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+
+    <a class="navbar-brand" href="#"><img class="mb-4" src="/images/faviconwhite.ico" alt="" width="42" height="42">
+        Project Management System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/projects">Projects <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/profile">Profile</a>
+            </li>
+
+
+        </ul>
+
+        <a href="/logout" class="btn btn-logout btn-lg btn-danger my-2 my-sm-0"> logout</a>
+
+
+    </div>
+</nav>
+<div class="sidebarandform sidebar-custom container-fluid">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <nav class="box-sidebar col-md-2 d-none d-md-block bg-light sidebar">
+
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+
+                    <li class="nav-item ">
+                        <a class="text-sidebar nav-link " href="/projects/overview/<%= url %>">
+                            <span data-feather="shopping-cart"></span>
+                            Overview
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" text-sidebar nav-link" href="#">
+                            <span data-feather="users"></span>
+                            Activity
+                        </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class=" text-sidebar nav-link" href="/projects/members/<%= url %>">
+                            <span data-feather="bar-chart-2"></span>
+                            Members
+                        </a>
+                    </li>
+                    <li class="nav-item active-custom">
+                        <a class=" text-sidebar nav-link" href="/projects/issues/<%= url %>">
+                            <span data-feather="layers"></span>
+                            Issue
+                        </a>
+                    </li>
+                </ul>
+
+
+
+            </div>
+        </nav>
+        <!-- END OF SIDEBAR -->
+        <div class="container-card-issue col-md-8">
+            <h1 class="title-filter-members">Issues</h1>
+
+            <div class="card-body-custom card " style="width: 100%;">
+                <div class="title-filter subtitle-issues">
+                    <h5>Filter</h5>
+                </div>
+                <div class="card-body">
+                    <form class="form-filter" method="GET">
+                        <!-- id -->
+                        <div class="form-group row">
+                            <label for="inputIdIssues" class="col-sm-2 col-form-label"><input type="checkbox"
+                                    name="checkboxIdIssues" class="form-check-input" />ID</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="inputIdIssues" name="inputIdIssues" class="form-control"
+                                    placeholder="ID">
+                            </div>
+                        </div>
+
+                        <!-- name -->
+                        <div class="form-group row">
+                            <label for="inputSubjectIssue" class="col-sm-2 col-form-label"><input type="checkbox"
+                                    name="checkboxSubjectIssues" class="form-check-input" />Subject</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="inputSubjectIssue" name="inputSubjectIssue" class="form-control"
+                                    placeholder="Subject">
+                            </div>
+                        </div>
+
+                        <!-- Position -->
+                        <div class="form-group row">
+                            <label for="inputTracker" class="col-sm-2 col-form-label"><input type="checkbox"
+                                    name="checkboxTracker" class="form-check-input" />Tracker</label>
+                            <div class="col-sm-8">
+                                <select name="inputTracker" class="custom-select" id="inputTracker">
+                                    <option selected>Open this select menu</option>
+
+
+                                    <option value="Quality Assurance">Bug</option>
+
+
+                                    <option value="manager">Feature</option>
+
+
+                                    <option value="Software Developer">Support</option>
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row container-search">
+                            <button type="submit" name="fiturBrowserUsers" value="yes"
+                                class=" btn btn-success btn-lg btn-search">Search</button>
+                        </div>
+
+                    </form>
+
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row option-col-issue">
+        <div class="container-card-issue col-md-8">
+
+            <div class="card-body-custom card " style="width: 100%;">
+                <div class="title-filter subtitle-issues">
+                    <h5>Options</h5>
+                </div>
+                <div class="container card-body">
+                    <form class="form-filter" method="GET">
+                        <!-- id -->
+                        <div class="checkboxIssue row">
+                            <div class="col-md-3">
+                                <input class="form-check-input" name="checkIdIssue"  type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    ID
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input"  name="checkStatusIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Status
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input"  name="checkDueDateIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Due Date
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input" name="checkTargetVersionIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Target version
+                                </label>
+                            </div>
+                        </div>
+                        <div class="checkboxIssue row">
+                            <div class="col-md-3">
+                                <input class="form-check-input" name="checkSubjectIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Subject
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input" name="checkPriorityIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Priority
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input" name="checkEstimatedTimeIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Estimated Time
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input" name="checkAuthorIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Author
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="checkboxIssue row">
+                            <div class="col-md-3">
+                                <input class="form-check-input"  name="checkTrackertIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Tracker
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input" name="checkAssigneIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Assigne
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input" name="checkSpentTimeIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Spent time
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input" name="checkCreatedDateIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Created Date
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="checkboxIssue row">
+                            <div class="col-md-3">
+                                <input class="form-check-input"  name="checkDescriptionIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Description
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input" name="checkStartDateIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                   Start Date
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input" name="checkDoneIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Done
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input" name="checkUpdateDateIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Updated Date
+                                </label>
+                            </div>
+                        </div>
+                        <div class="checkboxIssue row">
+                            <div class="col-md-3">
+                                <input class="form-check-input"  name="checkClosedIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                    Closed Data
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input class="form-check-input"name="checkFileIssue" type="checkbox" id="gridCheck">
+                                <label class="form-check-label" for="gridCheck">
+                                   File
+                                </label>
+                            </div>
+                        </div>
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="list-issue row">
+        <section id="table-pagi">
+            <div class="container">
+              <div class="card card-tables mx-auto">
+                <div class="title-filter subtitle-issues" ">
+                    <h5 style="margin-right: 25%">List</h5>
+                </div>
+                  <div class="card-body table-responsive mt-5">
+                    <form class="form-add" method="POST" action="/projects">
+                      <table class="table table-striped">
+                        <thead>
+                            <tr>
+                               <th scope="col" >Issue ID</th>
+                               <th scope="col" >Subject</th>
+                               <th scope="col" >Tracker</th>
+                               <th scope="col" >Description</th>
+                               <th scope="col" >Status</th>
+                               <th scope="col" >Priority</th>
+                               <th scope="col" >Assignee</th>
+                               <th scope="col" >Start Date</th>
+                               <th scope="col" >Due Date</th>
+                               <th scope="col" >Estimated Time
+                               </th>
+                               <th scope="col" >Spent Time</th>
+                               <th scope="col" >Done</th>
+                               <th scope="col" >Target Version
+                               </th>
+                               <th scope="col" >Author</th>
+                               <th scope="col" >Created Date
+                               </th>
+                               <th scope="col" >Updated Date
+                               </th>
+                               <th scope="col" >Closed Date</th>
+                               <th scope="col" >File</th>
+    
+                               <th scope="col">Action</th>
+                            </tr>
+                         </thead>
+    
+    
+                         <tbody>
+                            
+                            <tr>
+                               <th scope="row" >27</th>
+                               <td >update issues </td>
+                               <td >
+                                  
+                                  <h5><span class="badge badge-warning">bug</span></h5>
+                                  
+                               </td>
+                               <td >Bug when redirect after updating issues if there is file uploaded before</td>
+                               <td >closed</td>
+                               <td >
+                                  
+                                  <h5><span class="badge badge-danger">urgent</span></h5>
+                                  
+                               </td>
+                               <td >
+                                  
+                                  Lebah Gak Ganteng
+                                  
+                                  
+                                  
+                                  
+                                  
+                               </td>
+                               <td >June 4th, 2020</td>
+                               <td >
+                                  June 4th, 2020</td>
+                               <td >
+                                  5 Hours
+                               </td>
+                               <td >3</td>
+                               <td >90%</td>
+                               <td >version edited 1.0
+                               </td>
+                               <td >Sapto Aja</td>
+                               <td >
+                                  June 4th, 2020</td>
+    
+                               <td >
+                                  June 14th, 2020</td>
+    
+                               <td >
+                                  June 14th, 2020
+                               </td>
+    
+                               <td >
+                                  
+                                  <a href="/upload/1591288666322screenshot-from-2020-05-15-23-47-12.png">File</a>
+                                  
+                               </td>
+    
+    
+    
+                               <td>
+                                  <a role="button" class="btn btn-success mr-2 mb-2"
+                                     href="/projects/issues/4/edit/27">
+                                     <i class="fas fa-edit"></i>
+                                  </a>
+    
+                                  <a role="button" class="btn btn-danger mr-2 mb-2"
+                                     href="/projects/issues/4/delete/27">
+                                     <i class="fas fa-trash-alt"></i>
+                                  </a>
+                               </td>
+                            </tr>
+                            
+                            <tr>
+                               <th scope="row" >28</th>
+                               <td >Rendering number of tracker in overview</td>
+                               <td >
+                                  
+                                  <h5><span class="badge badge-primary">feature</span></h5>
+                                  
+                               </td>
+                               <td >Use count to counting number of bug, feature, or support and render it (test)</td>
+                               <td >resolved</td>
+                               <td >
+                                  
+                                  normal
+                                  
+                               </td>
+                               <td >
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+                               </td>
+                               <td >June 4th, 2020</td>
+                               <td >
+                                  June 5th, 2020</td>
+                               <td >
+                                  2 Hours
+                               </td>
+                               <td >2</td>
+                               <td >70%</td>
+                               <td >version edited 1.0
+                               </td>
+                               <td >Sapto Aja</td>
+                               <td >
+                                  June 4th, 2020</td>
+    
+                               <td >
+                                  June 14th, 2020</td>
+    
+                               <td >
+                                   
+                               </td>
+    
+                               <td >
+                                  
+                                  <a href="/upload/1591288524356contoh-upload-file.jpg">File</a>
+                                  
+                               </td>
+    
+    
+    
+                               <td>
+                                  <a role="button" class="btn btn-success mr-2 mb-2"
+                                     href="/projects/issues/4/edit/28">
+                                     <i class="fas fa-edit"></i>
+                                  </a>
+    
+                                  <a role="button" class="btn btn-danger mr-2 mb-2"
+                                     href="/projects/issues/4/delete/28">
+                                     <i class="fas fa-trash-alt"></i>
+                                  </a>
+                               </td>
+                            </tr>
+                            
+                            <tr>
+                               <th scope="row" >29</th>
+                               <td >Log Activity</td>
+                               <td >
+                                  
+                                  <h5><span class="badge badge-primary">feature</span></h5>
+                                  
+                               </td>
+                               <td >Testing rendering log activity from database (recordActivity function)</td>
+                               <td >in progress</td>
+                               <td >
+                                  
+                                  normal
+                                  
+                               </td>
+                               <td >
+                                  
+                                  Lebah Gak Ganteng
+                                  
+                                  
+                                  
+                                  
+                                  
+                               </td>
+                               <td >June 5th, 2020</td>
+                               <td >
+                                  June 5th, 2020</td>
+                               <td >
+                                  3 Hours
+                               </td>
+                               <td >7</td>
+                               <td >90%</td>
+                               <td >version 1.1
+                               </td>
+                               <td >Sapto Aja</td>
+                               <td >
+                                  June 5th, 2020</td>
+    
+                               <td >
+                                  June 15th, 2020</td>
+    
+                               <td >
+                                   
+                               </td>
+    
+                               <td >
+                                  
+                                  <a href="/upload/1592220146165screenshot-from-2020-05-13-16-27-13.png">File</a>
+                                  
+                               </td>
+    
+    
+    
+                               <td>
+                                  <a role="button" class="btn btn-success mr-2 mb-2"
+                                     href="/projects/issues/4/edit/29">
+                                     <i class="fas fa-edit"></i>
+                                  </a>
+    
+                                  <a role="button" class="btn btn-danger mr-2 mb-2"
+                                     href="/projects/issues/4/delete/29">
+                                     <i class="fas fa-trash-alt"></i>
+                                  </a>
+                               </td>
+                            </tr>
+                            
+                         </tbody>
+                      </table>
+                    </form>
+                  </div>
+              </div>
+            </div>
+          </section>
+    </div>
+    <div class="row" style="margin-left: 15%;">
+        <a href="<%= url %>/add" name="search" value="clicked" class="btn-members-add btn btn-success btn-lg ">
+            Add</a>
+    </div>
+</div>
+</body>
+<footer>
+    <section class="overview ">
+        <div class="footer-container container-fluid">
+            <p class="copy-right text-center text-md-center">
+                Projects System Management 2020 ©
+            </p>
+            <i class="social-icon fab fa-facebook-f"></i>
+            <i class="social-icon fab fa-twitter"></i>
+            <i class="social-icon fab fa-instagram"></i>
+            <i class="social-icon fas fa-envelope"></i>
+        </div>
+    </section>
+</footer>
+
+</html>

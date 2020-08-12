@@ -167,6 +167,7 @@ input[type="checkbox"] {
   #optional {
     margin-top: -25%;
   }
+
   #optional-users {
     margin-top: -25%;
   }
@@ -447,7 +448,7 @@ p.copy-right {
 .sidebar-custom {
   margin-top: 60px;
   color: black;
-  
+
 }
 
 .overview {
@@ -461,7 +462,7 @@ p.copy-right {
   padding-left: 0%;
   padding-right: 0%;
   padding-top: 0.9%;
-  
+
 
 }
 
@@ -508,23 +509,61 @@ main {
   font-size: 3rem;
   margin-bottom: 2%;
 }
-.filter-members{
+
+.filter-members {
   margin-top: -100px;
-  
+
 }
 
 /* Browse Fitur Users */
-#optional-users{
+#optional-users {
   color: white;
   font-size: 1.25rem;
   margin-top: -30%;
 }
-.btn-members-add{
+
+.btn-members-add {
   margin-top: 30px;
   margin-left: 120px;
   width: 10%;
   border-radius: 30px;
 }
-.add-overview-members{
-font-size: 1.2rem;
+
+.add-overview-members {
+  font-size: 1.2rem;
+}
+
+
+/* issue */
+.container-card-issue {
+  margin: 0 auto;
+  margin-top: 2%
+}
+
+.card-body-custom{
+  color: white;
+  border-radius: 30px;
+  background-color: #252734;
+}
+.title-card-issue{
+  color:black;
+  font-size: 3rem;
+  margin-bottom: 2%;
+  
+}
+.subtitle-issues{
+  border-radius:30px 0px 30px 0px
+}
+.checkboxIssue{
+  margin-left:12%
+}
+.option-col-issue{
+  margin-left:16%
+}
+/* .checkboxIssueCol{
+  margin-left: 3%;
+} */
+
+.list-issue{
+  margin-left: 20%;
 }
