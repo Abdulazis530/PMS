@@ -52,7 +52,7 @@ module.exports = (db) => {
             }
 
         } else {
-           
+
             let currentPage = req.query.page || 1
             let page = "page"
             let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid)`
@@ -322,8 +322,8 @@ module.exports = (db) => {
     // });
 
     // // localhost:3000/projects/issues/1
-    router.get('/issues/:projectid', helpers.isLogIn, async (req, res, next)=> {
-        // let currentPage = req.query.page || 1
+    router.get('/issues/:projectid', helpers.isLogIn, async (req, res, next) => {
+
         // let page = "page"
         // let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid)`
         // let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', 'ORDER BY users.firstname,users.lastname) members FROM((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit};`
@@ -335,17 +335,27 @@ module.exports = (db) => {
         // let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
         // res.render('projects/view', { user: req.session.user, currentPage, totalPage, data: getData.rows, nameOfPage: page, fullnames: fullname.rows, optionCheckBox })
         try {
-            const issuesQuery = `SELECT*FROM issues WHERE projectid=$1`
-            const issues = await db.query(issuesQuery,[req.params.projectid])
-            const getIssues = issues.rows
-    
-            console.log(getIssues)
-            const url =req.params.projectid
-            res.render('projects/issues/view',{url})
+            let currentPage = req.query.pageIssue || 1
+            let page = "pageIssue"
+            const limit=3
+            const url = req.params.projectid 
+
+            const issuesQuery = `SELECT*FROM issues WHERE projectid=$1 LIMIT ${limit} OFFSET ${limit*currentPage-limit}` 
+            const getIssues = await db.query(issuesQuery, [url])
+
+            let queryTotal = `SELECT COUNT(*) FROM issues WHERE projectid=$1`
+            const total = await db.query(queryTotal, [url])
+            
+            const issues = getIssues.rows
+            const totalPage=Math.ceil(Number(total.rows[0].count)/limit)
+            
+
+           
+            res.render('projects/issues/view', { url,currentPage,totalPage,data:issues, nameOfPage: page })
         } catch (error) {
             console.log(error)
         }
-       
+
     });
 
     // // localhost:3000/projects/issues/1/add
@@ -388,7 +398,7 @@ module.exports = (db) => {
 
             const userInmember = `SELECT userid FROM members WHERE projectid =$1`
             const alreadyMember = await db.query(userInmember, [req.params.projectid])
-        
+
             const userMember = alreadyMember.rows
             userMember.forEach(e => {
                 conditionAddMembers.push(`users.userid != ${e.userid}`)
@@ -398,7 +408,7 @@ module.exports = (db) => {
             let getUser = `SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE ${conditionsAddMembers} `
             const users = await db.query(getUser)
 
-            res.render('projects/members/add', { url, data: users.rows,selectRoles })
+            res.render('projects/members/add', { url, data: users.rows, selectRoles })
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
@@ -408,24 +418,24 @@ module.exports = (db) => {
     // localhost:3000/projects/members/1/add method:post
     router.post('/members/:projectid/add', helpers.isLogIn, async (req, res, next) => {
         console.log(req.body)
-        const idUser=Number(req.body.inputIdMembers)
-        const inputRole=req.body.inputRoleMembers
+        const idUser = Number(req.body.inputIdMembers)
+        const inputRole = req.body.inputRoleMembers
         console.log(req.params.projectid)
         console.log(idUser)
-        if(idUser ==NaN || inputRole=='Open this select menu'){
+        if (idUser == NaN || inputRole == 'Open this select menu') {
             res.redirect('add')
         }
 
         try {
             let queryAdd = `INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`
-            await db.query(queryAdd,[inputRole,idUser,req.params.projectid,'fulltime'])
+            await db.query(queryAdd, [inputRole, idUser, req.params.projectid, 'fulltime'])
             res.redirect(`/projects/members/${req.params.projectid}`)
-            
+
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
         }
-       
+
     });
 
     // // localhost:3000/projects/members/1/edit/2
