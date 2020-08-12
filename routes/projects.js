@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var helpers = require('../helpers/auth');
-
+var moment = require('moment');
 
 let optionCheckBox = {
     checkId: true,
@@ -17,6 +17,7 @@ module.exports = (db) => {
     let condition = []
     let conditionUser = []
     let conditionAddMembers = []
+    let conditionIssues = []
     router.get('/', helpers.isLogIn, async (req, res, next) => {
         console.log(optionCheckBox)
         const limit = 5
@@ -323,38 +324,123 @@ module.exports = (db) => {
 
     // // localhost:3000/projects/issues/1
     router.get('/issues/:projectid', helpers.isLogIn, async (req, res, next) => {
+        const limit = 3
+        const url = req.params.projectid
+        if (req.query.fiturBrowseIssue === "yes" || req.query.pageBrowseIssue) {
 
-        // let page = "page"
-        // let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid)`
-        // let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', 'ORDER BY users.firstname,users.lastname) members FROM((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit};`
+            let currentPage = req.query.pageBrowseIssue || 1
+            let page = "pageBrowseIssue"
 
-        // const total = await db.query(queryTotal)
-        // const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users")
-        // const getData = await db.query(queryGetData)
+            console.log(req.query)
+            if (req.query.checkboxIdIssues === "on" && req.query.inputIdIssues.length !== 0) conditionIssues.push(`issues.issueid = ${Number(req.query.inputIdIssues)}`)
+            if (req.query.checkboxSubjectIssues === "on" && req.query.inputSubjectIssue.length !== 0) conditionIssues.push(`issues.subject ILIKE '%${req.query.inputSubjectIssue}%'`)
+            if (req.query.checkboxTracker=== "on" && req.query.inputTracker.length !== 0 && req.query.inputTracker !== 'Open this select menu') conditionIssues.push(`issues.tracker ILIKE '%${req.query.inputTracker}%'`)
+            console.log(conditionIssues)
+            if (conditionIssues.length == 0) {
+                res.redirect(url)
+            }
+            else {
+                console.log('here too')
+                const conditions = conditionIssues.join(" OR ")
+                conditionIssues = []
+                try {
+                    const issuesQuery = `SELECT issueid,projectid,tracker,subject,description,status,priority,startdate,duedate,estimatedtime,done,files,spenttime,targetversion,crateddate,updateddate,closeddate,parenttask FROM issues WHERE projectid=$1 AND (${conditions}) LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                    const getIssues = await db.query(issuesQuery, [url])
+                    const issues = getIssues.rows
 
-        // let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
-        // res.render('projects/view', { user: req.session.user, currentPage, totalPage, data: getData.rows, nameOfPage: page, fullnames: fullname.rows, optionCheckBox })
-        try {
-            let currentPage = req.query.pageIssue || 1
-            let page = "pageIssue"
-            const limit=3
-            const url = req.params.projectid 
+                    const queryAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS assigneName FROM users JOIN issues ON users.userid = issues.assignee WHERE projectid=$1 AND (${conditions}) LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                    const getAssigneeUsers = await db.query(queryAssignee, [url])
+                    const assigneeUsers = getAssigneeUsers.rows
 
-            const issuesQuery = `SELECT*FROM issues WHERE projectid=$1 LIMIT ${limit} OFFSET ${limit*currentPage-limit}` 
-            const getIssues = await db.query(issuesQuery, [url])
+                    const queryAuthor = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS authorName FROM users JOIN issues ON users.userid =issues.author WHERE projectid=$1 AND (${conditions}) LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                    const getAuthor = await db.query(queryAuthor, [url])
+                    const authorUsers = getAuthor.rows
 
-            let queryTotal = `SELECT COUNT(*) FROM issues WHERE projectid=$1`
-            const total = await db.query(queryTotal, [url])
-            
-            const issues = getIssues.rows
-            const totalPage=Math.ceil(Number(total.rows[0].count)/limit)
-            
+                    const queryTotal = `SELECT COUNT(*) FROM issues WHERE projectid=$1 AND (${conditions})`
+                    const total = await db.query(queryTotal, [url])
+                    const totalPage = Math.ceil(Number(total.rows[0].count) / limit)
 
-           
-            res.render('projects/issues/view', { url,currentPage,totalPage,data:issues, nameOfPage: page })
-        } catch (error) {
-            console.log(error)
+                    issues.forEach((issue, i) => {
+                        let startDate = moment(issue.startdate).format('YYYY-MM-DD')
+                        let dueDate = moment(issue.duedate).format('YYYY-MM-DD')
+                        let createdDate = moment(issue.crateddate).format('YYYY-MM-DD')
+
+                        let updateDate = moment(issue.updateddate).format('YYYY-MM-DD')
+                        let closeDate = moment(issue.closeddate).format('YYYY-MM-DD')
+
+                        issue.startdate = startDate
+                        issue.duedate = dueDate
+                        issue.crateddate = createdDate
+                        issue.updateddate = updateDate
+                        issue.closeddate = closeDate
+                        issue.assignee = assigneeUsers[i].assignename
+                        issue.author = authorUsers[i].authorname
+                    })
+                    res.render('projects/issues/view', { url, currentPage, totalPage, data: issues, nameOfPage: page })
+
+
+                }
+                catch (error) {
+                    console.log(error)
+                    res.status(500).json({ error: true, message: error })
+                }
+
+            }
+
+        } else {
+            console.log('here')
+            try {
+                let currentPage = req.query.pageIssue || 1
+                let page = "pageIssue"
+
+
+
+                const issuesQuery = `SELECT issueid,projectid,tracker,subject,description,status,priority,startdate,duedate,estimatedtime,done,files,spenttime,targetversion,crateddate,updateddate,closeddate,parenttask FROM issues WHERE projectid=$1 LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                const getIssues = await db.query(issuesQuery, [url])
+                const issues = getIssues.rows
+
+
+                const queryAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS assigneName FROM users JOIN issues ON users.userid = issues.assignee WHERE projectid=$1 LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                const getAssigneeUsers = await db.query(queryAssignee, [url])
+                const assigneeUsers = getAssigneeUsers.rows
+
+
+                const queryAuthor = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS authorName FROM users JOIN issues ON users.userid =issues.author WHERE projectid=$1 LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                const getAuthor = await db.query(queryAuthor, [url])
+                const authorUsers = getAuthor.rows
+
+                let queryTotal = `SELECT COUNT(*) FROM issues WHERE projectid=$1`
+                const total = await db.query(queryTotal, [url])
+                const totalPage = Math.ceil(Number(total.rows[0].count) / limit)
+
+
+                issues.forEach((issue, i) => {
+                    let startDate = moment(issue.startdate).format('YYYY-MM-DD')
+                    let dueDate = moment(issue.duedate).format('YYYY-MM-DD')
+                    let createdDate = moment(issue.crateddate).format('YYYY-MM-DD')
+                   
+                    let updateDate = moment(issue.updateddate).format('YYYY-MM-DD')
+                    let closeDate = moment(issue.closeddate).format('YYYY-MM-DD')
+
+                    issue.startdate = startDate
+                    issue.duedate = dueDate
+                    issue.crateddate = createdDate
+                    issue.updateddate = updateDate
+                    issue.closeddate = closeDate
+                    issue.assignee = assigneeUsers[i].assignename
+                    issue.author = authorUsers[i].authorname
+                })
+
+
+
+
+                res.render('projects/issues/view', { url, currentPage, totalPage, data: issues, nameOfPage: page })
+            } catch (error) {
+                console.log(error)
+                res.status(500).json({ error: true, message: error })
+            }
         }
+
 
     });
 

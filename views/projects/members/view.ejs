@@ -198,6 +198,7 @@
             </div>
         </div>
       </div>
+    
       <section id="paginations">
         <form action="/projects/members/<%=url%>" method="GET">
           <div class="container container-pagi">
@@ -224,7 +225,7 @@
                     class="page-link "><%= index %></button>
                 </li>
                 <% } else { %>
-                <l  i class="page-item">
+                <li  i class="page-item">
                   <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
                     class="page-link "><%= index %></button>
                 </li>
@@ -253,14 +254,13 @@
         </form>
       
       </section>
-      <a href="<%= url %>/add" name="search" value="clicked" class="btn-members-add btn btn-success btn-lg ">
-        Add</a>
-       
-   
   </main>
   </div>
 </div>
 
+<a href="<%= url %>/add" name="search" value="clicked" class="btn-members-add btn btn-success btn-lg ">
+  Add</a>
+ 
 <footer>
   <section class="overview ">
     <div class="footer-container container-fluid">
