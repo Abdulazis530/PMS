@@ -63,12 +63,12 @@
 
     <main role="main" class=" filter-members col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
       <section id="filter">
-        <h1 class="title">ADD MEMBERS</h1>
+        <h1 class="title">EDIT PROJECT </h1>
         <div class="container">
           <div class="card card-filter mx-auto">
             <h5 class="card-header card-header-filter">
               <div class="title-filter">
-                <h5>Add</h5>
+                <h5>Edit</h5>
               </div>
               <div class="card-body">
                 <form class="form-filter" method="POST">
@@ -78,16 +78,9 @@
                     <label for="inputIdMembers"
                       class=" add-overview-members col-sm-2 col-form-label col-form-label-lg">Name</label>
                     <div class="col-sm-8 ">
-                      <select name="inputIdMembers" style="height: 100%; font-size: 1.2rem;"
-                      class="custom-select form-control form-control-lg" id="inputIdMembers">
-                      <option selected>Open this select menu</option>
-
-                      <% data.forEach(e=>{ %>
-                      <option value="<%= e.userid %>"><%=e.fullname %></option>
-
-                      <%})%>
-
-                    </select>
+                        <input  class="custom-select form-control form-control-lg" name="editMembers" type="text"  id="editMembers" style="height: 100%; font-size: 1.2rem;" value="<%=data.fullname%>" disabled >
+                       
+                    
                     </div>
                   </div>
 

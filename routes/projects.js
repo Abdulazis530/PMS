@@ -278,6 +278,7 @@ module.exports = (db) => {
                 const getNumberOfUsers = await db.query(numberOfusers, [req.params.projectid])
                 const getMembers = await db.query(members, [req.params.projectid])
                 const optionRole = await db.query(queryPosition)
+                console.log(getMembers.rows)
                 const selectRoles = optionRole.rows
                 const totalData = getNumberOfUsers.rows[0].count
                 const totalPage = Math.ceil(Number(totalData) / limit)
@@ -506,13 +507,13 @@ module.exports = (db) => {
         console.log(req.body)
         const idUser = Number(req.body.inputIdMembers)
         const inputRole = req.body.inputRoleMembers
-        console.log(req.params.projectid)
-        console.log(idUser)
+      
         if (idUser == NaN || inputRole == 'Open this select menu') {
             res.redirect('add')
         }
 
         try {
+            
             let queryAdd = `INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`
             await db.query(queryAdd, [inputRole, idUser, req.params.projectid, 'fulltime'])
             res.redirect(`/projects/members/${req.params.projectid}`)
@@ -525,14 +526,41 @@ module.exports = (db) => {
     });
 
     // // localhost:3000/projects/members/1/edit/2
-    // router.get('/members/:projectid/edit/:memberid', helpers.isLogIn, function (req, res, next) {
-    //     res.render('projects/members/edit')
-    // });
+    router.get('/members/:projectid/edit/:memberid', helpers.isLogIn, async (req, res, next) =>{
+        const url = req.params.projectid
+        try {
+            const sqlGetUser= "SELECT CONCAT(users.firstname, ' ', users.lastname) as fullname,members.id FROM members JOIN users on members.userid=users.userid WHERE members.id=$1"
+            const getUsers= await db.query(sqlGetUser,[req.params.memberid])
+            const users=getUsers.rows[0]
 
-    // // localhost:3000/projects/members/1/edit/2 method:post
-    // router.post('/members/:projectid/edit/:memberid', helpers.isLogIn, function (req, res, next) {
-    //     res.redirect(`/projects/members/${req.params.projectid}`)
-    // });
+            let queryPosition = `SELECT DISTINCT role as Position FROM members`
+            const optionRole = await db.query(queryPosition)
+            const selectRoles = optionRole.rows
+            console.log(users)
+            res.render('projects/members/edit',{url,data:users,selectRoles})
+        } catch (error) {
+            console.log(error)  
+            res.status(500).json({ error: true, message: error })
+        }
+
+       
+    });
+
+    // localhost:3000/projects/members/1/edit/2 method:post
+    router.post('/members/:projectid/edit/:memberid', helpers.isLogIn,async (req, res, next)=> {
+        const newRole=req.body.inputRoleMembers
+
+        console.log(req.body)
+        try {
+            const queryEdit='UPDATE members SET role =$1 WHERE projectid=$2 AND id=$3'
+            await db.query(queryEdit,[newRole,req.params.projectid,req.params.memberid])
+            res.redirect(`/projects/members/${req.params.projectid}`)
+        } catch (error) {
+            console.log(error)  
+            res.status(500).json({ error: true, message: error })
+        }
+      
+    });
 
     // // localhost:3000/projects/members/1/delete/2
     // router.get('/members/:projectid/delete/:memberid', helpers.isLogIn, function (req, res, next) {

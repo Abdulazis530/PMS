@@ -183,7 +183,7 @@
                         <td <%= checkRoleUsers ? " " : "hidden"%>><%= position %></td>
       
                         <td>
-                          <a href="projects/edit/<%=id%>" name='button-edit' value='ok' class="btn-edit btn btn-success btn-sm">Edit</a>
+                          <a href="<%=url%>/edit/<%=id%>" name='button-edit' value='ok' class="btn-edit btn btn-success btn-sm">Edit</a>
                           <button class="btn-delete btn btn-danger btn-sm" type="submit" name="delete"
                             value="<%=id%>">Delete </button>
       
@@ -254,12 +254,13 @@
         </form>
       
       </section>
+      <a href="<%= url %>/add" name="search" value="clicked" class="btn-members-add btn btn-success btn-lg ">
+        Add</a>
   </main>
   </div>
 </div>
 
-<a href="<%= url %>/add" name="search" value="clicked" class="btn-members-add btn btn-success btn-lg ">
-  Add</a>
+
  
 <footer>
   <section class="overview ">
