@@ -1,0 +1,308 @@
+<%- include('../../partials/header'); -%>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+
+    <a class="navbar-brand" href="#"><img class="mb-4" src="/images/faviconwhite.ico" alt="" width="42" height="42">
+        Project Management System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/projects">Projects <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/profile">Profile</a>
+            </li>
+
+        </ul>
+
+        <a href="/logout" class="btn btn-logout btn-lg btn-danger my-2 my-sm-0"> logout</a>
+
+
+    </div>
+</nav>
+<div class="sidebarandform sidebar-custom container-fluid">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <nav class="box-sidebar col-md-2 d-none d-md-block bg-light sidebar">
+
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+
+                    <li class="nav-item ">
+                        <a class="text-sidebar nav-link " href="/projects/overview/<%= url %>">
+                            <span data-feather="shopping-cart"></span>
+                            Overview
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" text-sidebar nav-link" href="#">
+                            <span data-feather="users"></span>
+                            Activity
+                        </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class=" text-sidebar nav-link" href="/projects/members/<%= url %>">
+                            <span data-feather="bar-chart-2"></span>
+                            Members
+                        </a>
+                    </li>
+                    <li class="nav-item active-custom">
+                        <a class=" text-sidebar nav-link" href="/projects/issues/<%= url %>">
+                            <span data-feather="layers"></span>
+                            Issue
+                        </a>
+                    </li>
+                </ul>
+
+
+
+            </div>
+        </nav>
+        <!-- END OF SIDEBAR -->
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 text-white">
+            <div class="content">
+                <h1>New Issue</h1>
+                <hr>
+                <br>
+                <form action="" method="POST" enctype="multipart/form-data">
+                    <!-- <input type="hidden" name="projectId" value="10"> -->
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">
+                            Tracker
+                        </label>
+                        <div class="col-sm-8">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tracker" value="bug" required>
+                                <label class="form-check-label">
+                                    Bug
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tracker" value="feature">
+                                <label class="form-check-label">
+                                    Feature
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tracker" value="support">
+                                <label class="form-check-label">
+                                    Support
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">
+                            Subject
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="subject" placeholder="Subject" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">
+                            Description
+                        </label>
+                        <div class="col-sm-8">
+                            <textarea class="form-control" name="description" placeholder="Description"
+                                rows="4" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">
+                            Status
+                        </label>
+                        <div class="col-sm-8">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status" value="new" required>
+                                <label class="form-check-label">
+                                    New
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status" value="in progress" disabled>
+                                <label class="form-check-label">
+                                    In Progress
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status" value="resolved" disabled>
+                                <label class="form-check-label">
+                                    Resolved
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status" value="feedback" disabled>
+                                <label class="form-check-label">
+                                    Feedback
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status" value="closed" disabled>
+                                <label class="form-check-label">
+                                    Closed
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status" value="rejected" disabled>
+                                <label class="form-check-label">
+                                    Rejected
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">
+                            Priority
+                        </label>
+                        <div class="col-sm-8">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="priority" value="normal" required>
+                                <label class="form-check-label">
+                                    Normal
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="priority" value="high">
+                                <label class="form-check-label">
+                                    High
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="priority" value="urgent">
+                                <label class="form-check-label">
+                                    Urgent
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="priority" value="immediate">
+                                <label class="form-check-label">
+                                    Immediate
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Assignee</label>
+                        <div class="form-group col-sm-8 edit-input-issue">
+                            <select class="form-control edit-width"  name="assignee" required>
+                                <option selected disabled value="">Choose assignee...</option>
+                              <%  members.forEach(member=>{ %>
+                                <option value="<%=member.userid %>" > <%= member.assignee%> </option>
+
+                               <% }) %>
+                                
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Start Date</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" name="startDate" type="date" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Due Date</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" name="dueDate" type="date" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Estimated Time</label>
+                        <div class="col-auto">
+                            <div class="input-group mb-2">
+                                <input type="number" name="estimatedTime" class="form-control"
+                                    placeholder="Estimated Time" required>
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">Hours</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="done">Done</label>
+                        <div class="form-group col-sm-8 edit-input-issue">
+                            <select class="form-control edit-width"  name="done" id="done" title="Done percentage..." required>
+                                <option value="0" selected disabled>Choose done percentage..</option>
+                                <option value="0" >0%</option>
+                                <option value="10">10%</option>
+                                <option value="20">20%</option>
+                                <option value="30">30%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                                <option value="60">60%</option>
+                                <option value="70">70%</option>
+                                <option value="80">80%</option>
+                                <option value="90">90%</option>
+                                <option value="100">100%</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="file-upload">Files</label>
+                        <div class="form-group col-sm-8 edit-input-issue">
+                            <div class="custom-file mb-3 edit-width">
+                                <input type="file" name="file" class="custom-file-input">
+                                <label class="custom-file-label">No file choosen..</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary">Add Issue</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+
+    </div>
+    
+</div>
+
+
+
+</body>
+<footer>
+    <section class="overview ">
+        <div class="footer-container container-fluid">
+            <p class="copy-right text-center text-md-center">
+                Projects System Management 2020 ©
+            </p>
+            <i class="social-icon fab fa-facebook-f"></i>
+            <i class="social-icon fab fa-twitter"></i>
+            <i class="social-icon fab fa-instagram"></i>
+            <i class="social-icon fas fa-envelope"></i>
+        </div>
+    </section>
+</footer>
+
+</html>

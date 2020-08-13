@@ -540,30 +540,45 @@ main {
   margin-top: 2%
 }
 
-.card-body-custom{
+.card-body-custom {
   color: white;
   border-radius: 30px;
   background-color: #252734;
 }
-.title-card-issue{
-  color:black;
+
+.title-card-issue {
+  color: black;
   font-size: 3rem;
   margin-bottom: 2%;
-  
+
 }
-.subtitle-issues{
-  border-radius:30px 0px 30px 0px
+
+.subtitle-issues {
+  border-radius: 30px 0px 30px 0px
 }
-.checkboxIssue{
-  margin-left:12%
+
+.checkboxIssue {
+  margin-left: 12%
 }
-.option-col-issue{
-  margin-left:16%
+
+.option-col-issue {
+  margin-left: 16%
 }
+
 /* .checkboxIssueCol{
   margin-left: 3%;
 } */
 
-.list-issue{
+.list-issue {
   margin-left: 20%;
+}
+
+/* add issue */
+
+.edit-input-issue {
+  padding-left: 0px;
+  margin-left: 1%
+}
+.edit-width{
+  width: 98.5%
 }

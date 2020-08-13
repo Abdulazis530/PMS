@@ -389,7 +389,7 @@ module.exports = (db) => {
             }
 
         } else {
-            console.log('here')
+           
             try {
                 let currentPage = req.query.pageIssue || 1
                 let page = "pageIssue"
@@ -432,9 +432,6 @@ module.exports = (db) => {
                     issue.author = authorUsers[i].authorname
                 })
 
-
-
-
                 res.render('projects/issues/view', { url, currentPage, totalPage, data: issues, nameOfPage: page })
             } catch (error) {
                 console.log(error)
@@ -446,14 +443,29 @@ module.exports = (db) => {
     });
 
     // // localhost:3000/projects/issues/1/add
-    // router.get('/issues/:projectid/add', helpers.isLogIn, function (req, res, next) {
-    //     res.render('projects/issues/add')
-    // });
+    router.get('/issues/:projectid/add', helpers.isLogIn, async(req, res, next)=> {
+        const url =req.params.projectid
+        try {
+            const sqlGetMembers = `SELECT CONCAT(users.firstname, ' ', users.lastname) as assignee,users.userid FROM users JOIN members ON users.userid =members.userid WHERE projectid=$1 `
+            const getMembers = await db.query(sqlGetMembers,[url])
+            const members =getMembers.rows
+
+            console.log(members)
+            res.render('projects/issues/add',{url,members})
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
+
+        }
+      
+    });
 
     // // localhost:3000/projects/issues/1/add method:post
-    // router.post('/issues/:projectid/add', helpers.isLogIn, function (req, res, next) {
-    //     res.redirect(`/projects/issues/${req.params.projectid}`)
-    // });
+    router.post('/issues/:projectid/add', helpers.isLogIn, function (req, res, next) {
+
+        console.log(req.body)
+        res.redirect(`/projects/issues/${req.params.projectid}`)
+    });
 
     // // localhost:3000/projects/issues/1/edit/2
     // router.get('/issues/:projectid/edit/:issueid', helpers.isLogIn, function (req, res, next) {
