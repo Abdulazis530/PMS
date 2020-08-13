@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var helpers = require('../helpers/auth');
 var moment = require('moment');
+var path = require('path');
 
 let optionCheckBox = {
     checkId: true,
@@ -450,7 +451,7 @@ module.exports = (db) => {
             const getMembers = await db.query(sqlGetMembers,[url])
             const members =getMembers.rows
 
-            console.log(members)
+           
             res.render('projects/issues/add',{url,members})
         } catch (error) {
             console.log(error)
@@ -461,10 +462,49 @@ module.exports = (db) => {
     });
 
     // // localhost:3000/projects/issues/1/add method:post
-    router.post('/issues/:projectid/add', helpers.isLogIn, function (req, res, next) {
+    router.post('/issues/:projectid/add', helpers.isLogIn, async (req, res, next)=> {
 
-        console.log(req.body)
-        res.redirect(`/projects/issues/${req.params.projectid}`)
+        const projectid=req.params.projectid
+        const tracker=req.body.tracker
+        const subject =req.body.subject
+        const description=req.body.description
+        const status=req.body.status
+        const priority=req.body.priority
+        const assignee=req.body.assignee
+        const startdate=req.body.startDate
+        const duedate=req.body.duedate
+        const estimatedtime=req.body.estimatedTime
+        const done =req.body.done
+        const author=req.session.user.userid
+        
+        try {
+           if(req.files){
+            const file=req.files.inputFile
+            const fileName=file.name.toLowerCase().replace("",Date.now()).split(' ').join('-')
+            let addQuery="INSERT INTO issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, author, crateddate)   VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())"
+            let value=[projectid,tracker,subject,description,status,priority,assignee,startdate,duedate,estimatedtime,done,fileName,author]
+            await db.query(addQuery,value)
+            await file.mv(path.join(__dirname, "..", "public", "upload", fileName))
+
+           }else{
+            let addQuery="INSERT INTO issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, author, crateddate)   VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())"
+            let value=[projectid,tracker,subject,description,status,priority,assignee,startdate,duedate,estimatedtime,done,author]
+            await db.query(addQuery,value)
+           }
+           res.redirect(`/projects/issues/${req.params.projectid}`)
+            
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
+
+        }
+ 
+        // console.log(req.files.inputFile.name.toLowerCase().replace("",Date.now()).split(' ').join('-'))
+
+        // console.log(req.files.inputFile)
+
+        // console.log(req.body)
+       
     });
 
     // // localhost:3000/projects/issues/1/edit/2
