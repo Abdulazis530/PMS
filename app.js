@@ -7,6 +7,7 @@ const moment = require('moment')
 const { Pool } = require('pg')
 const session = require('express-session')
 const flash = require('connect-flash');
+const fileUpload = require('express-fileupload');
 
 const pool = new Pool({
   user: 'azis',
@@ -28,6 +29,7 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(fileUpload())
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

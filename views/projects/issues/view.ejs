@@ -271,6 +271,7 @@
 
                         <button type="submit" name="option" value="clicked"
                             class="btn-apply btn btn-primary btn-optional">Apply</button>
+                    </form>
                 </div>
 
 
@@ -288,8 +289,8 @@
                 <div class="title-filter subtitle-issues" ">
                     <h5 style=" margin-right: 25%">List</h5>
                 </div>
-                <div class="card-body table-responsive mt-5">
-                    <form class="form-add" method="POST" action="/projects">
+                <div class="card-body card-issue-edit table-responsive mt-5">
+                    <form class="form-add" method="POST" >
                         <table class="table table-striped">
                             <thead>
                                 <tr>
@@ -325,60 +326,38 @@
                                 <tr>
                                     <th scope="row"><%= issueid%></th>
                                     <td><%=subject %> </td>
-                                    <td>
-                                        <%=tracker%>
-                                    </td>
+                                    <td> <%=tracker%></td>
                                     <td><%=description%></td>
-                                    <td>
-                                        <%=status %>
-                                    </td>
-                                    <td>
-                                        <%=priority%>
-
-                                    </td>
-                                    <td>
-                                        <%= assignee%>
-                                    </td>
+                                    <td> <%=status %> </td>
+                                    <td> <%=priority%></td>
+                                    <td> <%= assignee%></td>
                                     <td><%= startdate%></td>
-                                    <td>
-                                        <%= duedate%></td>
-                                    <td>
-                                        <%=estimatedtime %> Hours
-                                    </td>
-                                    <td><%=spenttime %></td>
-                                    <td><%=done%></td>
-                                    <td><%=targetversion %>
-                                    </td>
+                                    <td> <%= duedate%></td>
+                                    <td><%=estimatedtime %> Hours</td>
+                                    <td><%=spenttime %> Hours</td>
+                                    <td><%=done%> %</td>
+                                    <td><%=targetversion %></td>
                                     <td><%=author%></td>
-                                    <td>
-                                        <%= crateddate%></td>
+                                    <td> <%= crateddate%></td>
+                                    <td> <%=updateddate %></td>
+                                    <td> <%=closeddate %></td>
 
-                                    <td>
-                                        <%=updateddate %></td>
-
-                                    <td>
-                                        <%=closeddate %>
-                                    </td>
 
                                     <td>
-
-                                        <a
-                                            href="/upload/1591288666322screenshot-from-2020-05-15-23-47-12.png"><%=files%></a>
-
-                                    </td>
-
-
-
+                                        <% if(files){ %>
+                                        <a href="/upload/<%= files %>">File</a>
+                                        <%} else {%>
+                                        No file attached
+                                        <% } %> </td>
                                     <td>
                                         <a role="button" class="btn btn-success mr-2 mb-2"
-                                            href="/projects/issues/4/edit/27">
+                                            href="<%= url%>/edit/<%= issueid%>">
                                             <i class="fas fa-edit"></i>
                                         </a>
-
-                                        <a role="button" class="btn btn-danger mr-2 mb-2"
-                                            href="/projects/issues/4/delete/27">
+                                        <button type="submit" class="btn btn-danger mr-2 mb-2" name="delete" value= <%=issueid%> >
                                             <i class="fas fa-trash-alt"></i>
-                                        </a>
+                                        </button>
+                                       
                                     </td>
                                 </tr>
 
@@ -398,7 +377,7 @@
 <section id="paginations">
     <form method="GET">
         <div class="container container-pagi">
-            <nav aria-label="Page navigation ">
+            <nav class="move-pagi" aria-label="Page navigation ">
                 <ul class="pagination">
 
                     <% if(currentPage==1) { %>
@@ -451,7 +430,7 @@
 
 </section>
 
-<div class="row" style="margin-left: 15%;">
+<div class="row" style="margin-left: 19%;">
     <a href="<%= url %>/add" name="search" value="clicked" class="btn-members-add btn btn-success btn-lg ">
         Add</a>
 </div>

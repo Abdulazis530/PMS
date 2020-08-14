@@ -570,7 +570,7 @@ main {
 } */
 
 .list-issue {
-  margin-left: 20%;
+  margin-left: 25%;
 }
 
 /* add issue */
@@ -581,4 +581,7 @@ main {
 }
 .edit-width{
   width: 98.5%
+}
+.move-pagi{
+  margin-left: 15%;
 }

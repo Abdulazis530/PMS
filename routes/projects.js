@@ -19,6 +19,7 @@ module.exports = (db) => {
     let conditionUser = []
     let conditionAddMembers = []
     let conditionIssues = []
+
     router.get('/', helpers.isLogIn, async (req, res, next) => {
         console.log(optionCheckBox)
         const limit = 5
@@ -102,7 +103,7 @@ module.exports = (db) => {
 
     });
 
-    // // localhost:3000/projects/add method:post
+    // localhost:3000/projects/add method:post
     router.post('/add', helpers.isLogIn, async (req, res, next) => {
 
         const newProject = req.body.project
@@ -114,12 +115,12 @@ module.exports = (db) => {
             res.redirect('add')
         } else {
             try {
-                //update project tabel
+
                 await db.query("INSERT INTO projects (name) VALUES($1)", [newProject])
-                //select projectid of newProject
+
                 const result = await db.query('SELECT projectid FROM projects WHERE name=$1', [newProject])
                 const newProjectId = result.rows[0].projectid
-                //update member tabel
+
                 newProjectMembers.forEach(async (newMember) => {
                     await db.query(`INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`, ['belum ditentukan', newMember, newProjectId, 'belum ditentukan'])
                 })
@@ -138,7 +139,7 @@ module.exports = (db) => {
 
     });
 
-    // // localhost:3000/projects/edit/1
+    // localhost:3000/projects/edit/1
     router.get('/edit/:id', helpers.isLogIn, async (req, res, next) => {
 
         const queryGetProject = 'SELECT name FROM projects WHERE projectid = $1;'
@@ -147,17 +148,16 @@ module.exports = (db) => {
         let members = []
 
         try {
-            //ambil data dari members siapa aja orang yang terlibat dalam project ini
+
             const alluser = await db.query(queryGetusers)
             const dataOldMembers = await db.query(queryOldmembers, [req.params.id])
             const getProject = await db.query(queryGetProject, [req.params.id])
 
             let oldMembers = dataOldMembers.rows
             let data = alluser.rows
-
             let projectName = getProject.rows[0].name
 
-            //store userid into an array 
+
             oldMembers.forEach(e => {
                 members.push(e.userid)
             })
@@ -166,13 +166,10 @@ module.exports = (db) => {
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
-
         }
-
-
     });
 
-    // // localhost:3000/projects/edit/1 method:post
+    // localhost:3000/projects/edit/1 method:post
     router.post('/edit/:id', helpers.isLogIn, async (req, res, next) => {
         console.log(req.body)
         const project = req.body.project
@@ -188,13 +185,8 @@ module.exports = (db) => {
                 let queryDelete = 'DELETE FROM members WHERE projectid =$1'
                 let queryInsert = `INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`
 
-                //update table projects
                 await db.query(queryUpdate, [project, req.params.id])
-
-                //delete rows in member table with projectid =req.params.id
                 await db.query(queryDelete, [req.params.id])
-
-                //insert one by one with each of newProjectMembers
                 newProjectMembers.forEach(async (newMember) => {
                     await db.query(queryInsert, ['belum ditentukan', newMember, req.params.id, 'belum ditentukan'])
                 })
@@ -208,16 +200,9 @@ module.exports = (db) => {
             }
 
         }
-
-
-
-
     });
 
-    // // localhost:3000/projects/delete/1 method:get
-
-
-    // // localhost:3000/projects/overview/1
+    // localhost:3000/projects/overview/1
     router.get('/overview/:projectid', helpers.isLogIn, async (req, res, next) => {
         const queryGetMembers = "SELECT CONCAT(users.firstname, ' ', users.lastname) AS fullname FROM users JOIN members ON users.userid = members.userid WHERE members.projectid =$1"
 
@@ -229,6 +214,8 @@ module.exports = (db) => {
             res.status(500).json({ error: true, message: error })
         }
     });
+
+    // localhost:3000/projects/members/1
     router.get('/members/:projectid', helpers.isLogIn, async (req, res, next) => {
         console.log(optionCheckBox)
         const limit = 3
@@ -292,7 +279,7 @@ module.exports = (db) => {
         }
 
     });
-
+    // localhost:3000/projects/members/1
     router.post('/members/:projectid', helpers.isLogIn, async (req, res, next) => {
 
         if (req.body.optionUsers) {
@@ -317,6 +304,91 @@ module.exports = (db) => {
 
         }
     })
+    router.get('/members/:projectid/add', helpers.isLogIn, async (req, res, next) => {
+        const url = req.params.projectid
+        try {
+            let queryPosition = `SELECT DISTINCT role as Position FROM members`
+            const optionRole = await db.query(queryPosition)
+            const selectRoles = optionRole.rows
+
+            const userInmember = `SELECT userid FROM members WHERE projectid =$1`
+            const alreadyMember = await db.query(userInmember, [req.params.projectid])
+
+            const userMember = alreadyMember.rows
+            userMember.forEach(e => {
+                conditionAddMembers.push(`users.userid != ${e.userid}`)
+            })
+
+            const conditionsAddMembers = conditionAddMembers.join(" AND ")
+            let getUser = `SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE ${conditionsAddMembers} `
+            const users = await db.query(getUser)
+
+            res.render('projects/members/add', { url, data: users.rows, selectRoles })
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
+        }
+    });
+
+    // localhost:3000/projects/members/1/add method:post
+    router.post('/members/:projectid/add', helpers.isLogIn, async (req, res, next) => {
+        console.log(req.body)
+        const idUser = Number(req.body.inputIdMembers)
+        const inputRole = req.body.inputRoleMembers
+
+        if (idUser == NaN || inputRole == 'Open this select menu') {
+            res.redirect('add')
+        }
+
+        try {
+
+            let queryAdd = `INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`
+            await db.query(queryAdd, [inputRole, idUser, req.params.projectid, 'fulltime'])
+            res.redirect(`/projects/members/${req.params.projectid}`)
+
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
+        }
+
+    });
+
+    // // localhost:3000/projects/members/1/edit/2
+    router.get('/members/:projectid/edit/:memberid', helpers.isLogIn, async (req, res, next) => {
+        const url = req.params.projectid
+        try {
+            const sqlGetUser = "SELECT CONCAT(users.firstname, ' ', users.lastname) as fullname,members.id FROM members JOIN users on members.userid=users.userid WHERE members.id=$1"
+            const getUsers = await db.query(sqlGetUser, [req.params.memberid])
+            const users = getUsers.rows[0]
+
+            let queryPosition = `SELECT DISTINCT role as Position FROM members`
+            const optionRole = await db.query(queryPosition)
+            const selectRoles = optionRole.rows
+            console.log(users)
+            res.render('projects/members/edit', { url, data: users, selectRoles })
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
+        }
+
+
+    });
+
+    // localhost:3000/projects/members/1/edit/2 method:post
+    router.post('/members/:projectid/edit/:memberid', helpers.isLogIn, async (req, res, next) => {
+        const newRole = req.body.inputRoleMembers
+
+        console.log(req.body)
+        try {
+            const queryEdit = 'UPDATE members SET role =$1 WHERE projectid=$2 AND id=$3'
+            await db.query(queryEdit, [newRole, req.params.projectid, req.params.memberid])
+            res.redirect(`/projects/members/${req.params.projectid}`)
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
+        }
+
+    });
 
 
     // // localhost:3000/projects/activity/1
@@ -324,7 +396,7 @@ module.exports = (db) => {
     //     res.render('projects/activity/view')
     // });
 
-    // // localhost:3000/projects/issues/1
+    // localhost:3000/projects/issues/1
     router.get('/issues/:projectid', helpers.isLogIn, async (req, res, next) => {
         const limit = 3
         const url = req.params.projectid
@@ -336,7 +408,7 @@ module.exports = (db) => {
             console.log(req.query)
             if (req.query.checkboxIdIssues === "on" && req.query.inputIdIssues.length !== 0) conditionIssues.push(`issues.issueid = ${Number(req.query.inputIdIssues)}`)
             if (req.query.checkboxSubjectIssues === "on" && req.query.inputSubjectIssue.length !== 0) conditionIssues.push(`issues.subject ILIKE '%${req.query.inputSubjectIssue}%'`)
-            if (req.query.checkboxTracker=== "on" && req.query.inputTracker.length !== 0 && req.query.inputTracker !== 'Open this select menu') conditionIssues.push(`issues.tracker ILIKE '%${req.query.inputTracker}%'`)
+            if (req.query.checkboxTracker === "on" && req.query.inputTracker.length !== 0 && req.query.inputTracker !== 'Open this select menu') conditionIssues.push(`issues.tracker ILIKE '%${req.query.inputTracker}%'`)
             console.log(conditionIssues)
             if (conditionIssues.length == 0) {
                 res.redirect(url)
@@ -390,7 +462,7 @@ module.exports = (db) => {
             }
 
         } else {
-           
+
             try {
                 let currentPage = req.query.pageIssue || 1
                 let page = "pageIssue"
@@ -415,12 +487,11 @@ module.exports = (db) => {
                 const total = await db.query(queryTotal, [url])
                 const totalPage = Math.ceil(Number(total.rows[0].count) / limit)
 
-
                 issues.forEach((issue, i) => {
                     let startDate = moment(issue.startdate).format('YYYY-MM-DD')
                     let dueDate = moment(issue.duedate).format('YYYY-MM-DD')
                     let createdDate = moment(issue.crateddate).format('YYYY-MM-DD')
-                   
+
                     let updateDate = moment(issue.updateddate).format('YYYY-MM-DD')
                     let closeDate = moment(issue.closeddate).format('YYYY-MM-DD')
 
@@ -442,75 +513,120 @@ module.exports = (db) => {
 
 
     });
+    router.post('/issues/:projectid', helpers.isLogIn, async (req, res, next) => {
+        const issueid = req.body.delete
+        try {
+            const sqlDelete = 'DELETE FROM issues WHERE issueid=$1'
+            await db.query(sqlDelete, [issueid])
+            res.redirect(`/projects/issues/${req.params.projectid}`)
+
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
+        }
+
+    })
+
 
     // // localhost:3000/projects/issues/1/add
-    router.get('/issues/:projectid/add', helpers.isLogIn, async(req, res, next)=> {
-        const url =req.params.projectid
+    router.get('/issues/:projectid/add', helpers.isLogIn, async (req, res, next) => {
+
+        const url = req.params.projectid
+
         try {
             const sqlGetMembers = `SELECT CONCAT(users.firstname, ' ', users.lastname) as assignee,users.userid FROM users JOIN members ON users.userid =members.userid WHERE projectid=$1 `
-            const getMembers = await db.query(sqlGetMembers,[url])
-            const members =getMembers.rows
+            const getMembers = await db.query(sqlGetMembers, [url])
+            const members = getMembers.rows
+            console.log(members)
 
-           
-            res.render('projects/issues/add',{url,members})
+            res.render('projects/issues/add', { url, members })
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
 
         }
-      
+
     });
 
     // // localhost:3000/projects/issues/1/add method:post
-    router.post('/issues/:projectid/add', helpers.isLogIn, async (req, res, next)=> {
+    router.post('/issues/:projectid/add', helpers.isLogIn, async (req, res, next) => {
 
-        const projectid=req.params.projectid
-        const tracker=req.body.tracker
-        const subject =req.body.subject
-        const description=req.body.description
-        const status=req.body.status
-        const priority=req.body.priority
-        const assignee=req.body.assignee
-        const startdate=req.body.startDate
-        const duedate=req.body.duedate
-        const estimatedtime=req.body.estimatedTime
-        const done =req.body.done
-        const author=req.session.user.userid
-        
+        const projectid = req.params.projectid
+        const tracker = req.body.tracker
+        const subject = req.body.subject
+        const description = req.body.description
+        const status = req.body.status
+        const priority = req.body.priority
+        const assignee = req.body.assignee
+        const startdate = req.body.startDate
+        const duedate = req.body.dueDate
+        const estimatedtime = req.body.estimatedTime
+        const done = req.body.done
+        const author = req.session.user.userid
+
         try {
-           if(req.files){
-            const file=req.files.inputFile
-            const fileName=file.name.toLowerCase().replace("",Date.now()).split(' ').join('-')
-            let addQuery="INSERT INTO issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, author, crateddate)   VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())"
-            let value=[projectid,tracker,subject,description,status,priority,assignee,startdate,duedate,estimatedtime,done,fileName,author]
-            await db.query(addQuery,value)
-            await file.mv(path.join(__dirname, "..", "public", "upload", fileName))
+            if (req.files) {
+                const file = req.files.inputFile
+                const fileName = file.name.toLowerCase().replace("", Date.now()).split(' ').join('-')
+                let addQuery = "INSERT INTO issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, author, crateddate)   VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())"
+                let value = [projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, fileName, author]
+                await db.query(addQuery, value)
+                await file.mv(path.join(__dirname, "..", "public", "upload", fileName))
 
-           }else{
-            let addQuery="INSERT INTO issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, author, crateddate)   VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())"
-            let value=[projectid,tracker,subject,description,status,priority,assignee,startdate,duedate,estimatedtime,done,author]
-            await db.query(addQuery,value)
-           }
-           res.redirect(`/projects/issues/${req.params.projectid}`)
-            
+            } else {
+                let addQuery = "INSERT INTO issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, author, crateddate)   VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())"
+                let value = [projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, author]
+                await db.query(addQuery, value)
+            }
+            res.redirect(`/projects/issues/${req.params.projectid}`)
+
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
 
         }
- 
-        // console.log(req.files.inputFile.name.toLowerCase().replace("",Date.now()).split(' ').join('-'))
 
-        // console.log(req.files.inputFile)
 
-        // console.log(req.body)
-       
     });
 
-    // // localhost:3000/projects/issues/1/edit/2
-    // router.get('/issues/:projectid/edit/:issueid', helpers.isLogIn, function (req, res, next) {
-    //     res.render('projects/issues/edit')
-    // });
+    // localhost:3000/projects/issues/1/edit/2
+    router.get('/issues/:projectid/edit/:issueid', helpers.isLogIn, async (req, res, next) => {
+        const url = req.params.projectid
+        const issueid = req.params.issueid
+
+        try {
+            //get all member of projectid to be showed in the select input
+            const sqlGetMembers = `SELECT CONCAT(users.firstname, ' ', users.lastname) as assignee,users.userid FROM users JOIN members ON users.userid =members.userid WHERE projectid=$1 `
+            const getMembers = await db.query(sqlGetMembers, [url])
+            const members = getMembers.rows
+
+            //get all data
+            const sqlGetAll = `SELECT * FROM issues where issueid =$1`
+            const getAll = await db.query(sqlGetAll, [issueid])
+            const issueData = getAll.rows[0]
+            // console.log(issueData)
+
+            // currentAssigne
+            const sqlCurrentAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) as assignee,users.userid FROM users JOIN issues ON users.userid =issues.assignee WHERE issueid=$1`
+            const getCurrentAssignee = await db.query(sqlCurrentAssignee, [issueid])
+            const currentAssigne = getCurrentAssignee.rows[0]
+
+            //getParentask
+            const sqlParentTasks = `SELECT issueid as parenttask, subject,tracker FROM issues WHERE projectid = $1`
+            const getParentTasks = await db.query(sqlParentTasks, [url])
+            const parentTasks = getParentTasks.rows
+            console.log(parentTasks)
+            res.render('projects/issues/edit', { url, members, issueData, currentAssigne, moment,parentTasks })
+
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
+
+        }
+
+
+
+    });
 
     // // localhost:3000/projects/issues/1/edit/2 method:post
     // router.post('/issues/:projectid/edit/:issueid', helpers.isLogIn, function (req, res, next) {
@@ -528,91 +644,7 @@ module.exports = (db) => {
     // });
 
     // // localhost:3000/projects/members/1/add
-    router.get('/members/:projectid/add', helpers.isLogIn, async (req, res, next) => {
-        const url = req.params.projectid
-        try {
-            let queryPosition = `SELECT DISTINCT role as Position FROM members`
-            const optionRole = await db.query(queryPosition)
-            const selectRoles = optionRole.rows
 
-            const userInmember = `SELECT userid FROM members WHERE projectid =$1`
-            const alreadyMember = await db.query(userInmember, [req.params.projectid])
-
-            const userMember = alreadyMember.rows
-            userMember.forEach(e => {
-                conditionAddMembers.push(`users.userid != ${e.userid}`)
-            })
-
-            const conditionsAddMembers = conditionAddMembers.join(" AND ")
-            let getUser = `SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE ${conditionsAddMembers} `
-            const users = await db.query(getUser)
-
-            res.render('projects/members/add', { url, data: users.rows, selectRoles })
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({ error: true, message: error })
-        }
-    });
-
-    // localhost:3000/projects/members/1/add method:post
-    router.post('/members/:projectid/add', helpers.isLogIn, async (req, res, next) => {
-        console.log(req.body)
-        const idUser = Number(req.body.inputIdMembers)
-        const inputRole = req.body.inputRoleMembers
-      
-        if (idUser == NaN || inputRole == 'Open this select menu') {
-            res.redirect('add')
-        }
-
-        try {
-            
-            let queryAdd = `INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`
-            await db.query(queryAdd, [inputRole, idUser, req.params.projectid, 'fulltime'])
-            res.redirect(`/projects/members/${req.params.projectid}`)
-
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({ error: true, message: error })
-        }
-
-    });
-
-    // // localhost:3000/projects/members/1/edit/2
-    router.get('/members/:projectid/edit/:memberid', helpers.isLogIn, async (req, res, next) =>{
-        const url = req.params.projectid
-        try {
-            const sqlGetUser= "SELECT CONCAT(users.firstname, ' ', users.lastname) as fullname,members.id FROM members JOIN users on members.userid=users.userid WHERE members.id=$1"
-            const getUsers= await db.query(sqlGetUser,[req.params.memberid])
-            const users=getUsers.rows[0]
-
-            let queryPosition = `SELECT DISTINCT role as Position FROM members`
-            const optionRole = await db.query(queryPosition)
-            const selectRoles = optionRole.rows
-            console.log(users)
-            res.render('projects/members/edit',{url,data:users,selectRoles})
-        } catch (error) {
-            console.log(error)  
-            res.status(500).json({ error: true, message: error })
-        }
-
-       
-    });
-
-    // localhost:3000/projects/members/1/edit/2 method:post
-    router.post('/members/:projectid/edit/:memberid', helpers.isLogIn,async (req, res, next)=> {
-        const newRole=req.body.inputRoleMembers
-
-        console.log(req.body)
-        try {
-            const queryEdit='UPDATE members SET role =$1 WHERE projectid=$2 AND id=$3'
-            await db.query(queryEdit,[newRole,req.params.projectid,req.params.memberid])
-            res.redirect(`/projects/members/${req.params.projectid}`)
-        } catch (error) {
-            console.log(error)  
-            res.status(500).json({ error: true, message: error })
-        }
-      
-    });
 
     // // localhost:3000/projects/members/1/delete/2
     // router.get('/members/:projectid/delete/:memberid', helpers.isLogIn, function (req, res, next) {
