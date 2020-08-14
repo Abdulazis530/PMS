@@ -604,21 +604,28 @@ module.exports = (db) => {
             const sqlGetAll = `SELECT * FROM issues where issueid =$1`
             const getAll = await db.query(sqlGetAll, [issueid])
             const issueData = getAll.rows[0]
-            // console.log(issueData)
+            console.log(issueData)
 
             // currentAssigne
             const sqlCurrentAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) as assignee,users.userid FROM users JOIN issues ON users.userid =issues.assignee WHERE issueid=$1`
             const getCurrentAssignee = await db.query(sqlCurrentAssignee, [issueid])
             const currentAssigne = getCurrentAssignee.rows[0]
 
+            //author
+            const sqlGetAuthor = "SELECT CONCAT(users.firstname, ' ', users.lastname) as author, users.userid FROM users JOIN issues ON users.userid=issues.author WHERE issueid=$1"
+            const getAuthor = await db.query(sqlGetAuthor, [issueid])
+            const author = getAuthor.rows[0]
+            console.log(author)
+
             //getParentask
             const sqlParentTasks = `SELECT issueid as parenttask, subject,tracker FROM issues WHERE projectid = $1`
             const getParentTasks = await db.query(sqlParentTasks, [url])
             const parentTasks = getParentTasks.rows
             console.log(parentTasks)
-            res.render('projects/issues/edit', { url, members, issueData, currentAssigne, moment,parentTasks })
+            res.render('projects/issues/edit', { url, members, issueData, currentAssigne, moment, parentTasks, author })
 
         } catch (error) {
+
             console.log(error)
             res.status(500).json({ error: true, message: error })
 
@@ -628,10 +635,44 @@ module.exports = (db) => {
 
     });
 
-    // // localhost:3000/projects/issues/1/edit/2 method:post
-    // router.post('/issues/:projectid/edit/:issueid', helpers.isLogIn, function (req, res, next) {
-    //     res.redirect(`/projects/issues/${req.params.projectid}`)
-    // });
+    // localhost:3000/projects/issues/1/edit/2 method:post
+    router.post('/issues/:projectid/edit/:issueid', helpers.isLogIn, async (req, res, next) => {
+        const issueid = req.params.issueid
+        const tracker = req.body.tracker
+        const subject = req.body.subject
+        const description = req.body.description
+        const status = req.body.status
+        const priority = req.body.priority
+        const duedate = req.body.dueDate
+        const done = req.body.done
+        const parentTask = req.body.parentTask
+        const spentTime = req.body.spentTime
+        const targetVersion = req.body.targetVersion
+
+        console.log(req.body)
+        try {
+            if (req.files) {
+                const file = req.files.inputFile
+                const fileName = file.name.toLowerCase().replace("", Date.now()).split(' ').join('-')
+
+                const sqltUpdateIssue = "UPDATE issues SET updateddate = NOW(),tracker=$1, subject =$2, description=$3, status=$4, priority=$5, duedate=$6,done=$7,parenttask =$8, spenttime =$9, targetversion =$10,files=$11 WHERE issueid= $12"
+                await db.query(sqltUpdateIssue, [tracker, subject, description, status, priority, duedate, Number(done), Number(parentTask), Number(spentTime), targetVersion, fileName, issueid])
+                await file.mv(path.join(__dirname, "..", "public", "upload", fileName))
+
+            } else {
+                const sqltUpdateIssue = "UPDATE issues SET updateddate = NOW(),tracker=$1, subject =$2, description=$3, status=$4, priority=$5, duedate=$6,done=$7,parenttask =$8, spenttime =$9, targetversion =$10 WHERE issueid= $11"
+                await db.query(sqltUpdateIssue, [tracker, subject, description, status, priority, duedate, Number(done), Number(parentTask), Number(spentTime), targetVersion, issueid])
+            }
+
+            res.redirect(`/projects/issues/${req.params.projectid}`)
+
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
+
+        }
+
+    });
 
     // // localhost:3000/projects/issues/1/delete/2
     // router.get('/issues/:projectid/delete/:issueid', helpers.isLogIn, function (req, res, next) {

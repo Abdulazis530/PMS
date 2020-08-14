@@ -288,7 +288,7 @@
                             <select class="form-control edit-width" name="parentTask" required>
                                 <option value="" selected disabled>Choose parent task..</option>
                                 <% parentTasks.forEach(parentTask=>{ %>
-                                    <option value="<%=parentTask.parenttask %>"> <%= parentTask.subject ,(parentTask.tracker) %>
+                                    <option value="<%=parentTask.parenttask %>"> <%= parentTask.subject %> (<%=parentTask.tracker %>)
                                     </option>
                                <% }) %>
                                 
@@ -326,7 +326,7 @@
                             Author
                         </label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="targetVersion" value="" disabled>
+                            <input type="text" class="form-control" name="targetVersion" value="<%=author.author %>" disabled>
                         </div>
                     </div>
 
@@ -334,7 +334,7 @@
                         <label class="col-sm-2 col-form-label" for="file-upload">Files</label>
                         <div class="form-group col-sm-8 edit-input-issue">
                             <div class="custom-file mb-3 edit-width">
-                                <input type="file" name="file" class="custom-file-input">
+                                <input type="file" name="inputFile" class="custom-file-input">
                                 <label class="custom-file-label">Change file</label>
                             </div>
                         </div>
