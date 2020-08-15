@@ -415,19 +415,19 @@ module.exports = (db) => {
         const projectid = req.params.projectid
         try {
             //get project
-            const sqlGetProject = "SELECT * FROM projects WHERE projectid= ${projectid}"
+            const sqlGetProject = `SELECT * FROM projects WHERE projectid= ${projectid}`
             const getProject = await db.query(sqlGetProject)
             const project = getProject.rows[0]
 
             //get activity 
-            const sqlActivities = `SELECT activity.*, CONCAT(users.firstname,' ',users.lastname) AS authorname,
+            const sqlActivities = `SELECT activity.*, CONCAT(users.firstname,' ',users.lastname) AS author,
             (time AT TIME ZONE 'Asia/Jakarta'):: time AS timeactivity, 
             (time AT TIME ZONE 'Asia/Jakarta'):: date AS dateactivity
             FROM activity
             LEFT JOIN users ON activity.author = users.userid WHERE projectid= ${projectid} 
             ORDER BY dateactivity DESC, timeactivity DESC`
 
-            const getActivities = await db.query(sqlActivity)
+            const getActivities = await db.query(sqlActivities)
             const activities = getActivities.rows
 
             activities.forEach(activity => {
