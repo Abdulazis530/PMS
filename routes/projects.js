@@ -11,24 +11,24 @@ let optionCheckBox = {
     checkIdMembers: true,
     checkNameUsers: true,
     checkRoleUsers: true,
-    checkIdIssue:true,
-    checkStatusIssue:true,
-    checkDueDateIssue:true,
-    checkTargetVersionIssue:true,
-    checkSubjectIssue:true,
-    checkPriorityIssue:true,
-    checkEstimatedTimeIssue:true,
-    checkAuthorIssue:true,
-    checkTrackerIssue:true,
-    checkAssigneIssue:true,
-    checkSpentTimeIssue:true,
-    checkCreatedDateIssue:true,
-    checkDescriptionIssue:true,
-    checkDoneIssue:true,
-    checkUpdateDateIssue:true,
+    checkIdIssue: true,
+    checkStatusIssue: true,
+    checkDueDateIssue: true,
+    checkTargetVersionIssue: true,
+    checkSubjectIssue: true,
+    checkPriorityIssue: true,
+    checkEstimatedTimeIssue: true,
+    checkAuthorIssue: true,
+    checkTrackerIssue: true,
+    checkAssigneIssue: true,
+    checkSpentTimeIssue: true,
+    checkCreatedDateIssue: true,
+    checkDescriptionIssue: true,
+    checkDoneIssue: true,
+    checkUpdateDateIssue: true,
     checkClosedIssue: true,
-    checkFileIssue:true,
-    checkStartDateIssue:true
+    checkFileIssue: true,
+    checkStartDateIssue: true
 
 }
 
@@ -411,9 +411,53 @@ module.exports = (db) => {
 
 
     // // localhost:3000/projects/activity/1
-    // router.get('/activity/:projectid', helpers.isLogIn, function (req, res, next) {
-    //     res.render('projects/activity/view')
-    // });
+    router.get('/activity/:projectid', helpers.isLogIn, async (req, res, next) => {
+        const projectid = req.params.projectid
+        try {
+            //get project
+            const sqlGetProject = "SELECT * FROM projects WHERE projectid= ${projectid}"
+            const getProject = await db.query(sqlGetProject)
+            const project = getProject.rows[0]
+
+            //get activity 
+            const sqlActivities = `SELECT activity.*, CONCAT(users.firstname,' ',users.lastname) AS authorname,
+            (time AT TIME ZONE 'Asia/Jakarta'):: time AS timeactivity, 
+            (time AT TIME ZONE 'Asia/Jakarta'):: date AS dateactivity
+            FROM activity
+            LEFT JOIN users ON activity.author = users.userid WHERE projectid= ${projectid} 
+            ORDER BY dateactivity DESC, timeactivity DESC`
+
+            const getActivities = await db.query(sqlActivity)
+            const activities = getActivities.rows
+
+            activities.forEach(activity => {
+                activity.dateactivity = moment(activity.dateactivity).format('YYYY-MM-DD')
+                activity.timeactivity = moment(activity.timeactivity, 'HH:mm:ss.SSS').format('HH:mm:ss');
+
+                if (activity.dateactivity == moment().format('YYYY-MM-DD')) {
+                    activity.dateactivity = 'Today'
+                } else if (activity.dateactivity == moment().subtract(1, 'days').format('YYYY-MM-DD')) {
+                    activity.dateactivity = 'Yesterday'
+                } else {
+                    activity.dateactivity = moment(activity.dateactivity).format("MMMM Do, YYYY")
+                }
+            })
+            res.render(`projects/activity/view`, {
+                activities,
+                project,
+                projectid,
+                url: projectid,
+                login: req.session.user
+            })
+         
+
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
+
+        }
+
+    });
 
     // localhost:3000/projects/issues/1
     router.get('/issues/:projectid', helpers.isLogIn, async (req, res, next) => {
@@ -437,15 +481,15 @@ module.exports = (db) => {
                 const conditions = conditionIssues.join(" OR ")
                 conditionIssues = []
                 try {
-                    const issuesQuery = `SELECT issueid,projectid,tracker,subject,description,status,priority,startdate,duedate,estimatedtime,done,files,spenttime,targetversion,crateddate,updateddate,closeddate,parenttask FROM issues WHERE projectid=$1 AND (${conditions}) LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                    const issuesQuery = `SELECT issueid,projectid,tracker,subject,description,status,priority,startdate,duedate,estimatedtime,done,files,spenttime,targetversion,crateddate,updateddate,closeddate,parenttask FROM issues WHERE projectid=$1 AND (${conditions}) ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit} `
                     const getIssues = await db.query(issuesQuery, [url])
                     const issues = getIssues.rows
 
-                    const queryAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS assigneName FROM users JOIN issues ON users.userid = issues.assignee WHERE projectid=$1 AND (${conditions}) LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                    const queryAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS assigneName FROM users JOIN issues ON users.userid = issues.assignee WHERE projectid=$1 AND (${conditions}) ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
                     const getAssigneeUsers = await db.query(queryAssignee, [url])
                     const assigneeUsers = getAssigneeUsers.rows
 
-                    const queryAuthor = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS authorName FROM users JOIN issues ON users.userid =issues.author WHERE projectid=$1 AND (${conditions}) LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                    const queryAuthor = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS authorName FROM users JOIN issues ON users.userid =issues.author WHERE projectid=$1 AND (${conditions}) ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit} `
                     const getAuthor = await db.query(queryAuthor, [url])
                     const authorUsers = getAuthor.rows
 
@@ -469,7 +513,7 @@ module.exports = (db) => {
                         issue.assignee = assigneeUsers[i].assignename
                         issue.author = authorUsers[i].authorname
                     })
-                    res.render('projects/issues/view', { url, currentPage, totalPage, data: issues, nameOfPage: page ,optionCheckBox })
+                    res.render('projects/issues/view', { url, currentPage, totalPage, data: issues, nameOfPage: page, optionCheckBox })
 
 
                 }
@@ -488,17 +532,17 @@ module.exports = (db) => {
 
 
 
-                const issuesQuery = `SELECT *FROM issues WHERE projectid=$1 LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                const issuesQuery = `SELECT *FROM issues WHERE projectid=$1 ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
                 const getIssues = await db.query(issuesQuery, [url])
                 const issues = getIssues.rows
 
 
-                const queryAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS assigneName FROM users JOIN issues ON users.userid = issues.assignee WHERE projectid=$1 LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                const queryAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS assigneName FROM users JOIN issues ON users.userid = issues.assignee WHERE projectid=$1 ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
                 const getAssigneeUsers = await db.query(queryAssignee, [url])
                 const assigneeUsers = getAssigneeUsers.rows
 
 
-                const queryAuthor = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS authorName FROM users JOIN issues ON users.userid =issues.author WHERE projectid=$1 LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                const queryAuthor = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS authorName FROM users JOIN issues ON users.userid =issues.author WHERE projectid=$1  ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
                 const getAuthor = await db.query(queryAuthor, [url])
                 const authorUsers = getAuthor.rows
 
@@ -523,7 +567,7 @@ module.exports = (db) => {
                     issue.author = authorUsers[i].authorname
                 })
 
-                res.render('projects/issues/view', { url, currentPage, totalPage, data: issues, nameOfPage: page,optionCheckBox  })
+                res.render('projects/issues/view', { url, currentPage, totalPage, data: issues, nameOfPage: page, optionCheckBox })
             } catch (error) {
                 console.log(error)
                 res.status(500).json({ error: true, message: error })
@@ -533,42 +577,42 @@ module.exports = (db) => {
 
     });
     router.post('/issues/:projectid', helpers.isLogIn, async (req, res, next) => {
-  
-        
-       if (req.body.option) {
-        typeof req.body.checkIdIssue === "undefined" ? optionCheckBox.checkIdIssue = false : optionCheckBox.checkIdIssue = true
-        typeof req.body.checkStatusIssue === "undefined" ? optionCheckBox.checkStatusIssue = false : optionCheckBox.checkStatusIssue = true
-        typeof req.body.checkDueDateIssue === "undefined" ? optionCheckBox.checkDueDateIssue = false : optionCheckBox.checkDueDateIssue = true
-        typeof req.body.checkTargetVersionIssue === "undefined" ? optionCheckBox.checkTargetVersionIssue = false : optionCheckBox.checkTargetVersionIssue = true
-        typeof req.body.checkSubjectIssue === "undefined" ? optionCheckBox.checkSubjectIssue = false : optionCheckBox.checkSubjectIssue = true
-        typeof req.body.checkPriorityIssue === "undefined" ? optionCheckBox.checkPriorityIssue = false : optionCheckBox.checkPriorityIssue = true
-        typeof req.body.checkEstimatedTimeIssue === "undefined" ? optionCheckBox.checkEstimatedTimeIssue = false : optionCheckBox.checkPriorityIssue = true
-        typeof req.body.checkAuthorIssue === "undefined" ? optionCheckBox.checkAuthorIssue = false : optionCheckBox.checkAuthorIssue = true
-        typeof req.body.checkTrackerIssue=== "undefined" ? optionCheckBox.checkTrackerIssue = false : optionCheckBox.checkTrackerIssue = true
-        typeof req.body.checkAssigneIssue=== "undefined" ? optionCheckBox.checkAssigneIssue = false : optionCheckBox.checkAssigneIssue = true
-        typeof req.body.checkSpentTimeIssue=== "undefined" ? optionCheckBox.checkSpentTimeIssue = false : optionCheckBox.checkSpentTimeIssue = true
-        typeof req.body.checkCreatedDateIssue=== "undefined" ? optionCheckBox.checkCreatedDateIssue= false : optionCheckBox.checkCreatedDateIssue = true
-        typeof req.body.checkDescriptionIssue=== "undefined" ? optionCheckBox.checkDescriptionIssue= false : optionCheckBox.checkDescriptionIssue= true
-        typeof req.body.checkStartDateIssue=== "undefined" ? optionCheckBox.checkStartDateIssue= false : optionCheckBox.checkStartDateIssue= true
-        typeof req.body.checkDoneIssue=== "undefined" ? optionCheckBox.checkDoneIssue= false : optionCheckBox.checkDoneIssue= true
-        typeof req.body.checkUpdateDateIssue=== "undefined" ? optionCheckBox.checkUpdateDateIssue= false : optionCheckBox.checkUpdateDateIssue= true
-        typeof req.body.checkClosedIssue=== "undefined" ? optionCheckBox.checkClosedIssue= false : optionCheckBox.checkClosedIssue= true
-        typeof req.body.checkFileIssue=== "undefined" ? optionCheckBox.checkFileIssue= false : optionCheckBox.checkFileIssue= true
-        res.redirect(`/projects/issues/${req.params.projectid}`)
 
 
-       } else {
-        const issueid = req.body.delete
-        try {
-            const sqlDelete = 'DELETE FROM issues WHERE issueid=$1'
-            await db.query(sqlDelete, [issueid])
+        if (req.body.option) {
+            typeof req.body.checkIdIssue === "undefined" ? optionCheckBox.checkIdIssue = false : optionCheckBox.checkIdIssue = true
+            typeof req.body.checkStatusIssue === "undefined" ? optionCheckBox.checkStatusIssue = false : optionCheckBox.checkStatusIssue = true
+            typeof req.body.checkDueDateIssue === "undefined" ? optionCheckBox.checkDueDateIssue = false : optionCheckBox.checkDueDateIssue = true
+            typeof req.body.checkTargetVersionIssue === "undefined" ? optionCheckBox.checkTargetVersionIssue = false : optionCheckBox.checkTargetVersionIssue = true
+            typeof req.body.checkSubjectIssue === "undefined" ? optionCheckBox.checkSubjectIssue = false : optionCheckBox.checkSubjectIssue = true
+            typeof req.body.checkPriorityIssue === "undefined" ? optionCheckBox.checkPriorityIssue = false : optionCheckBox.checkPriorityIssue = true
+            typeof req.body.checkEstimatedTimeIssue === "undefined" ? optionCheckBox.checkEstimatedTimeIssue = false : optionCheckBox.checkPriorityIssue = true
+            typeof req.body.checkAuthorIssue === "undefined" ? optionCheckBox.checkAuthorIssue = false : optionCheckBox.checkAuthorIssue = true
+            typeof req.body.checkTrackerIssue === "undefined" ? optionCheckBox.checkTrackerIssue = false : optionCheckBox.checkTrackerIssue = true
+            typeof req.body.checkAssigneIssue === "undefined" ? optionCheckBox.checkAssigneIssue = false : optionCheckBox.checkAssigneIssue = true
+            typeof req.body.checkSpentTimeIssue === "undefined" ? optionCheckBox.checkSpentTimeIssue = false : optionCheckBox.checkSpentTimeIssue = true
+            typeof req.body.checkCreatedDateIssue === "undefined" ? optionCheckBox.checkCreatedDateIssue = false : optionCheckBox.checkCreatedDateIssue = true
+            typeof req.body.checkDescriptionIssue === "undefined" ? optionCheckBox.checkDescriptionIssue = false : optionCheckBox.checkDescriptionIssue = true
+            typeof req.body.checkStartDateIssue === "undefined" ? optionCheckBox.checkStartDateIssue = false : optionCheckBox.checkStartDateIssue = true
+            typeof req.body.checkDoneIssue === "undefined" ? optionCheckBox.checkDoneIssue = false : optionCheckBox.checkDoneIssue = true
+            typeof req.body.checkUpdateDateIssue === "undefined" ? optionCheckBox.checkUpdateDateIssue = false : optionCheckBox.checkUpdateDateIssue = true
+            typeof req.body.checkClosedIssue === "undefined" ? optionCheckBox.checkClosedIssue = false : optionCheckBox.checkClosedIssue = true
+            typeof req.body.checkFileIssue === "undefined" ? optionCheckBox.checkFileIssue = false : optionCheckBox.checkFileIssue = true
             res.redirect(`/projects/issues/${req.params.projectid}`)
 
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({ error: true, message: error })
+
+        } else {
+            const issueid = req.body.delete
+            try {
+                const sqlDelete = 'DELETE FROM issues WHERE issueid=$1'
+                await db.query(sqlDelete, [issueid])
+                res.redirect(`/projects/issues/${req.params.projectid}`)
+
+            } catch (error) {
+                console.log(error)
+                res.status(500).json({ error: true, message: error })
+            }
         }
-       }
 
     })
 
@@ -661,7 +705,7 @@ module.exports = (db) => {
             const sqlGetAuthor = "SELECT CONCAT(users.firstname, ' ', users.lastname) as author, users.userid FROM users JOIN issues ON users.userid=issues.author WHERE issueid=$1"
             const getAuthor = await db.query(sqlGetAuthor, [issueid])
             const author = getAuthor.rows[0]
-            console.log(author)
+            // console.log(author)
 
             //getParentask
             const sqlParentTasks = `SELECT issueid as parenttask, subject,tracker FROM issues WHERE projectid = $1`
@@ -694,9 +738,16 @@ module.exports = (db) => {
         const parentTask = req.body.parentTask
         const spentTime = req.body.spentTime
         const targetVersion = req.body.targetVersion
+        const previousDone = req.body.previousDone
+        const previousSpent = req.body.previousSpent
+        const titleActivity = `${subject} #${issueid} (${tracker}) -[${status}]`
+        const descActivity = `Spent Time by Hours : from ${previousSpent} updated to ${spentTime}`
+        const user = req.session.user.userid
+        const projectid = req.params.projectid
 
-        console.log(req.body)
         try {
+            let queryActivity = `INSERT INTO activity (time, title, description, author, projectid, previousdone, currentdone) VALUES(NOW(), $1, $2, $3, $4, $5, $6)`
+            let values = [titleActivity, descActivity, user, projectid, previousDone, done]
             let sqltUpdateIssue
             if (req.files) {
                 const file = req.files.inputFile
@@ -706,8 +757,11 @@ module.exports = (db) => {
                 } else {
                     sqltUpdateIssue = "UPDATE issues SET updateddate = NOW(),tracker=$1, subject =$2, description=$3, status=$4, priority=$5, duedate=$6,done=$7,parenttask =$8, spenttime =$9, targetversion =$10,files=$11 WHERE issueid= $12"
                 }
+                //insert into activity table
+                await db.query(queryActivity, values)
+                //update edited data
                 await db.query(sqltUpdateIssue, [tracker, subject, description, status, priority, duedate, Number(done), Number(parentTask), Number(spentTime), targetVersion, fileName, issueid])
-
+                //sent file to public/upload
                 await file.mv(path.join(__dirname, "..", "public", "upload", fileName))
 
             } else {
@@ -716,6 +770,7 @@ module.exports = (db) => {
                 } else {
                     sqltUpdateIssue = "UPDATE issues SET updateddate = NOW(),tracker=$1, subject =$2, description=$3, status=$4, priority=$5, duedate=$6,done=$7,parenttask =$8, spenttime =$9, targetversion =$10 WHERE issueid= $11"
                 }
+                await db.query(queryActivity, values)
                 await db.query(sqltUpdateIssue, [tracker, subject, description, status, priority, duedate, Number(done), Number(parentTask), Number(spentTime), targetVersion, issueid])
 
 

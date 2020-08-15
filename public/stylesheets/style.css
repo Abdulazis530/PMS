@@ -59,12 +59,16 @@ body {
   font-size: 1rem;
   margin-top: 120px;
   margin-right: 20%;
+}
 
+.filter-edit {
+  margin-bottom: 15%;
 }
 
 .form-filter {
   margin-top: 60px;
 }
+
 
 label input {
   margin-right: 15px;
@@ -149,7 +153,6 @@ input[type="checkbox"] {
   border-radius: 30px;
   width: 20%;
   height: 60%;
-
 }
 
 /* section optional */
@@ -325,7 +328,7 @@ td {
 /* Footer container */
 
 #footer {
-  margin-top: 100px;
+
   height: 300px;
   background-color: #252734;
   text-align: center;
@@ -409,7 +412,9 @@ p.copy-right {
   border-radius: 30px;
   width: 9%;
   height: 60%;
-  margin-left: 24%;
+  margin-left: 17%;
+  margin-top: 2%;
+  margin-bottom: 2%
 }
 
 .btn-projects-back {
@@ -537,7 +542,8 @@ main {
 /* issue */
 .container-card-issue {
   margin: 0 auto;
-  margin-top: 2%
+  margin-top: 2%;
+  width: 100%
 }
 
 .card-body-custom {
@@ -570,7 +576,7 @@ main {
 } */
 
 .list-issue {
-  margin-left: 25%;
+  margin-left: 0%;
 }
 
 /* add issue */
@@ -579,9 +585,32 @@ main {
   padding-left: 0px;
   margin-left: 1%
 }
-.edit-width{
+
+.edit-width {
   width: 98.5%
 }
-.move-pagi{
+
+.move-pagi {
   margin-left: 15%;
+}
+
+.container-activity {
+  margin-top: 4%
+}
+.card-profile{
+  margin-bottom:5%;
+  margin-left:0%
+}
+.card-issue-longtable{
+  width: 150%;
+}
+.container-pagi-issue {
+  margin-left: 0px;
+  width: 0px;
+  margin: 5% 0;
+}
+.btn-issue-add{
+  border-radius: 30px;
+  width: 10%;
+  margin:2% 2%
 }

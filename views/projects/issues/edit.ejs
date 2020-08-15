@@ -71,9 +71,12 @@
                 <hr>
                 <br>
                 <form action="" method="POST" encType="multipart/form-data">
+                    <% const{tracker,subject,description,status,priority,startdate,duedate,estimatedtime,done,spenttime}=issueData %>
+
+                    <input type="hidden" name="previousDone" value="<%=done%>">
+                    <input type="hidden" name="previousSpent" value="<%=spenttime == null ? '0' : spenttime%>">
                     <!-- <input type="hidden" name="projectId" value="10"> -->
 
-                    <% const{tracker,subject,description,status,priority,startdate,duedate,estimatedtime,done}=issueData %>
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label">
                             Tracker
@@ -267,17 +270,17 @@
                         <div class="form-group col-sm-8 edit-input-issue">
                             <select class="form-control edit-width" name="done" id="done" title="Done percentage..."
                                 required>
-                            <option value="0" <%= done == 0 ? 'selected' : '' %>>0%</option>
-                            <option value="10" <%= done == 10 ? 'selected' : '' %>>10%</option>
-                            <option value="20" <%= done == 20 ? 'selected' : '' %>>20%</option>
-                            <option value="30" <%= done == 30 ? 'selected' : '' %>>30%</option>
-                            <option value="40" <%= done == 40 ? 'selected' : '' %>>40%</option>
-                            <option value="50" <%= done == 50 ? 'selected' : '' %>>50%</option>
-                            <option value="60" <%= done == 60 ? 'selected' : '' %>>60%</option>
-                            <option value="70" <%= done == 70 ? 'selected' : '' %>>70%</option>
-                            <option value="80" <%= done == 80 ? 'selected' : '' %>>80%</option>
-                            <option value="90" <%= done == 90 ? 'selected' : '' %>>90%</option>
-                            <option value="100" <%= done == 100 ? 'selected' : '' %>>100%</option>
+                                <option value="0" <%= done == 0 ? 'selected' : '' %>>0%</option>
+                                <option value="10" <%= done == 10 ? 'selected' : '' %>>10%</option>
+                                <option value="20" <%= done == 20 ? 'selected' : '' %>>20%</option>
+                                <option value="30" <%= done == 30 ? 'selected' : '' %>>30%</option>
+                                <option value="40" <%= done == 40 ? 'selected' : '' %>>40%</option>
+                                <option value="50" <%= done == 50 ? 'selected' : '' %>>50%</option>
+                                <option value="60" <%= done == 60 ? 'selected' : '' %>>60%</option>
+                                <option value="70" <%= done == 70 ? 'selected' : '' %>>70%</option>
+                                <option value="80" <%= done == 80 ? 'selected' : '' %>>80%</option>
+                                <option value="90" <%= done == 90 ? 'selected' : '' %>>90%</option>
+                                <option value="100" <%= done == 100 ? 'selected' : '' %>>100%</option>
                             </select>
                         </div>
                     </div>
@@ -288,10 +291,11 @@
                             <select class="form-control edit-width" name="parentTask" required>
                                 <option value="" selected disabled>Choose parent task..</option>
                                 <% parentTasks.forEach(parentTask=>{ %>
-                                    <option value="<%=parentTask.parenttask %>"> <%= parentTask.subject %> (<%=parentTask.tracker %>)
-                                    </option>
-                               <% }) %>
-                                
+                                <option value="<%=parentTask.parenttask %>"> <%= parentTask.subject %>
+                                    (<%=parentTask.tracker %>)
+                                </option>
+                                <% }) %>
+
 
 
                             </select>
@@ -326,7 +330,8 @@
                             Author
                         </label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="targetVersion" value="<%=author.author %>" disabled>
+                            <input type="text" class="form-control" name="targetVersion" value="<%=author.author %>"
+                                disabled>
                         </div>
                     </div>
 

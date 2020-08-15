@@ -25,9 +25,8 @@
 
     </div>
 </nav>
-<div class="sidebarandform sidebar-custom container-fluid">
+<div class="sidebar-custom container-fluid">
     <div class="row">
-
         <!-- SIDEBAR -->
         <nav class="box-sidebar col-md-2 d-none d-md-block bg-light sidebar">
 
@@ -41,7 +40,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class=" text-sidebar nav-link" href="#">
+                        <a class=" text-sidebar nav-link" href="/projects/activity/<%= url %>">
                             <span data-feather="users"></span>
                             Activity
                         </a>
@@ -66,6 +65,7 @@
         </nav>
         <!-- END OF SIDEBAR -->
         <div class="container-card-issue col-md-8">
+
             <h1 class="title-filter-members">Issues</h1>
 
             <div class="card-body-custom card " style="width: 100%;">
@@ -126,351 +126,335 @@
 
                 </div>
             </div>
+            <div class="container-card-issue col-md-8">
 
-        </div>
-    </div>
-    <div class="row option-col-issue">
-        <div class="container-card-issue col-md-8">
-
-            <div class="card-body-custom card " style="width: 100%;">
-                <div class="title-filter subtitle-issues">
-                    <h5>Options</h5>
-                </div>
-                <div class="container card-body">
-                    <form class="form-filter" method="POST">
-                        <!-- id -->
-                        <% const{checkDoneIssue,checkIdIssue,checkStatusIssue,checkDueDateIssue,checkTargetVersionIssue,checkUpdateDateIssue,checkStartDateIssue,checkSubjectIssue,checkPriorityIssue,checkEstimatedTimeIssue,checkTrackerIssue,checkAssigneIssue,checkSpentTimeIssue,checkCreatedDateIssue,checkDescriptionIssue,checkClosedIssue,checkFileIssue,checkAuthorIssue}=optionCheckBox %>
-
-                        <div class="checkboxIssue row">
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkIdIssue" type="checkbox" id="gridCheck" <%=checkIdIssue ?  "checked" : " " %>>
-                                <label class="form-check-label" for="gridCheck">
-                                    ID
-                                </label>
+                <div class="card-body-custom card " style="width: 100%;">
+                    <div class="title-filter subtitle-issues">
+                        <h5>Options</h5>
+                    </div>
+                    <div class="container card-body">
+                        <form class="form-filter" method="POST">
+                            <!-- id -->
+                            <% const{checkDoneIssue,checkIdIssue,checkStatusIssue,checkDueDateIssue,checkTargetVersionIssue,checkUpdateDateIssue,checkStartDateIssue,checkSubjectIssue,checkPriorityIssue,checkEstimatedTimeIssue,checkTrackerIssue,checkAssigneIssue,checkSpentTimeIssue,checkCreatedDateIssue,checkDescriptionIssue,checkClosedIssue,checkFileIssue,checkAuthorIssue}=optionCheckBox %>
+    
+                            <div class="checkboxIssue row">
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkIdIssue" type="checkbox" id="gridCheck" <%=checkIdIssue ?  "checked" : " " %>>
+                                    <label class="form-check-label" for="gridCheck">
+                                        ID
+                                    </label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkStatusIssue" type="checkbox" id="gridCheck" <%=checkStatusIssue ?  "checked" : " "%>>
+                                    <label class="form-check-label" for="gridCheck">
+                                        Status
+                                    </label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkDueDateIssue" type="checkbox" id="gridCheck"  <%=checkDueDateIssue ?  "checked" : " "%>>
+                                    <label class="form-check-label" for="gridCheck">
+                                        Due Date
+                                    </label>
+    
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkTargetVersionIssue" type="checkbox" id="gridCheck"  <%=checkTargetVersionIssue ?  "checked" : " "%>>
+                                    <label class="form-check-label" for="gridCheck">
+                                        Target version
+                                    </label>
+                                </div>
                             </div>
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkStatusIssue" type="checkbox" id="gridCheck" <%=checkStatusIssue ?  "checked" : " "%>>
-                                <label class="form-check-label" for="gridCheck">
-                                    Status
-                                </label>
+    
+                            <div class="checkboxIssue row">
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkSubjectIssue" type="checkbox" id="gridCheck" <%=checkSubjectIssue ?  "checked" : " " %> >
+                                    <label class="form-check-label" for="gridCheck">
+                                        Subject
+                                    </label>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkPriorityIssue" type="checkbox" id="gridCheck" <%=checkPriorityIssue ?  "checked" : " " %> >
+                                    <label class="form-check-label" for="gridCheck">
+                                        Priority
+                                    </label>
+    
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkEstimatedTimeIssue" type="checkbox"id="gridCheck" <%=checkEstimatedTimeIssue ?  "checked" : " " %> >
+                                    <label class="form-check-label" for="gridCheck">
+                                        Estimated Time
+                                    </label>
+                                </div>
+    
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkAuthorIssue" type="checkbox" id="gridCheck" <%=checkAuthorIssue ? "checked" : " " %> >
+                                    <label class="form-check-label" for="gridCheck">
+                                        Author
+                                    </label>
+                                </div>
+    
                             </div>
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkDueDateIssue" type="checkbox" id="gridCheck"  <%=checkDueDateIssue ?  "checked" : " "%>>
-                                <label class="form-check-label" for="gridCheck">
-                                    Due Date
-                                </label>
-
+                            <div class="checkboxIssue row">
+    
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkTrackerIssue" type="checkbox"
+                                        id="gridCheck" <%=checkTrackerIssue ? "checked" : " " %> >
+                                    <label class="form-check-label" for="gridCheck">
+                                        Tracker
+                                    </label>
+                                </div>
+    
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkAssigneIssue" type="checkbox" id="gridCheck" <%= checkAssigneIssue ? "checked" : " " %>  >
+                                    <label class="form-check-label" for="gridCheck">
+                                        Assigne
+                                    </label>
+                                </div>
+    
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkSpentTimeIssue" type="checkbox" <%=checkSpentTimeIssue ? "checked" : " " %>
+                                        id="gridCheck">
+                                    <label class="form-check-label" for="gridCheck">
+                                        Spent time
+                                    </label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkCreatedDateIssue" type="checkbox"
+                                        id="gridCheck" <%= checkCreatedDateIssue ? "checked" : " " %> >
+                                    <label class="form-check-label" for="gridCheck">
+                                        Created Date
+                                    </label>
+                                </div>
+    
                             </div>
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkTargetVersionIssue" type="checkbox" id="gridCheck"  <%=checkTargetVersionIssue ?  "checked" : " "%>>
-                                <label class="form-check-label" for="gridCheck">
-                                    Target version
-                                </label>
+                            <div class="checkboxIssue row">
+    
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkDescriptionIssue" type="checkbox"
+                                        id="gridCheck" <%= checkDescriptionIssue ? "checked" : " " %> >
+                                    <label class="form-check-label" for="gridCheck">
+                                        Description
+                                    </label>
+                                </div>
+    
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkStartDateIssue" type="checkbox"
+                                        id="gridCheck" <%= checkStartDateIssue ? "checked" : " " %>  >
+                                    <label class="form-check-label" for="gridCheck">
+                                        Start Date
+                                    </label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkDoneIssue" type="checkbox" id="gridCheck" <%= checkDoneIssue ? "checked" : " " %> >
+                                    <label class="form-check-label" for="gridCheck">
+                                        Done
+                                    </label>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkUpdateDateIssue" type="checkbox"
+                                        id="gridCheck"  <%= checkUpdateDateIssue ? "checked" : " " %> >
+                                    <label class="form-check-label" for="gridCheck">
+                                        Updated Date
+                                    </label>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="checkboxIssue row">
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkSubjectIssue" type="checkbox" id="gridCheck" <%=checkSubjectIssue ?  "checked" : " " %> >
-                                <label class="form-check-label" for="gridCheck">
-                                    Subject
-                                </label>
+    
+                            <div class="checkboxIssue row">
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkClosedIssue" type="checkbox" id="gridCheck" <%= checkClosedIssue ? "checked" : " " %> >
+                                    <label class="form-check-label" for="gridCheck">
+                                        Closed Data
+                                    </label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkFileIssue" type="checkbox" id="gridCheck" <%= checkFileIssue ? "checked" : " " %> >
+                                    <label class="form-check-label" for="gridCheck">
+                                        File
+                                    </label>
+                                </div>
                             </div>
-                            
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkPriorityIssue" type="checkbox" id="gridCheck" <%=checkPriorityIssue ?  "checked" : " " %> >
-                                <label class="form-check-label" for="gridCheck">
-                                    Priority
-                                </label>
-
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkEstimatedTimeIssue" type="checkbox"id="gridCheck" <%=checkEstimatedTimeIssue ?  "checked" : " " %> >
-                                <label class="form-check-label" for="gridCheck">
-                                    Estimated Time
-                                </label>
-                            </div>
-
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkAuthorIssue" type="checkbox" id="gridCheck" <%=checkAuthorIssue ? "checked" : " " %> >
-                                <label class="form-check-label" for="gridCheck">
-                                    Author
-                                </label>
-                            </div>
-
-                        </div>
-                        <div class="checkboxIssue row">
-
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkTrackerIssue" type="checkbox"
-                                    id="gridCheck" <%=checkTrackerIssue ? "checked" : " " %> >
-                                <label class="form-check-label" for="gridCheck">
-                                    Tracker
-                                </label>
-                            </div>
-
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkAssigneIssue" type="checkbox" id="gridCheck" <%= checkAssigneIssue ? "checked" : " " %>  >
-                                <label class="form-check-label" for="gridCheck">
-                                    Assigne
-                                </label>
-                            </div>
-
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkSpentTimeIssue" type="checkbox" <%=checkSpentTimeIssue ? "checked" : " " %>
-                                    id="gridCheck">
-                                <label class="form-check-label" for="gridCheck">
-                                    Spent time
-                                </label>
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkCreatedDateIssue" type="checkbox"
-                                    id="gridCheck" <%= checkCreatedDateIssue ? "checked" : " " %> >
-                                <label class="form-check-label" for="gridCheck">
-                                    Created Date
-                                </label>
-                            </div>
-
-                        </div>
-                        <div class="checkboxIssue row">
-
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkDescriptionIssue" type="checkbox"
-                                    id="gridCheck" <%= checkDescriptionIssue ? "checked" : " " %> >
-                                <label class="form-check-label" for="gridCheck">
-                                    Description
-                                </label>
-                            </div>
-
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkStartDateIssue" type="checkbox"
-                                    id="gridCheck" <%= checkStartDateIssue ? "checked" : " " %>  >
-                                <label class="form-check-label" for="gridCheck">
-                                    Start Date
-                                </label>
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkDoneIssue" type="checkbox" id="gridCheck" <%= checkDoneIssue ? "checked" : " " %> >
-                                <label class="form-check-label" for="gridCheck">
-                                    Done
-                                </label>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkUpdateDateIssue" type="checkbox"
-                                    id="gridCheck"  <%= checkUpdateDateIssue ? "checked" : " " %> >
-                                <label class="form-check-label" for="gridCheck">
-                                    Updated Date
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="checkboxIssue row">
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkClosedIssue" type="checkbox" id="gridCheck" <%= checkClosedIssue ? "checked" : " " %> >
-                                <label class="form-check-label" for="gridCheck">
-                                    Closed Data
-                                </label>
-                            </div>
-                            <div class="col-md-3">
-                                <input class="form-check-input" name="checkFileIssue" type="checkbox" id="gridCheck" <%= checkFileIssue ? "checked" : " " %> >
-                                <label class="form-check-label" for="gridCheck">
-                                    File
-                                </label>
-                            </div>
-                        </div>
-
-                        <button type="submit" name="option" value="clicked"
-                            class="btn-apply btn btn-primary btn-optional">Apply</button>
-                    </form>
-                </div>
-
-
-            </div>
-        </div>
-
-    </div>
-</div>
-
-
-<div class="list-issue row">
-    <section id="table-pagi">
-        <div class="container">
-            <div class="card card-tables mx-auto">
-                <div class="title-filter subtitle-issues" ">
-                    <h5 style=" margin-right: 25%">List</h5>
-                </div>
-                <div class="card-body card-issue-edit table-responsive mt-5">
-                    <form class="form-add" method="POST">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th scope="col"  <%=checkIdIssue ?  "" : "hidden" %> >Issue ID</th>
-                                    <th scope="col" <%=checkSubjectIssue ?   "" : "hidden" %> >Subject</th>
-                                    <th scope="col" <%=checkTrackerIssue ? "" : "hidden"  %>>Tracker</th>
-                                    <th scope="col" <%=checkDescriptionIssue ?  "" : "hidden" %>>Description</th>
-                                    <th scope="col" <%=checkStatusIssue ?  "" : "hidden"%>  >Status</th>
-                                    <th scope="col" <%=checkPriorityIssue ?   "" : "hidden" %>>Priority</th>
-                                    <th scope="col" <%=checkAssigneIssue ? "" : "hidden" %>>Assignee</th>
-                                    <th scope="col" <%=checkStartDateIssue ? "" : "hidden" %>>Start Date</th>
-                                    <th scope="col"<%=checkDueDateIssue ?  "" : "hidden"%>>Due Date</th>
-                                    <th scope="col" <%=checkEstimatedTimeIssue ?   "" : "hidden"%>>Estimated Time
-                                    </th>
-                                    <th scope="col" <%=checkSpentTimeIssue ? "" : "hidden" %>>Spent Time</th>
-                                    <th scope="col" <%=checkDoneIssue ? "" : "hidden" %>>Done</th>
-                                    <th scope="col"  <%=checkTargetVersionIssue ? "" : "hidden"%>>Target Version
-                                    </th>
-                                    <th scope="col"  <%=checkAuthorIssue ? "" : "hidden" %>>Author</th>
-                                    <th scope="col" <%=checkCreatedDateIssue ?  "" : "hidden" %>>Created Date
-                                    </th>
-                                    <th scope="col"  <%=checkUpdateDateIssue ? "" : "hidden" %>>Updated Date
-                                    </th>
-                                    <th scope="col" <%=checkClosedIssue ? "" : "hidden" %>>Closed Date</th>
-                                    <th scope="col"<%=checkFileIssue ? "" : "hidden" %>>File</th>
-                                   
-
-                                    <th scope="col">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% data.forEach(e=>{ %>
-                                <% const{issueid,projectid,tracker,subject,description,status,priority,startdate,duedate,estimatedtime,done,files,spenttime,targetversion,crateddate,updateddate,closeddate,parenttask,assignee,author}=e %>
-                                <tr>
-                                    <th scope="row"<%=checkIdIssue ?  " " : "hidden" %> ><%= issueid%></th>
-                                    <td <%=checkSubjectIssue ?   "" : "hidden" %>><%=subject %> </td>
-                                    <td <%=checkTrackerIssue ? "" : "hidden"  %>> <%=tracker%></td>
-                                    <td <%=checkDescriptionIssue ?  "" : "hidden" %>><%=description%></td>
-                                    <td <%=checkStatusIssue ?  "" : "hidden"%>  > <%=status %> </td>
-                                    <td  <%=checkPriorityIssue ?   "" : "hidden" %>> <%=priority%></td>
-                                    <td  <%=checkAssigneIssue ?"" : "hidden" %>> <%= assignee%></td>
-                                    <td <%=checkStartDateIssue ? "" : "hidden" %>><%= startdate%></td>
-                                    <td <%=checkDueDateIssue ?  "" : "hidden"%>> <%= duedate%></td>
-                                    <td <%=checkEstimatedTimeIssue ?   "" : "hidden"%>><%=estimatedtime > 1 ? `${estimatedtime} Hours`: `${estimatedtime} Hour` %>
-                                    </td>
-                                    <td <%=checkSpentTimeIssue ? "" : "hidden" %>>
-                                        <% if(spenttime!= null){ %>
-                                        <%=spenttime >1 ?`${spenttime} Hours`: `${spenttime} Hour` %>
-                                        <% }else{ %>
-                                        N/A
-                                        <%}%>
-                                       
-                                    </td>
-                                    <td <%=checkDoneIssue ? "" : "hidden" %>><%=done%> %</td>
-                                    <td <%=checkTargetVersionIssue ? "" : "hidden"%>><%=!targetversion ? "N/A" :targetversion %></td>
-                                    <td <%=checkAuthorIssue ? "" : "hidden"%>><%=author%></td>
-                                    <td <%=checkCreatedDateIssue ?  "" : "hidden" %>> <%= crateddate  %></td>
-                                    <td <%=checkUpdateDateIssue ? "" : "hidden" %>> <%=updateddate =="Invalid date" ? "N/A" : updateddate%></td>
-                                    <td <%=checkClosedIssue ? "" : "hidden" %>> <%=closeddate =="Invalid date" ? "N/A" : closeddate %></td>
-
-
-                                    <td <%=checkFileIssue ? "" : "hidden" %>>
-                                        <% if(files){ %>
-                                        <a href="/upload/<%= files %>" target="_blank">File</a>
-                                        <%} else {%>
-                                        No file attached
-                                        <% } %> 
-                                    </td>
-                                  
-                                    <td>
-                                        <a role="button" class="btn btn-success mr-2 mb-2"
-                                            href="<%= url%>/edit/<%= issueid%>">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button type="submit" class="btn btn-danger mr-2 mb-2" name="delete"
-                                            value=<%=issueid%>>
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-
-                                    </td>
-                                </tr>
-
-                                <% })%>
-
-
-                            </tbody>
-                        </table>
-                    </form>
+    
+                            <button type="submit" name="option" value="clicked"
+                                class="btn-apply btn btn-primary btn-optional">Apply</button>
+                        </form>
+                    </div>
+    
+    
                 </div>
             </div>
+            <section id="table-pagi" class="col-md-8 list-issue">
+                <div class="container">
+                    <div class="card card-tables mx-auto card-issue-longtable">
+                        <div class="title-filter subtitle-issues" ">
+                            <h5 style=" margin-right: 25%">List</h5>
+                        </div>
+                        <div class="card-body card-issue-edit table-responsive mt-5">
+                            
+                            <form class="form-add" method="POST">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col"  <%=checkIdIssue ?  "" : "hidden" %> >Issue ID</th>
+                                            <th scope="col" <%=checkSubjectIssue ?   "" : "hidden" %> >Subject</th>
+                                            <th scope="col" <%=checkTrackerIssue ? "" : "hidden"  %>>Tracker</th>
+                                            <th scope="col" <%=checkDescriptionIssue ?  "" : "hidden" %>>Description</th>
+                                            <th scope="col" <%=checkStatusIssue ?  "" : "hidden"%>  >Status</th>
+                                            <th scope="col" <%=checkPriorityIssue ?   "" : "hidden" %>>Priority</th>
+                                            <th scope="col" <%=checkAssigneIssue ? "" : "hidden" %>>Assignee</th>
+                                            <th scope="col" <%=checkStartDateIssue ? "" : "hidden" %>>Start Date</th>
+                                            <th scope="col"<%=checkDueDateIssue ?  "" : "hidden"%>>Due Date</th>
+                                            <th scope="col" <%=checkEstimatedTimeIssue ?   "" : "hidden"%>>Estimated Time
+                                            </th>
+                                            <th scope="col" <%=checkSpentTimeIssue ? "" : "hidden" %>>Spent Time</th>
+                                            <th scope="col" <%=checkDoneIssue ? "" : "hidden" %>>Done</th>
+                                            <th scope="col"  <%=checkTargetVersionIssue ? "" : "hidden"%>>Target Version
+                                            </th>
+                                            <th scope="col"  <%=checkAuthorIssue ? "" : "hidden" %>>Author</th>
+                                            <th scope="col" <%=checkCreatedDateIssue ?  "" : "hidden" %>>Created Date
+                                            </th>
+                                            <th scope="col"  <%=checkUpdateDateIssue ? "" : "hidden" %>>Updated Date
+                                            </th>
+                                            <th scope="col" <%=checkClosedIssue ? "" : "hidden" %>>Closed Date</th>
+                                            <th scope="col"<%=checkFileIssue ? "" : "hidden" %>>File</th>
+                                           
+        
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% data.forEach(e=>{ %>
+                                        <% const{issueid,projectid,tracker,subject,description,status,priority,startdate,duedate,estimatedtime,done,files,spenttime,targetversion,crateddate,updateddate,closeddate,parenttask,assignee,author}=e %>
+                                        <tr>
+                                            <th scope="row"<%=checkIdIssue ?  " " : "hidden" %> ><%= issueid%></th>
+                                            <td <%=checkSubjectIssue ?   "" : "hidden" %>><%=subject %> </td>
+                                            <td <%=checkTrackerIssue ? "" : "hidden"  %>> <%=tracker%></td>
+                                            <td <%=checkDescriptionIssue ?  "" : "hidden" %>><%=description%></td>
+                                            <td <%=checkStatusIssue ?  "" : "hidden"%>  > <%=status %> </td>
+                                            <td  <%=checkPriorityIssue ?   "" : "hidden" %>> <%=priority%></td>
+                                            <td  <%=checkAssigneIssue ?"" : "hidden" %>> <%= assignee%></td>
+                                            <td <%=checkStartDateIssue ? "" : "hidden" %>><%= startdate%></td>
+                                            <td <%=checkDueDateIssue ?  "" : "hidden"%>> <%= duedate%></td>
+                                            <td <%=checkEstimatedTimeIssue ?   "" : "hidden"%>><%=estimatedtime > 1 ? `${estimatedtime} Hours`: `${estimatedtime} Hour` %>
+                                            </td>
+                                            <td <%=checkSpentTimeIssue ? "" : "hidden" %>>
+                                                <% if(spenttime!= null){ %>
+                                                <%=spenttime >1 ?`${spenttime} Hours`: `${spenttime} Hour` %>
+                                                <% }else{ %>
+                                                N/A
+                                                <%}%>
+                                               
+                                            </td>
+                                            <td <%=checkDoneIssue ? "" : "hidden" %>><%=done%> %</td>
+                                            <td <%=checkTargetVersionIssue ? "" : "hidden"%>><%=!targetversion ? "N/A" :targetversion %></td>
+                                            <td <%=checkAuthorIssue ? "" : "hidden"%>><%=author%></td>
+                                            <td <%=checkCreatedDateIssue ?  "" : "hidden" %>> <%= crateddate  %></td>
+                                            <td <%=checkUpdateDateIssue ? "" : "hidden" %>> <%=updateddate =="Invalid date" ? "N/A" : updateddate%></td>
+                                            <td <%=checkClosedIssue ? "" : "hidden" %>> <%=closeddate =="Invalid date" ? "N/A" : closeddate %></td>
+        
+        
+                                            <td <%=checkFileIssue ? "" : "hidden" %>>
+                                                <% if(files){ %>
+                                                <a href="/upload/<%= files %>" target="_blank">File</a>
+                                                <%} else {%>
+                                                No file attached
+                                                <% } %> 
+                                            </td>
+                                          
+                                            <td>
+                                                <a role="button" class="btn btn-success mr-2 mb-2"
+                                                    href="<%= url%>/edit/<%= issueid%>">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button type="submit" class="btn btn-danger mr-2 mb-2" name="delete"
+                                                    value=<%=issueid%>>
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+        
+                                            </td>
+                                        </tr>
+        
+                                        <% })%>
+        
+        
+                                    </tbody>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="paginations" class="col-md-8 ">
+                <form method="GET">
+                    <div class="container container-pagi container-pagi-issue">
+                        <nav class="move-pagi" aria-label="Page navigation ">
+                            <ul class="pagination">
+            
+                                <% if(currentPage==1) { %>
+                                <li class="page-item  disabled">
+                                    <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)-1 %>"
+                                        class="page-link ">Previous</button>
+                                </li>
+                                <% }else{ %>
+                                <li class="page-item">
+                                    <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)-1 %>"
+                                        class="page-link ">Previous</button>
+                                </li>
+                                <%}%>
+              
+                          <% for(let index=1; index<= totalPage;index++){ %>
+            
+                                <%  if(currentPage == index){ %>
+                                <li class="page-item active">
+                                    <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
+                                        class="page-link "><%= index %></button>
+                                </li>
+                                <% } else { %>
+                                <li class="page-item">
+                                    <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
+                                        class="page-link "><%= index %></button>
+                                </li>
+                                <% } %>
+            
+            
+                                <!-- <a class="page-link bg-dark" href="#"><%= index %></a> -->
+            
+                                <% } %>
+                                <% if(currentPage == totalPage){ %>
+                                <li class="page-item  disabled">
+                                    <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)+1 %>"
+                                        class="page-link ">Next</button>
+            
+                                </li>
+                                <% } else { %>
+                                <li class="page-item">
+                                    <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)+1 %>"
+                                        class="page-link ">Next</button>
+            
+                                </li>
+                                <% } %>
+                            </ul>
+                        </nav>
+                    </div>
+                </form>
+            
+            </section>
+            <a href="<%= url %>/add" name="search" value="clicked" class="btn-issue-add btn btn-success btn-lg ">
+                Add</a>
         </div>
-    </section>
+      
+    </div>
+   
+    
 </div>
 
 
-<section id="paginations">
-    <form method="GET">
-        <div class="container container-pagi">
-            <nav class="move-pagi" aria-label="Page navigation ">
-                <ul class="pagination">
-
-                    <% if(currentPage==1) { %>
-                    <li class="page-item  disabled">
-                        <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)-1 %>"
-                            class="page-link ">Previous</button>
-                    </li>
-                    <% }else{ %>
-                    <li class="page-item">
-                        <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)-1 %>"
-                            class="page-link ">Previous</button>
-                    </li>
-                    <%}%>
-  
-              <% for(let index=1; index<= totalPage;index++){ %>
-
-                    <%  if(currentPage == index){ %>
-                    <li class="page-item active">
-                        <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
-                            class="page-link "><%= index %></button>
-                    </li>
-                    <% } else { %>
-                    <li class="page-item">
-                        <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
-                            class="page-link "><%= index %></button>
-                    </li>
-                    <% } %>
 
 
-                    <!-- <a class="page-link bg-dark" href="#"><%= index %></a> -->
 
-                    <% } %>
-                    <% if(currentPage == totalPage){ %>
-                    <li class="page-item  disabled">
-                        <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)+1 %>"
-                            class="page-link ">Next</button>
 
-                    </li>
-                    <% } else { %>
-                    <li class="page-item">
-                        <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)+1 %>"
-                            class="page-link ">Next</button>
 
-                    </li>
-                    <% } %>
-                </ul>
-            </nav>
-        </div>
-    </form>
 
-</section>
 
-<div class="row" style="margin-left: 19%;">
-    <a href="<%= url %>/add" name="search" value="clicked" class="btn-members-add btn btn-success btn-lg ">
-        Add</a>
-</div>
-</div>
-</body>
-<footer>
-    <section class="overview ">
-        <div class="footer-container container-fluid">
-            <p class="copy-right text-center text-md-center">
-                Projects System Management 2020 ©
-            </p>
-            <i class="social-icon fab fa-facebook-f"></i>
-            <i class="social-icon fab fa-twitter"></i>
-            <i class="social-icon fab fa-instagram"></i>
-            <i class="social-icon fas fa-envelope"></i>
-        </div>
-    </section>
-</footer>
-
-</html>
+<%- include('../../partials/footer'); -%>
