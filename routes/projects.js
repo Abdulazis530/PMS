@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var helpers = require('../helpers/auth');
-var moment = require('moment');
-var path = require('path');
+const express = require('express');
+const router = express.Router();
+const helpers = require('../helpers/auth');
+const moment = require('moment');
+const path = require('path');
 
 let optionCheckBox = {
     checkId: true,
@@ -38,6 +38,7 @@ module.exports = (db) => {
     let conditionUser = []
     let conditionAddMembers = []
     let conditionIssues = []
+    const tab = "projects"
 
     router.get('/', helpers.isLogIn, async (req, res, next) => {
         console.log(optionCheckBox)
@@ -65,7 +66,7 @@ module.exports = (db) => {
                     const getData = await db.query(queryGetData)
                     const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users")
                     let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
-                    res.render('projects/view', { currentPage, totalPage, data: getData.rows, nameOfPage: page, fullnames: fullname.rows, optionCheckBox })
+                    res.render('projects/view', { currentPage, totalPage, data: getData.rows, nameOfPage: page, fullnames: fullname.rows, optionCheckBox, tab })
 
                 } catch (error) {
                     console.log(error)
@@ -85,7 +86,7 @@ module.exports = (db) => {
             const getData = await db.query(queryGetData)
 
             let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
-            res.render('projects/view', { user: req.session.user, currentPage, totalPage, data: getData.rows, nameOfPage: page, fullnames: fullname.rows, optionCheckBox });
+            res.render('projects/view', { user: req.session.user, currentPage, totalPage, data: getData.rows, nameOfPage: page, fullnames: fullname.rows, optionCheckBox, tab });
         }
     });
     router.post('/', helpers.isLogIn, async (req, res, next) => {
@@ -114,7 +115,7 @@ module.exports = (db) => {
         const queryGetusers = "SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users;"
         try {
             const result = await db.query(queryGetusers)
-            res.render('projects/form', { data: result.rows, pesanKesalahan: req.flash('pesanKesalahan'), pesanKeberhasilan: req.flash('pesanKeberhasilan') })
+            res.render('projects/form', { data: result.rows, pesanKesalahan: req.flash('pesanKesalahan'), pesanKeberhasilan: req.flash('pesanKeberhasilan'), tab })
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
@@ -137,12 +138,17 @@ module.exports = (db) => {
 
                 await db.query("INSERT INTO projects (name) VALUES($1)", [newProject])
 
-                const result = await db.query('SELECT projectid FROM projects WHERE name=$1', [newProject])
+                const result = await db.query("SELECT projectid FROM projects WHERE name =$1", [newProject])
                 const newProjectId = result.rows[0].projectid
 
-                newProjectMembers.forEach(async (newMember) => {
-                    await db.query(`INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`, ['belum ditentukan', newMember, newProjectId, 'belum ditentukan'])
-                })
+                if (typeof newProjectMembers != "object") {
+                    await db.query(`INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`, ['belum ditentukan', Number(newProjectMembers), Number(newProjectId), 'belum ditentukan'])
+                } else {
+                    newProjectMembers.forEach(async (newMember) => {
+                        await db.query(`INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`, ['belum ditentukan', Number(newMember), Number(newProjectId), 'belum ditentukan'])
+                    })
+                }
+
                 req.flash('pesanKeberhasilan', 'New Project added succesfully!')
                 res.redirect('add')
 
@@ -164,13 +170,14 @@ module.exports = (db) => {
         const queryGetProject = 'SELECT name FROM projects WHERE projectid = $1;'
         const queryGetusers = "SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users;"
         const queryOldmembers = 'SELECT users.userid FROM((projects JOIN members ON projects.projectid=members.projectid)JOIN users ON users.userid=members.userid) WHERE projects.projectid =$1'
+        const projectid = Number(req.params.id)
         let members = []
 
         try {
 
             const alluser = await db.query(queryGetusers)
-            const dataOldMembers = await db.query(queryOldmembers, [req.params.id])
-            const getProject = await db.query(queryGetProject, [req.params.id])
+            const dataOldMembers = await db.query(queryOldmembers, [projectid])
+            const getProject = await db.query(queryGetProject, [projectid])
 
             let oldMembers = dataOldMembers.rows
             let data = alluser.rows
@@ -181,7 +188,7 @@ module.exports = (db) => {
                 members.push(e.userid)
             })
             let page = `edit/${req.params.id}`
-            res.render('projects/form', { projectName, data, pesanKesalahan: req.flash('pesanKesalahan'), pesanKeberhasilan: req.flash('pesanKeberhasilan'), members, page })
+            res.render('projects/form', { projectName, data, pesanKesalahan: req.flash('pesanKesalahan'), pesanKeberhasilan: req.flash('pesanKeberhasilan'), members, page, tab })
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
@@ -190,7 +197,6 @@ module.exports = (db) => {
 
     // localhost:3000/projects/edit/1 method:post
     router.post('/edit/:id', helpers.isLogIn, async (req, res, next) => {
-        console.log(req.body)
         const project = req.body.project
         const newProjectMembers = req.body.cb
 
@@ -227,7 +233,7 @@ module.exports = (db) => {
 
         try {
             const members = await db.query(queryGetMembers, [req.params.projectid])
-            res.render('projects/overview/view', { members: members.rows, url: req.params.projectid })
+            res.render('projects/overview/view', { members: members.rows, url: req.params.projectid, tab })
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
@@ -236,9 +242,8 @@ module.exports = (db) => {
 
     // localhost:3000/projects/members/1
     router.get('/members/:projectid', helpers.isLogIn, async (req, res, next) => {
-        console.log(optionCheckBox)
+
         const limit = 3
-        console.log(req.query)
         if (req.query.fiturBrowserUsers === "yes" || req.query.pageBrowseUsers) {
             let currentPage = req.query.pageBrowseUsers || 1
             let page = "pageBrowseUsers"
@@ -253,9 +258,9 @@ module.exports = (db) => {
                 const conditionsUser = conditionUser.join(" OR ")
                 conditionUser = []
                 try {
-                    let numberOfusers = `SELECT COUNT(users.userid) FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 AND (${conditionsUser}) `
-                    let members = `SELECT members.id, CONCAT(firstname, ' ', lastname) AS fullname, members.role AS position FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 AND (${conditionsUser}) LIMIT ${limit} OFFSET ${currentPage * limit - limit}`
-                    let queryPosition = `SELECT DISTINCT role as Position FROM members`
+                    let numberOfusers = `SELECT COUNT(users.userid) FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 AND (${conditionsUser})`
+                    let members = `SELECT members.id, CONCAT(firstname, ' ', lastname) AS fullname, members.role AS position FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 AND (${conditionsUser})  ORDER BY members.id LIMIT ${limit} OFFSET ${currentPage * limit - limit}`
+                    let queryPosition = `SELECT DISTINCT role as Position FROM members `
 
                     const getNumberOfUsers = await db.query(numberOfusers, [req.params.projectid])
                     const getMembers = await db.query(members, [req.params.projectid])
@@ -264,7 +269,7 @@ module.exports = (db) => {
                     const totalData = getNumberOfUsers.rows[0].count
                     const totalPage = Math.ceil(Number(totalData) / limit)
 
-                    res.render('projects/members/view', { url: req.params.projectid, data: getMembers.rows, currentPage, totalPage, nameOfPage: page, selectRoles, optionCheckBox })
+                    res.render('projects/members/view', { url: req.params.projectid, data: getMembers.rows, currentPage, totalPage, nameOfPage: page, selectRoles, optionCheckBox, tab })
 
                 } catch (error) {
                     console.log(error)
@@ -279,18 +284,18 @@ module.exports = (db) => {
             let currentPage = req.query.pageMember || 1
             let page = "pageMember"
             let numberOfusers = `SELECT COUNT(users.userid) FROM ((projects  JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 `
-            let members = `SELECT members.id, CONCAT(firstname, ' ', lastname) AS fullname, members.role AS position FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 LIMIT ${limit} OFFSET ${currentPage * limit - limit}`
-            let queryPosition = `SELECT DISTINCT role as Position FROM members`
+            let members = `SELECT members.id, CONCAT(firstname, ' ', lastname) AS fullname, members.role AS position FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1  ORDER BY members.id  LIMIT ${limit} OFFSET ${currentPage * limit - limit}`
+            let queryPosition = `SELECT DISTINCT role as Position FROM members `
             try {
                 const getNumberOfUsers = await db.query(numberOfusers, [req.params.projectid])
                 const getMembers = await db.query(members, [req.params.projectid])
                 const optionRole = await db.query(queryPosition)
-                console.log(getMembers.rows)
+
                 const selectRoles = optionRole.rows
                 const totalData = getNumberOfUsers.rows[0].count
                 const totalPage = Math.ceil(Number(totalData) / limit)
 
-                res.render('projects/members/view', { url: req.params.projectid, data: getMembers.rows, currentPage, totalPage, nameOfPage: page, selectRoles, optionCheckBox })
+                res.render('projects/members/view', { url: req.params.projectid, data: getMembers.rows, currentPage, totalPage, nameOfPage: page, selectRoles, optionCheckBox, tab })
             } catch (error) {
                 console.log(error)
                 res.status(500).json({ error: true, message: error })
@@ -323,6 +328,7 @@ module.exports = (db) => {
 
         }
     })
+    // localhost:3000/projects/members/1/add
     router.get('/members/:projectid/add', helpers.isLogIn, async (req, res, next) => {
         const url = req.params.projectid
         try {
@@ -331,7 +337,7 @@ module.exports = (db) => {
             const selectRoles = optionRole.rows
 
             const userInmember = `SELECT userid FROM members WHERE projectid =$1`
-            const alreadyMember = await db.query(userInmember, [req.params.projectid])
+            const alreadyMember = await db.query(userInmember, [Number(req.params.projectid)])
 
             const userMember = alreadyMember.rows
             userMember.forEach(e => {
@@ -342,7 +348,12 @@ module.exports = (db) => {
             let getUser = `SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE ${conditionsAddMembers} `
             const users = await db.query(getUser)
 
-            res.render('projects/members/add', { url, data: users.rows, selectRoles })
+            res.render('projects/members/add', {
+                url,
+                data: users.rows,
+                selectRoles,
+                tab
+            })
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
@@ -351,7 +362,6 @@ module.exports = (db) => {
 
     // localhost:3000/projects/members/1/add method:post
     router.post('/members/:projectid/add', helpers.isLogIn, async (req, res, next) => {
-        console.log(req.body)
         const idUser = Number(req.body.inputIdMembers)
         const inputRole = req.body.inputRoleMembers
 
@@ -362,7 +372,7 @@ module.exports = (db) => {
         try {
 
             let queryAdd = `INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`
-            await db.query(queryAdd, [inputRole, idUser, req.params.projectid, 'fulltime'])
+            await db.query(queryAdd, [inputRole, idUser, Number(req.params.projectid), 'fulltime'])
             res.redirect(`/projects/members/${req.params.projectid}`)
 
         } catch (error) {
@@ -372,7 +382,7 @@ module.exports = (db) => {
 
     });
 
-    // // localhost:3000/projects/members/1/edit/2
+    // localhost:3000/projects/members/1/edit/2
     router.get('/members/:projectid/edit/:memberid', helpers.isLogIn, async (req, res, next) => {
         const url = req.params.projectid
         try {
@@ -384,7 +394,7 @@ module.exports = (db) => {
             const optionRole = await db.query(queryPosition)
             const selectRoles = optionRole.rows
             console.log(users)
-            res.render('projects/members/edit', { url, data: users, selectRoles })
+            res.render('projects/members/edit', { url, data: users, selectRoles, tab })
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
@@ -397,7 +407,6 @@ module.exports = (db) => {
     router.post('/members/:projectid/edit/:memberid', helpers.isLogIn, async (req, res, next) => {
         const newRole = req.body.inputRoleMembers
 
-        console.log(req.body)
         try {
             const queryEdit = 'UPDATE members SET role =$1 WHERE projectid=$2 AND id=$3'
             await db.query(queryEdit, [newRole, req.params.projectid, req.params.memberid])
@@ -405,56 +414,6 @@ module.exports = (db) => {
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
-        }
-
-    });
-
-
-    // // localhost:3000/projects/activity/1
-    router.get('/activity/:projectid', helpers.isLogIn, async (req, res, next) => {
-        const projectid = req.params.projectid
-        try {
-            //get project
-            const sqlGetProject = `SELECT * FROM projects WHERE projectid= ${projectid}`
-            const getProject = await db.query(sqlGetProject)
-            const project = getProject.rows[0]
-
-            //get activity 
-            const sqlActivities = `SELECT activity.*, CONCAT(users.firstname,' ',users.lastname) AS author,
-            (time AT TIME ZONE 'Asia/Jakarta'):: time AS timeactivity, 
-            (time AT TIME ZONE 'Asia/Jakarta'):: date AS dateactivity
-            FROM activity
-            LEFT JOIN users ON activity.author = users.userid WHERE projectid= ${projectid} 
-            ORDER BY dateactivity DESC, timeactivity DESC`
-
-            const getActivities = await db.query(sqlActivities)
-            const activities = getActivities.rows
-
-            activities.forEach(activity => {
-                activity.dateactivity = moment(activity.dateactivity).format('YYYY-MM-DD')
-                activity.timeactivity = moment(activity.timeactivity, 'HH:mm:ss.SSS').format('HH:mm:ss');
-
-                if (activity.dateactivity == moment().format('YYYY-MM-DD')) {
-                    activity.dateactivity = 'Today'
-                } else if (activity.dateactivity == moment().subtract(1, 'days').format('YYYY-MM-DD')) {
-                    activity.dateactivity = 'Yesterday'
-                } else {
-                    activity.dateactivity = moment(activity.dateactivity).format("MMMM Do, YYYY")
-                }
-            })
-            res.render(`projects/activity/view`, {
-                activities,
-                project,
-                projectid,
-                url: projectid,
-                login: req.session.user
-            })
-         
-
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({ error: true, message: error })
-
         }
 
     });
@@ -513,7 +472,15 @@ module.exports = (db) => {
                         issue.assignee = assigneeUsers[i].assignename
                         issue.author = authorUsers[i].authorname
                     })
-                    res.render('projects/issues/view', { url, currentPage, totalPage, data: issues, nameOfPage: page, optionCheckBox })
+                    res.render('projects/issues/view', {
+                        url,
+                        currentPage,
+                        totalPage,
+                        data: issues,
+                        nameOfPage: page,
+                        optionCheckBox,
+                        tab
+                    })
 
 
                 }
@@ -541,7 +508,6 @@ module.exports = (db) => {
                 const getAssigneeUsers = await db.query(queryAssignee, [url])
                 const assigneeUsers = getAssigneeUsers.rows
 
-
                 const queryAuthor = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS authorName FROM users JOIN issues ON users.userid =issues.author WHERE projectid=$1  ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
                 const getAuthor = await db.query(queryAuthor, [url])
                 const authorUsers = getAuthor.rows
@@ -567,7 +533,15 @@ module.exports = (db) => {
                     issue.author = authorUsers[i].authorname
                 })
 
-                res.render('projects/issues/view', { url, currentPage, totalPage, data: issues, nameOfPage: page, optionCheckBox })
+                res.render('projects/issues/view', {
+                    url,
+                    currentPage,
+                    totalPage,
+                    data: issues,
+                    nameOfPage: page,
+                    optionCheckBox,
+                    tab
+                })
             } catch (error) {
                 console.log(error)
                 res.status(500).json({ error: true, message: error })
@@ -577,8 +551,6 @@ module.exports = (db) => {
 
     });
     router.post('/issues/:projectid', helpers.isLogIn, async (req, res, next) => {
-
-
         if (req.body.option) {
             typeof req.body.checkIdIssue === "undefined" ? optionCheckBox.checkIdIssue = false : optionCheckBox.checkIdIssue = true
             typeof req.body.checkStatusIssue === "undefined" ? optionCheckBox.checkStatusIssue = false : optionCheckBox.checkStatusIssue = true
@@ -616,28 +588,26 @@ module.exports = (db) => {
 
     })
 
-
-    // // localhost:3000/projects/issues/1/add
+    // localhost:3000/projects/issues/1/add
     router.get('/issues/:projectid/add', helpers.isLogIn, async (req, res, next) => {
-
         const url = req.params.projectid
-
         try {
             const sqlGetMembers = `SELECT CONCAT(users.firstname, ' ', users.lastname) as assignee,users.userid FROM users JOIN members ON users.userid =members.userid WHERE projectid=$1 `
             const getMembers = await db.query(sqlGetMembers, [url])
             const members = getMembers.rows
-            console.log(members)
 
-            res.render('projects/issues/add', { url, members })
+            res.render('projects/issues/add', {
+                url,
+                members,
+                tab
+            })
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
-
         }
-
     });
 
-    // // localhost:3000/projects/issues/1/add method:post
+    // localhost:3000/projects/issues/1/add method:post
     router.post('/issues/:projectid/add', helpers.isLogIn, async (req, res, next) => {
 
         const projectid = req.params.projectid
@@ -652,7 +622,7 @@ module.exports = (db) => {
         const estimatedtime = Number(req.body.estimatedTime)
         const done = Number(req.body.done)
         const author = req.session.user.userid
-        console.log(req.body)
+
 
         try {
             if (req.files) {
@@ -673,7 +643,6 @@ module.exports = (db) => {
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
-
         }
 
 
@@ -694,7 +663,6 @@ module.exports = (db) => {
             const sqlGetAll = `SELECT * FROM issues where issueid =$1`
             const getAll = await db.query(sqlGetAll, [issueid])
             const issueData = getAll.rows[0]
-            console.log(issueData)
 
             // currentAssigne
             const sqlCurrentAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) as assignee,users.userid FROM users JOIN issues ON users.userid =issues.assignee WHERE issueid=$1`
@@ -705,14 +673,13 @@ module.exports = (db) => {
             const sqlGetAuthor = "SELECT CONCAT(users.firstname, ' ', users.lastname) as author, users.userid FROM users JOIN issues ON users.userid=issues.author WHERE issueid=$1"
             const getAuthor = await db.query(sqlGetAuthor, [issueid])
             const author = getAuthor.rows[0]
-            // console.log(author)
 
             //getParentask
             const sqlParentTasks = `SELECT issueid as parenttask, subject,tracker FROM issues WHERE projectid = $1`
             const getParentTasks = await db.query(sqlParentTasks, [url])
             const parentTasks = getParentTasks.rows
             console.log(parentTasks)
-            res.render('projects/issues/edit', { url, members, issueData, currentAssigne, moment, parentTasks, author })
+            res.render('projects/issues/edit', { url, members, issueData, currentAssigne, moment, parentTasks, author, tab })
 
         } catch (error) {
 
@@ -786,24 +753,55 @@ module.exports = (db) => {
 
     });
 
-    // // localhost:3000/projects/issues/1/delete/2
-    // router.get('/issues/:projectid/delete/:issueid', helpers.isLogIn, function (req, res, next) {
-    //     res.redirect(`/projects/issues/${req.params.projectid}`)
-    // });
+    // localhost:3000/projects/activity/1
+    router.get('/activity/:projectid', helpers.isLogIn, async (req, res, next) => {
+        const projectid = req.params.projectid
+        try {
+            //get project
+            const sqlGetProject = `SELECT * FROM projects WHERE projectid= ${projectid}`
+            const getProject = await db.query(sqlGetProject)
+            const project = getProject.rows[0]
 
-    // // localhost:3000/projects/members/1
-    // router.get('/members/:projectid', helpers.isLogIn, function (req, res, next) {
-    //     res.render('projects/members/list')
-    // });
+            //get activity 
+            const sqlActivities = `SELECT activity.*, CONCAT(users.firstname,' ',users.lastname) AS author,
+            (time AT TIME ZONE 'Asia/Jakarta'):: time AS timeactivity, 
+            (time AT TIME ZONE 'Asia/Jakarta'):: date AS dateactivity
+            FROM activity
+            LEFT JOIN users ON activity.author = users.userid WHERE projectid= ${projectid} 
+            ORDER BY dateactivity DESC, timeactivity DESC`
 
-    // // localhost:3000/projects/members/1/add
+            const getActivities = await db.query(sqlActivities)
+            const activities = getActivities.rows
+
+            activities.forEach(activity => {
+                activity.dateactivity = moment(activity.dateactivity).format('YYYY-MM-DD')
+                activity.timeactivity = moment(activity.timeactivity, 'HH:mm:ss.SSS').format('HH:mm:ss');
+
+                if (activity.dateactivity == moment().format('YYYY-MM-DD')) {
+                    activity.dateactivity = 'Today'
+                } else if (activity.dateactivity == moment().subtract(1, 'days').format('YYYY-MM-DD')) {
+                    activity.dateactivity = 'Yesterday'
+                } else {
+                    activity.dateactivity = moment(activity.dateactivity).format("MMMM Do, YYYY")
+                }
+            })
+            res.render(`projects/activity/view`, {
+                activities,
+                project,
+                projectid,
+                url: projectid,
+                login: req.session.user,
+                tab
+            })
 
 
-    // // localhost:3000/projects/members/1/delete/2
-    // router.get('/members/:projectid/delete/:memberid', helpers.isLogIn, function (req, res, next) {
-    //     res.redirect(`/projects/members/${req.params.projectid}`)
-    // });
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ error: true, message: error })
 
+        }
+
+    });
 
     return router;
 }

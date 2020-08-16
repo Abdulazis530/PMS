@@ -479,7 +479,9 @@ p.copy-right {
   background-color: rgba(161, 17, 161, 0.561);
 
 }
-
+.card-member{
+  font-size: 1.2rem;
+}
 .text-overview {
   color: #fff;
   border: 2px solid rgba(161, 17, 161, 0.561);
@@ -597,20 +599,32 @@ main {
 .container-activity {
   margin-top: 4%
 }
-.card-profile{
-  margin-bottom:5%;
-  margin-left:0%
+
+.card-profile {
+  margin-bottom: 5%;
+  margin-left: 0%
 }
-.card-issue-longtable{
+
+.card-issue-longtable {
   width: 150%;
 }
+
 .container-pagi-issue {
   margin-left: 0px;
   width: 0px;
   margin: 5% 0;
 }
-.btn-issue-add{
+
+.btn-issue-add {
   border-radius: 30px;
   width: 10%;
-  margin:2% 2%
+  margin: 2% 2%
+}
+
+.activity-card,.title-activity {
+  text-align: center;
+  color:white;
+}
+.title-hr{
+  background-color: white;
 }

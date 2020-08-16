@@ -1,31 +1,6 @@
 <%- include('../../partials/header'); -%>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
 
-  <a class="navbar-brand" href="#"><img class="mb-4" src="/images/faviconwhite.ico" alt="" width="42" height="42">
-    Project Management System</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="/projects">Projects <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/profile">Profile</a>
-      </li>
-
-
-    </ul>
-
-    <a href="/logout" class="btn btn-logout btn-lg btn-danger my-2 my-sm-0"> logout</a>
-
-
-  </div>
-</nav>
 <div class="sidebar-custom container-fluid">
   <div class="row">
     <nav class="box-sidebar col-md-2 d-none d-md-block bg-light sidebar">
@@ -74,7 +49,7 @@
               <div class="title-filter">
                 <h5>Filter</h5>
               </div>
-              <div class="card-body">
+              <div class="card-body card-member">
                 <form class="form-filter"  method="GET">
                   <!-- id -->
                   <div class="form-group row">
