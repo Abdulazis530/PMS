@@ -37,30 +37,95 @@
 
       </div>
     </nav>
-
+    <!-- insert here -->
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-      <h1 class="title-overview">Overview</h1>
-      <h2 class='sub-title-overview' style="color: white;">Lybrary system</h2>
-      <div class="container my-4 text-overview ">
-        <h3 class="h3-overview">Issue Tracking</h3>
-        <ul>
-          <li>Bug: 0 Open / 0</li>
-          <li>Feature: 2 Open / 6</li>
-          <li>Support:1 Open / 1</li> 
-        </ul>
-      </div>
-      <div class="container my-4 text-overview ">
-        <h3 class="h3-overview">Members</h3>
-        <ul>
+      <h1 class="activity-card">Overview</h1>
+      <h4 class="title-activity">#<%= url%> <%=projectName%></h4>
+      <hr>
 
-         <% members.forEach(member=>{ %>
-          <li><%= member.fullname %></li>
-          <%}) %>
-         
-        </ul>
+      <div class="row">
+          <div class="col-10 offset-1">
+              <div class="card issue-tracker">
+                  <div class="card-header">
+                      <h5>Issue Tracker</h5>
+                  </div>
+                  <div class="card-body">
+                      <div class="card">
+                          <ul class="list-group list-group-flush">
+                              <li class="list-group-item">
+                                  <div class="row">
+                                      <h6 class="col" style="text-align: left;">Bug</h6>
+                                      <%const{openBug,totalBug}=bug %>
+                                      <div style="text-align: right;">
+                                          <h5><span class="badge badge-warning" style="text-align: right;">
+                                                  <%=openBug%> Open /<%=totalBug %></span>
+                                          </h5>
+                                      </div>
+                                  </div>
+                              </li>
+                              <li class="list-group-item">
+                                  <div class="row">
+                                      <h6 class="col" style="text-align: left;">Feature</h6>
+                                      <%const{openFeature,totalFeature}=feature %>
+
+                                      <div style="text-align: right;">
+                                          <h5><span class="badge badge-primary" style="text-align: right;">
+                                                  <%=openFeature%> Open /<%=totalFeature %></span></h5>
+                                      </div>
+                                  </div>
+                              </li>
+                              <li class="list-group-item">
+                                  <div class="row">
+                                      <h6 class="col" style="text-align: left;">Support</h6>
+                                      <%const{openSupport,totalSupport}=support %>
+
+                                      <div style="text-align: right;">
+                                          <h5><span class="badge badge-info" style="text-align: right;">
+                                                  <%=openSupport%> Open /<%=totalSupport%></span></h5>
+                                      </div>
+                                  </div>
+                              </li>
+                          </ul>
+                      </div>
+                  </div>
+              </div>
+          </div>
       </div>
 
-    </main>
+      <br>
+
+      <div class="row">
+          <div class="col-10 offset-1">
+              <div class="card issue-tracker">
+                  <div class="card-header">
+                      <h5>Members</h5>
+                  </div>
+                  <div class="card-body">
+                      <div class="card">
+                          <ul class="list-group list-group-flush">
+                              <% members.forEach(member=>{ %>
+                                <li class="list-group-item">
+                                  <div class="row">
+                                      <h6 class="col" style="text-align: left;"><%= member.fullname %></h6>
+                                      <div style="text-align: right;">
+                                          <span class="badge badge-secondary"
+                                              style="text-align: right;"><%= member.role %> </span>
+                                      </div>
+                                  </div>
+                              </li>
+                              <%})%>
+                              
+                              
+                              
+                          </ul>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </main>
+</div>
+    <!-- end of row -->
   </div>
 </div>
 

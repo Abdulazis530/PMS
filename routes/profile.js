@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var helpers = require('../helpers/auth');
+const express = require('express');
+const router = express.Router();
+const helpers = require('../helpers/auth');
 const bcrypt = require('bcrypt')
 
 
@@ -14,8 +14,7 @@ module.exports = (db) => {
     const email = req.session.user.email
     const userid = req.session.user.userid
 
-
-
+    // const result =await db.query('SELECT*FROM users WHERE userid=$1')
     const result = await db.query(`SELECT *FROM members WHERE userid =$1`, [userid])
     const role = result.rows[0].role
     const type = result.rows[0].type

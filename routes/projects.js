@@ -229,11 +229,72 @@ module.exports = (db) => {
 
     // localhost:3000/projects/overview/1
     router.get('/overview/:projectid', helpers.isLogIn, async (req, res, next) => {
-        const queryGetMembers = "SELECT CONCAT(users.firstname, ' ', users.lastname) AS fullname FROM users JOIN members ON users.userid = members.userid WHERE members.projectid =$1"
-
+        const projectid = req.params.projectid
         try {
-            const members = await db.query(queryGetMembers, [req.params.projectid])
-            res.render('projects/overview/view', { members: members.rows, url: req.params.projectid, tab })
+            const trackers = ["bug", "feature", "support"]
+            const bug = { openBug: 0, totalBug: 0 }
+            const feature = { openFeature: 0, totalFeature: 0 }
+            const support = { openSupport: 0, totalSupport: 0 }
+
+            trackers.forEach(async tracker => {
+                //get any tracker
+                try {
+
+                    const sqlGetTotalTracker = `SELECT COUNT(tracker) FROM issues WHERE tracker ILIKE '%${tracker}%' AND projectid= $1 `
+                    const getTotalTracker = await db.query(sqlGetTotalTracker, [Number(projectid)])
+                    const totalTracker = Number(getTotalTracker.rows[0].count)
+                   
+                    //get total closed traccker
+                    const sqlGetClosedTracker = `SELECT COUNT(tracker) FROM issues WHERE tracker ILIKE '%${tracker}%' AND status ILIKE '%closed%' AND projectid= $1`
+                    const getClosedTracker = await db.query(sqlGetClosedTracker, [Number(projectid)])
+                    const closedTracker = Number(getClosedTracker.rows[0].count)
+
+                    const openTracker = totalTracker - closedTracker
+
+                    if (tracker == 'bug') {
+                    
+                        bug.openBug += openTracker
+                        bug.totalBug += totalTracker
+                        console.log(bug)
+                    }
+                    if (tracker == 'feature') {
+                        feature.openFeature += openTracker
+                        feature.totalFeature += totalTracker
+                        console.log(feature)
+
+                    }
+                    if (tracker == 'support') {
+                        support.openSupport += openTracker
+                        support.totalSupport += totalTracker
+                        console.log(support)
+
+                    }
+                } catch (error) {
+                    console.log(error)
+                    res.status(500).json({ error: true, message: error })
+
+                }
+
+
+            })
+
+            const queryGetMembers = "SELECT CONCAT(users.firstname, ' ', users.lastname) AS fullname,members.role FROM users JOIN members ON users.userid = members.userid WHERE members.projectid =$1"
+            const members = await db.query(queryGetMembers, [Number(projectid)])
+            console.log(members)
+
+            const sqlGetProjectName = 'SELECT name FROM projects WHERE projectid=$1'
+            const getProjectName = await db.query(sqlGetProjectName, [Number(projectid)])
+            const projectName = getProjectName.rows[0].name
+
+            res.render('projects/overview/view', {
+                members: members.rows,
+                projectName,
+                url: projectid,
+                tab,
+                bug,
+                support,
+                feature
+            })
         } catch (error) {
             console.log(error)
             res.status(500).json({ error: true, message: error })
