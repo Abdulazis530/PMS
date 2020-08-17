@@ -1,312 +1,239 @@
 <%- include('../partials/header'); -%>
+
 <section id="filter">
-    <h1 class="title">PROJECTS</h1>
-  
-    <div class="container container-card">
-      <div class="card card-filter mx-auto">
-        <h5 class="card-header card-header-filter">
-          <div class="title-filter">
-            <h5>Filter</h5>
-          </div>
-          <div class="card-body">
-            <form class="form-filter" action="/projects" method="GET">
-              <!-- id -->
-              <div class="form-group row">
-                <label for="inputId" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxId"
-                    class="form-check-input" />ID</label>
-                <div class="col-sm-8">
-                  <input type="text" id="inpuId" name="projectid" class="form-control" placeholder="ID">
+  <h1 class="title">USERS</h1>
+
+  <div class="container container-card">
+    <div class="card card-filter mx-auto">
+      <h5 class="card-header card-header-filter">
+        <div class="title-filter">
+          <h5>Filter</h5>
+        </div>
+        
+        <div class="card-body ">
+          <form class="form-filter" method="GET">
+            <!-- id -->
+            <div class="form-group row">
+              <label for="idUser" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxIdUser"
+                  class="form-check-input" />ID</label>
+              <div class="col-sm-8">
+                <input type="text" id="idUser" name="idUser" class="form-control" placeholder="ID">
+              </div>
+            </div>
+
+            <!-- name -->
+            <div class="form-group row">
+              <label for="nameUser" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxNameUser"
+                  class="form-check-input" />Name</label>
+              <div class="col-sm-8">
+                <input type="text" id="nameUser" name="nameUser" class="form-control" placeholder="Name">
+              </div>
+            </div>
+
+            <!-- email -->
+            <div class="form-group row">
+              <label for="email" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxEmail"
+                  class="form-check-input" />Email</label>
+              <div class="col-sm-8">
+                <input type="email" id="email" name="email" class="form-control" placeholder="Email">
+              </div>
+            </div>
+            <!-- position -->
+            <div class="form-group row">
+              <label for="position" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxPosition"
+                  class="form-check-input" />Position</label>
+              <div class="col-sm-8">
+                <select name="position" class="custom-select" id="position">
+                  <option selected>Choose position</option>
+                  <option value="Software Developer">Software Developer</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Quality Assurance">Quality Assurance</option>
+                </select>
+              </div>
+            </div>
+            <!-- typejob -->
+            <div class="form-group row">
+              <label for="typeJob" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxTypeJob"
+                  class="form-check-input" />Type job</label>
+              <div class="col-sm-10 radios">
+                <div class="form-check container-cbx">
+                  <input class="form-check-input cbx-add " type="radio" name="typeJob" value="Fulltime">
+                  <label class="form-check-label label-add" for="gridCheck1">
+                    Fulltime
+                  </label>
                 </div>
-              </div>
-  
-              <!-- name -->
-              <div class="form-group row">
-                <label for="inputName" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxName"
-                    class="form-check-input" />Name</label>
-                <div class="col-sm-8">
-                  <input type="text" id="inputName" name="projectname" class="form-control" placeholder="Name">
+
+                <div class="form-check container-cbx">
+                  <input class="form-check-input cbx-add " type="radio" name="typeJob" value="Part-time">
+                  <label class="form-check-label label-add" for="gridCheck1">
+                    Part-time
+                  </label>
                 </div>
-              </div>
-  
-              <!-- member -->
-              <div class="form-group row">
-                <label for="inputMember" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxMember"
-                    class="form-check-input" />Member</label>
-                <div class="col-sm-8">
-                  <select name="member" class="custom-select" id="inputMember">
-                    <option selected>Open this select menu</option>
-  
-                    
-                    <option value="abdul azis">abdul azis</option>
-                      
-                    
-                    <option value="Elthon Jhon">Elthon Jhon</option>
-                      
-                    
-                    <option value="Popol Kupa">Popol Kupa</option>
-                      
-                    
-                    <option value="Tuti Astuti">Tuti Astuti</option>
-                      
-                    
-                    <option value="Tampan Dikit">Tampan Dikit</option>
-                      
-                    
-                    <option value="Sukijan Budiono">Sukijan Budiono</option>
-                      
-                    
-                    <option value="Andrew Chang">Andrew Chang</option>
-                      
-                    
-                    <option value="Joji Indigo">Joji Indigo</option>
-                      
-                    
-                    <option value="Chris Evan">Chris Evan</option>
-                      
-                    
-                    <option value="Anderson Brian">Anderson Brian</option>
-                      
-                    
-                    <option value="Scout James">Scout James</option>
-                      
-                    
-                    <option value="Bimo Biloba">Bimo Biloba</option>
-                      
-                    
-                    <option value="Serizawa Ryuji">Serizawa Ryuji</option>
-                      
-                    
-                    <option value="Awbw Konate">Awbw Konate</option>
-                      
-                    
-                    <option value="Carlos Marquez">Carlos Marquez</option>
-                      
-                    
-                    <option value="Susan Jerico">Susan Jerico</option>
-                      
-                    
-                    <option value="Mat James">Mat James</option>
-                      
-                    
-                    <option value="Curtis Brows">Curtis Brows</option>
-                      
-                    
-  
-                  </select>
-                </div>
-              </div>
-  
-              <div class="form-group row container-search">
-                <button type="submit" name="fiturBrowser" value="yes"
-                  class=" btn btn-success btn-lg btn-search">Search</button>
-              </div>
-  
-            </form>
-  
-          </div>
-      </div>
+
+        
+
+        </div>
     </div>
-  
-  </section>
-  
-  
-  <section id="optional">
-  <form action="/projects" method="POST">
-    <div class="container container-optional">
-      <div class="row optional-row ">
+    <!-- button -->
+    <div class="form-group row container-search">
+      <button type="submit" name="fiturBrowserUser" value="yes" class=" btn btn-success btn-lg btn-search">Search</button>
+    </div>
+  </form>
+  </div>
+
+</section>
+
+
+<section id="optional" >
+  <form  method="POST" >
+    <div class="container container-optional user-card">
+      <div class="row">
         <div class="col-sm-12">
           <button class="btn btn-lg btn-success btn-title" type="button">Option</button>
-      </div>
-        <div class="optional-col col-sm-12">
-            <p>Column</p>
+        </div>
+        
+        <br>
+        <br>
+        <% const{ checkboxIdUser, checkboxNameUser, checkboxEmail,checkboxPosition, checkboxTypeJob,checkboxStatus}=optionCheckBox %>
+    </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <label class=" col-form-label"><input type="checkbox" name="checkboxId" <%= checkboxIdUser ? "checked" : " "%>/>ID</label>
+        </div>
+        <div class="col-sm-12">
+          <label class=" col-form-label"><input type="checkbox" name="checkboxName"<%= checkboxNameUser ? "checked" : " "%>/>Name</label>
+        </div>
+        <div class="col-sm-12">
+          <label class=" col-form-label"><input type="checkbox" name="checkboxEmail" <%= checkboxEmail ? "checked" : " "%> />Email</label>
+        </div>
+        <div class="col-sm-12">
+          <label class=" col-form-label"><input type="checkbox" name="checkboxPosition" <%= checkboxPosition ? "checked" : " "%>/>Position</label>
+        </div>
+        <div class="col-sm-12">
+          <label class=" col-form-label"><input type="checkbox" name="checkboxTypeJob" <%= checkboxTypeJob ? "checked" : " "%> />Type</label>
+        </div>
+        <div class="col-sm-12">
+          <label class=" col-form-label"><input type="checkbox" name="checkboxStatus" <%= checkboxStatus ? "checked" : " "%> />Status</label>
         </div>
         
         <div class="col-sm-12">
-          <label class=" col-form-label"><input type="checkbox" name="checkboxId" checked />ID</label>
-        </div>
-        <div class="col-sm-12">
-          <label class=" col-form-label"><input type="checkbox" name="checkboxName" checked />Name</label>
-        </div>
-        <div class="col-sm-12">
-          <label class=" col-form-label"><input type="checkbox" name="checkboxMember" checked/>Member</label>
-        </div>
-        <div class="col-sm-12">
           <button type="submit" name="option" value="clicked"
-                class="btn-apply btn btn-primary btn-optional">Apply</button>
+            class="btn-apply btn btn-primary btn-optional">Apply</button>
         </div>
-      
+
       </div>
     </div>
   </form>
-  </section>
-  
-  
-  <section id="table-pagi">
+</section>
 
-    <div class="container">
-      <div class="card card-tables mx-auto">
-        <h5 class="card-header">
-          <div class="title-filter">
-            <h5 class="pagi">LIST</h5>
-          </div>
-          <div class="card-body">
-            <form class="form-add" method="POST" action="/projects">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th scope="col"  >ID</th>
-                    <th scope="col"  >Project Name</th>
-                    <th scope="col"   >Members</th>
-                    <th scope="col">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  
-                  
-                  
-                  <tr>
-                    <th scope="row"   ><a class="to-overview" href="projects/overview/4">4</a></th>
-                    <td   >Nanjak Adventure</td>
-                    <td   >Elthon Jhon, Popol Kupa, Scout James, Tampan Dikit</td>
-  
-                    <td>
-                      <a href="projects/edit/4" name='button-edit' value='ok' class="btn-edit btn btn-success btn-sm">Edit</a>
-                      <button class="btn-delete btn btn-danger btn-sm" type="submit" name="delete"
-                        value="4">Delete </button>
-  
-                    </td>
-                  </tr>
-                  
-                  
-                  
-                  <tr>
-                    <th scope="row"   ><a class="to-overview" href="projects/overview/5">5</a></th>
-                    <td   >Ka kardusan</td>
-                    <td   >Curtis Brows, Mat James, Susan Jerico</td>
-  
-                    <td>
-                      <a href="projects/edit/5" name='button-edit' value='ok' class="btn-edit btn btn-success btn-sm">Edit</a>
-                      <button class="btn-delete btn btn-danger btn-sm" type="submit" name="delete"
-                        value="5">Delete </button>
-  
-                    </td>
-                  </tr>
-                  
-                  
-                  
-                  <tr>
-                    <th scope="row"   ><a class="to-overview" href="projects/overview/6">6</a></th>
-                    <td   >Buka Toko</td>
-                    <td   >Bimo Biloba, Curtis Brows, Mat James</td>
-  
-                    <td>
-                      <a href="projects/edit/6" name='button-edit' value='ok' class="btn-edit btn btn-success btn-sm">Edit</a>
-                      <button class="btn-delete btn btn-danger btn-sm" type="submit" name="delete"
-                        value="6">Delete </button>
-  
-                    </td>
-                  </tr>
-                  
-                  
-                  
-                  <tr>
-                    <th scope="row"   ><a class="to-overview" href="projects/overview/11">11</a></th>
-                    <td   >Tin cat testt</td>
-                    <td   >Sukijan Budiono, Tampan Dikit</td>
-  
-                    <td>
-                      <a href="projects/edit/11" name='button-edit' value='ok' class="btn-edit btn btn-success btn-sm">Edit</a>
-                      <button class="btn-delete btn btn-danger btn-sm" type="submit" name="delete"
-                        value="11">Delete </button>
-  
-                    </td>
-                  </tr>
-                  
-                  
-                  
-                  <tr>
-                    <th scope="row"   ><a class="to-overview" href="projects/overview/14">14</a></th>
-                    <td   >Ternak Lele Jumbo</td>
-                    <td   >Awbw Konate, Bimo Biloba, Elthon Jhon, Popol Kupa, Serizawa Ryuji</td>
-  
-                    <td>
-                      <a href="projects/edit/14" name='button-edit' value='ok' class="btn-edit btn btn-success btn-sm">Edit</a>
-                      <button class="btn-delete btn btn-danger btn-sm" type="submit" name="delete"
-                        value="14">Delete </button>
-  
-                    </td>
-                  </tr>
-                  
-               
-                </tbody>
-              </table>
-            </form>
-          </div>
-      </div>
+
+<section id="table-pagi-user" >
+
+  <div class="container">
+    <div class="card card-tables mx-auto">
+      <h5 class="card-header">
+        <div class="title-filter">
+          <h5 class="pagi">LIST</h5>
+        </div>
+        <div class="card-body">
+          <form class="form-add" method="POST" action="/projects">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col" <%= checkboxIdUser ? " " : "hidden"%>>ID</th>
+                  <th scope="col" <%= checkboxNameUser ? " " : "hidden"%>>Name</th>
+                  <th scope="col" <%= checkboxEmail ? " " : "hidden"%>>Email</th>
+                  <th scope="col" <%= checkboxPosition ? " " : "hidden"%>>Position</th> 
+                  <th scope="col" <%= checkboxTypeJob ? " " : "hidden"%>>Type job</th>
+                  <th scope="col" <%= checkboxStatus ? " " : "hidden"%>>Status</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <%data.forEach(e=>{ %>
+                  <% const{userid,email,fullname,status,worktype,role}=e%>
+                <tr>
+                  <th scope="row" <%= checkboxIdUser ? " " : "hidden"%>> <%=userid%></th>
+                  <td <%= checkboxNameUser ? " " : "hidden"%>> <%=fullname%></td>
+                  <td <%= checkboxEmail ? " " : "hidden"%>> <%=email%></td>
+                  <td <%= checkboxPosition ? " " : "hidden"%>> <%=role%></td>
+                  <td <%= checkboxTypeJob ? " " : "hidden"%>> <%=worktype%></td>
+                  <td <%= checkboxStatus ? " " : "hidden"%>><%=status%></td>
+                  <td>
+                    <a href="users/edit/<%=userid%>" name='button-edit' value='ok'
+                      class="btn btn-success btn-sm">Edit</a>
+                    <button class=" btn btn-danger btn-sm" type="submit" name="delete" value="<%=userid%>">Delete
+                    </button>
+
+                  </td>
+                </tr>
+
+                <%})%>
+              </tbody>
+            </table>
+          </form>
+        </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section id="paginations">
-    <form action="/projects" method="GET">
-      <div class="container container-pagi">
-        <nav aria-label="Page navigation ">
-          <ul class="pagination">
-  
-            
-            <li class="page-item  disabled">
-              <button type="submit" name="page" value="0"
-                class="page-link ">Previous</button>
-            </li>
-            
-  
-              
-  
-            
-            <li class="page-item active">
-              <button type="submit" name="page" value="1"
-                class="page-link ">1</button>
-            </li>
-            
-  
-  
-            <!-- <a class="page-link bg-dark" href="#">1</a> -->
-  
-            
-  
-            
-            <li class="page-item">
-              <button type="submit" name="page" value="2"
-                class="page-link ">2</button>
-            </li>
-            
-  
-  
-            <!-- <a class="page-link bg-dark" href="#">2</a> -->
-  
-            
-  
-            
-            <li class="page-item">
-              <button type="submit" name="page" value="3"
-                class="page-link ">3</button>
-            </li>
-            
- 
-            <li class="page-item">
-              <button type="submit" name="page" value="2"
-                class="page-link ">Next</button>
-  
-            </li>
-            
-          </ul>
-        </nav>
-      </div>
-    </form>
-  
-  </section>
-  
-  <a href="projects/add" name="search" value="clicked" class=" btn btn-success btn-lg btn-projects-add change-search">
-    Add</a>
-  
-  
+<section id="paginations">
+  <form action="" method="GET">
+    <div class="container container-pagi">
+      <nav aria-label="Page navigation ">
+        <ul class="pagination">
+
+          <% if(currentPage==1) { %>
+          <li class="page-item  disabled">
+            <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)-1 %>"
+              class="page-link ">Previous</button>
+          </li>
+          <% }else{ %>
+          <li class="page-item">
+            <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)-1 %>"
+              class="page-link ">Previous</button>
+          </li>
+          <%}%>
+
+            <% for(let index=1; index<= totalPage;index++){ %>
+
+          <%  if(currentPage == index){ %>
+          <li class="page-item active">
+            <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
+              class="page-link "><%= index %></button>
+          </li>
+          <% } else { %>
+          <li class="page-item">
+            <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
+              class="page-link "><%= index %></button>
+          </li>
+          <% } %>
+
+          <% } %>
+          <% if(currentPage == totalPage){ %>
+          <li class="page-item  disabled">
+            <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)+1 %>"
+              class="page-link ">Next</button>
+
+          </li>
+          <% } else { %>
+          <li class="page-item">
+            <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)+1 %>"
+              class="page-link ">Next</button>
+
+          </li>
+          <% } %>
+        </ul>
+      </nav>
+    </div>
+  </form>
+
+</section>
+
+<a href="projects/add" name="search" value="clicked" class=" btn btn-success btn-lg btn-projects-add change-search">
+  Add</a>
+
+
 <%- include('../partials/footer'); -%>

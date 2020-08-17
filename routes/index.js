@@ -25,6 +25,7 @@ module.exports = (db) => {
           return res.redirect('/')
         }
         let user = result.rows[0]
+        console.log(user)
         //sebelum dikirim ke front-end password harus di delete terlebih dahulu
         delete user['password']
         //user masuk session  

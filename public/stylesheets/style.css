@@ -479,9 +479,11 @@ p.copy-right {
   background-color: rgba(161, 17, 161, 0.561);
 
 }
-.card-member{
+
+.card-member {
   font-size: 1.2rem;
 }
+
 .text-overview {
   color: #fff;
   border: 2px solid rgba(161, 17, 161, 0.561);
@@ -539,7 +541,9 @@ main {
 .add-overview-members {
   font-size: 1.2rem;
 }
-
+.opt-user{
+  margin-top: -20%;
+}
 
 /* issue */
 .container-card-issue {
@@ -621,10 +625,27 @@ main {
   margin: 2% 2%
 }
 
-.activity-card,.title-activity {
+.activity-card,
+.title-activity {
   text-align: center;
-  color:white;
+  color: white;
 }
-.title-hr{
+
+.title-hr {
   background-color: white;
+}
+
+.radios {
+  margin-top: 1.7%
+}
+.user-card{
+  position: absolute;
+  top: 28%;
+}
+.table-pagi-user{
+  margin-top: 500px
+}
+#table-pagi-user {
+  margin-top: 500px;
+
 }

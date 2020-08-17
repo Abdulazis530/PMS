@@ -47,7 +47,7 @@ module.exports = (db) => {
         if (req.query.fiturBrowser === "yes" || req.query.pageBrowse) {
             let currentPage = req.query.pageBrowse || 1
             let page = "pageBrowse"
-
+            
             if (req.query.checkboxId === "on" && req.query.projectid.length !== 0) condition.push(`projects.projectid = ${Number(req.query.projectid)}`)
             if (req.query.checkboxName === "on" && req.query.projectname.length !== 0) condition.push(`projects.name ILIKE '%${req.query.projectname}%'`)
             if (req.query.checkboxMember === "on" && req.query.member.length !== 0 && req.query.member !== 'Open this select menu') condition.push(`CONCAT(users.firstname, ' ', users.lastname) ILIKE '%${req.query.member}%'`)
@@ -57,7 +57,7 @@ module.exports = (db) => {
             } else {
 
                 const conditions = condition.join(" OR ")
-                condition = []
+          
                 try {
                     let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE ${conditions}`
                     let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', ' ORDER BY users.firstname, users.lastname) AS members FROM ((users JOIN members ON users.userid=members.userid) JOIN projects ON projects.projectid = members.projectid) WHERE ${conditions} GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
@@ -70,23 +70,31 @@ module.exports = (db) => {
 
                 } catch (error) {
                     console.log(error)
+                    res.status(500).json({ error: true, message: error })
+
                 }
 
             }
 
         } else {
+            try {
+                let currentPage = req.query.page || 1
+                let page = "page"
+                let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid)`
+                let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', 'ORDER BY users.firstname,users.lastname) members FROM((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit};`
 
-            let currentPage = req.query.page || 1
-            let page = "page"
-            let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid)`
-            let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', 'ORDER BY users.firstname,users.lastname) members FROM((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit};`
+                const total = await db.query(queryTotal)
+                const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users")
+                const getData = await db.query(queryGetData)
 
-            const total = await db.query(queryTotal)
-            const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users")
-            const getData = await db.query(queryGetData)
+                let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
+                res.render('projects/view', { user: req.session.user, currentPage, totalPage, data: getData.rows, nameOfPage: page, fullnames: fullname.rows, optionCheckBox, tab });
+            } catch (error) {
+                console.log(error)
+                res.status(500).json({ error: true, message: error })
 
-            let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
-            res.render('projects/view', { user: req.session.user, currentPage, totalPage, data: getData.rows, nameOfPage: page, fullnames: fullname.rows, optionCheckBox, tab });
+            }
+
         }
     });
     router.post('/', helpers.isLogIn, async (req, res, next) => {
@@ -142,10 +150,10 @@ module.exports = (db) => {
                 const newProjectId = result.rows[0].projectid
 
                 if (typeof newProjectMembers != "object") {
-                    await db.query(`INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`, ['belum ditentukan', Number(newProjectMembers), Number(newProjectId), 'belum ditentukan'])
+                    await db.query(`INSERT INTO members (role,userid,projectid) VALUES ($1,$2,$3)`, ['belum ditentukan', Number(newProjectMembers), Number(newProjectId)])
                 } else {
                     newProjectMembers.forEach(async (newMember) => {
-                        await db.query(`INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`, ['belum ditentukan', Number(newMember), Number(newProjectId), 'belum ditentukan'])
+                        await db.query(`INSERT INTO members (role,userid,projectid) VALUES ($1,$2,$3)`, ['belum ditentukan', Number(newMember), Number(newProjectId)])
                     })
                 }
 
@@ -208,12 +216,12 @@ module.exports = (db) => {
             try {
                 let queryUpdate = 'UPDATE projects SET name = $1 Where projectid = $2'
                 let queryDelete = 'DELETE FROM members WHERE projectid =$1'
-                let queryInsert = `INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`
+                let queryInsert = `INSERT INTO members (role,userid,projectid) VALUES ($1,$2,$3)`
 
                 await db.query(queryUpdate, [project, req.params.id])
                 await db.query(queryDelete, [req.params.id])
                 newProjectMembers.forEach(async (newMember) => {
-                    await db.query(queryInsert, ['belum ditentukan', newMember, req.params.id, 'belum ditentukan'])
+                    await db.query(queryInsert, ['belum ditentukan', newMember, req.params.id])
                 })
                 req.flash('pesanKeberhasilan', 'Project have been edited succesfully!')
 
@@ -243,7 +251,7 @@ module.exports = (db) => {
                     const sqlGetTotalTracker = `SELECT COUNT(tracker) FROM issues WHERE tracker ILIKE '%${tracker}%' AND projectid= $1 `
                     const getTotalTracker = await db.query(sqlGetTotalTracker, [Number(projectid)])
                     const totalTracker = Number(getTotalTracker.rows[0].count)
-                   
+
                     //get total closed traccker
                     const sqlGetClosedTracker = `SELECT COUNT(tracker) FROM issues WHERE tracker ILIKE '%${tracker}%' AND status ILIKE '%closed%' AND projectid= $1`
                     const getClosedTracker = await db.query(sqlGetClosedTracker, [Number(projectid)])
@@ -252,7 +260,7 @@ module.exports = (db) => {
                     const openTracker = totalTracker - closedTracker
 
                     if (tracker == 'bug') {
-                    
+
                         bug.openBug += openTracker
                         bug.totalBug += totalTracker
                         console.log(bug)
@@ -432,8 +440,8 @@ module.exports = (db) => {
 
         try {
 
-            let queryAdd = `INSERT INTO members (role,userid,projectid,type) VALUES ($1,$2,$3,$4)`
-            await db.query(queryAdd, [inputRole, idUser, Number(req.params.projectid), 'fulltime'])
+            let queryAdd = `INSERT INTO members (role,userid,projectid) VALUES ($1,$2,$3)`
+            await db.query(queryAdd, [inputRole, idUser, Number(req.params.projectid)])
             res.redirect(`/projects/members/${req.params.projectid}`)
 
         } catch (error) {
