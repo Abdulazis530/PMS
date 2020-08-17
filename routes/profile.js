@@ -14,8 +14,7 @@ module.exports = (db) => {
     const email = req.session.user.email
     const userid = req.session.user.userid
 
-    // const result =await db.query('SELECT*FROM users WHERE userid=$1')
-    const result = await db.query(`SELECT *FROM members WHERE userid =$1`, [userid])
+    const result =await db.query('SELECT role,worktype as type FROM users WHERE userid=$1',[userid])
     const role = result.rows[0].role
     const type = result.rows[0].type
 
@@ -38,7 +37,7 @@ module.exports = (db) => {
       const check = await db.query('SELECT password FROM users WHERE userid= $1', [userid])
       const found = await bcrypt.compare(req.body.password, check.rows[0].password)
       if (found) {
-        const result = await db.query(`UPDATE members SET role = $1, type = $2 WHERE userid= $3`, [role, type, userid])
+        const result = await db.query(`UPDATE users SET role = $1, worktype = $2 WHERE userid= $3`, [role, type, userid])
         res.redirect('/projects')
       } else {
         req.flash('pesanKesalahan', 'Terjadi Error Hubungi Administrator')

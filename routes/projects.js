@@ -47,7 +47,7 @@ module.exports = (db) => {
         if (req.query.fiturBrowser === "yes" || req.query.pageBrowse) {
             let currentPage = req.query.pageBrowse || 1
             let page = "pageBrowse"
-            if(req.query.fiturBrowser) condition=[]
+            if (req.query.fiturBrowser) condition = []
             if (req.query.checkboxId === "on" && req.query.projectid.length !== 0) condition.push(`projects.projectid = ${Number(req.query.projectid)}`)
             if (req.query.checkboxName === "on" && req.query.projectname.length !== 0) condition.push(`projects.name ILIKE '%${req.query.projectname}%'`)
             if (req.query.checkboxMember === "on" && req.query.member.length !== 0 && req.query.member !== 'Open this select menu') condition.push(`CONCAT(users.firstname, ' ', users.lastname) ILIKE '%${req.query.member}%'`)
@@ -57,7 +57,7 @@ module.exports = (db) => {
             } else {
 
                 const conditions = condition.join(" OR ")
-          
+
                 try {
                     let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE ${conditions}`
                     let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', ' ORDER BY users.firstname, users.lastname) AS members FROM ((users JOIN members ON users.userid=members.userid) JOIN projects ON projects.projectid = members.projectid) WHERE ${conditions} GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
@@ -517,6 +517,7 @@ module.exports = (db) => {
                     const getAssigneeUsers = await db.query(queryAssignee, [url])
                     const assigneeUsers = getAssigneeUsers.rows
 
+
                     const queryAuthor = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS authorName FROM users JOIN issues ON users.userid =issues.author WHERE projectid=$1 AND (${conditions}) ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit} `
                     const getAuthor = await db.query(queryAuthor, [url])
                     const authorUsers = getAuthor.rows
@@ -571,15 +572,18 @@ module.exports = (db) => {
                 const issuesQuery = `SELECT *FROM issues WHERE projectid=$1 ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
                 const getIssues = await db.query(issuesQuery, [url])
                 const issues = getIssues.rows
-
+                console.log(issues)
 
                 const queryAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS assigneName FROM users JOIN issues ON users.userid = issues.assignee WHERE projectid=$1 ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
                 const getAssigneeUsers = await db.query(queryAssignee, [url])
                 const assigneeUsers = getAssigneeUsers.rows
 
+
                 const queryAuthor = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS authorName FROM users JOIN issues ON users.userid =issues.author WHERE projectid=$1  ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
                 const getAuthor = await db.query(queryAuthor, [url])
                 const authorUsers = getAuthor.rows
+
+
 
                 let queryTotal = `SELECT COUNT(*) FROM issues WHERE projectid=$1`
                 const total = await db.query(queryTotal, [url])

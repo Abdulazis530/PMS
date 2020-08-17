@@ -12,7 +12,7 @@ module.exports = (db) => {
     try {
       const result = await db.query(`SELECT *FROM users WHERE email =$1`, [req.body.email])
       if (result.rows.length == 0) {
-        req.flash('pesanKesalahan', 'username atau password')
+        req.flash('pesanKesalahan', 'username atau password salah')
         return res.redirect('/')
       }
       bcrypt.compare(req.body.password, result.rows[0].password, function (err, found) {

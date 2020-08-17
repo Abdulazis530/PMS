@@ -1,0 +1,148 @@
+<%- include('../partials/header'); -%>
+
+
+<h1 class="title" style="margin-top: 100px ;"> <%= typeof data==="undefined" ?"ADD USER" : "EDIT USER"   %></h1>
+
+
+<% if(pesanKesalahan.length>0){%>
+    <div class="container container-alertsc">
+        <div class="alert-bad alert-good alert alert-danger" role="alert">
+            <a class="btn-bad btn-bad" href="/users/add">X</a>
+            <h4 class="alert-heading">Something went wrong!</h4>
+            <%=pesanKesalahan %>
+        </div>
+    </div>
+    <% } %>
+
+<div class="container container-addd-user">
+    <div class="card card-filter mx-auto">
+        <h5 class="card-header card-header-filter">
+            <div class="title-filter">
+                <h5> <%= typeof data==="undefined" ?"Add" : "Edit"   %></h5>
+            </div>
+            <div class="card-body">
+                <form class="form-filter" method="POST">
+
+                    <!--First Name -->
+                    <div class="form-group row">
+                        <label for="firstName" class="col-sm-3 col-form-label col-form-label-lg">First Name</label>
+                        <div class="col-sm-8 ">
+                            <input type="text" id="firstName" class="form-control form-control-lg" name="firstName"
+                                placeholder= <%=typeof data==="undefined" ? "First Name" : data.firstname %> >
+                        </div>
+                    </div>
+
+                    <!-- Second Name -->
+                    <div class="form-group row">
+                        <label for="secondName" class="col-sm-3 col-form-label ">Second Name</label>
+                        <div class="col-sm-8 ">
+                            <input type="text" id="secondName" class="form-control form-control-lg" name="secondName"
+                                placeholder=<%=typeof data==="undefined" ? "Second Name" : data.firstname %>>
+                        </div>
+                    </div>
+
+
+                    <!-- email -->
+                  
+                    <div class="form-group row">
+                        <label for="newEmail" class="col-sm-3 col-form-label"  >Email</label>
+                        <div class="col-sm-8">
+                            <input type="email" id="newEmail" name="newEmail" class="form-control form-control-lg"
+                                placeholder= <%= typeof data==="undefined" ? "Email" : data.email%>  <%= typeof data==="undefined" ? " " : "disabled"   %> >
+                        </div>
+                    </div>
+                    <!-- password -->
+
+                    <div class="form-group row">
+                        <label for="newPassword" class="col-sm-3 col-form-label">Password</label>
+                        <div class="col-sm-8">
+                            <input type="password" id="newPassword" name="newPassword"
+                                class="form-control form-control-lg" placeholder="Password">
+                        </div>
+                    </div>
+
+                    <% if(typeof data!="undefined") {%>
+
+                        <div class="form-group row">
+                            <label for="rePassword" class="col-sm-3 col-form-label">Retype Password</label>
+                            <div class="col-sm-8">
+                                <input type="password" id="rePassword" name="rePassword"
+                                    class="form-control form-control-lg" placeholder="Retype Password">
+                            </div>
+                        </div>
+
+                   <% }%>
+                    <!-- position -->
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Position</label>
+                        <div class="form-group col-sm-9">
+                            <select class="form-control form-control-lg " name="newPosition" required>
+                                <option selected disabled value=""><%=typeof data==="undefined" ? "Choose position..." : data.role %></option>
+                                <option value="Software Developer">Software Developer</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Quality Assurance">Quality Assurance</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="newTypeJob" class="col-sm-3 col-form-label">Type job</label>
+                        <div class="col-sm-8 radios">
+                            <div class="form-check ">
+                                <input class="form-check-input cbx-add " type="radio" name="newTypeJob"
+                                    value="Fulltime" <%=typeof data!=="undefined" && data.worktype === "Fulltime" ? "checked" : " "   %>>
+                                <label class="form-check-label label-add" for="gridCheck1">
+                                    Fulltime
+                                </label>
+                            </div>
+
+                            <div class="form-check container-cbx">
+                                <input class="form-check-input cbx-add " type="radio" name="newTypeJob"
+                                    value="Part-time" <%=typeof data!=="undefined" && data.worktype === "Part-time" ? "checked" : " "%> >
+                                <label class="form-check-label label-add" for="gridCheck1">
+                                    Part-time
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- role -->
+                    <div class="form-group row">
+                        <label for="newStatus" class="col-sm-3 col-form-label">Status</label>
+                        <div class="col-sm-8 radios">
+                            <div class="form-check ">
+                                <input class="form-check-input cbx-add " type="radio" name="newStatus"
+                                    value="Admin" <%=typeof data!=="undefined" && data.status.toLowerCase() === "Admin".toLowerCase() ? "checked" : " "%>>
+                                <label class="form-check-label label-add" for="gridCheck1">
+                                    Admin
+                                </label>
+                            </div>
+
+                            <div class="form-check container-cbx">
+                                <input class="form-check-input cbx-add " type="radio" name="newStatus"
+                                    value="User"  <%=typeof data!=="undefined" && data.status.toLowerCase() === "User".toLowerCase() ? "checked" : " "%>>
+                                <label class="form-check-label label-add" for="gridCheck1">
+                                    User
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row cont-btn" >
+                        <button type="submit" name="search" style="margin-right: 2%;" value="clicked"
+                            class=" btn btn-success btn-lg btn-add-user"><%=typeof data==="undefined" ? "Add" : "Update" %></button>
+                        <a href="/users" name="kembali" value="clicked"
+                            class=" btn btn-primary btn-lg btn-add-user">
+                            Kembali</a>
+                    </div>
+
+
+
+                </form>
+
+            </div>
+    </div>
+</div>
+
+
+
+<%- include('../partials/footer'); -%>

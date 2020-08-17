@@ -649,3 +649,19 @@ main {
   margin-top: 500px;
 
 }
+.container-add-user{
+  margin-top: 4%;
+}
+.container-user{
+  margin-left :200px
+}
+.container-addd-user{
+  margin-bottom: 100px;
+}
+.btn-add-user{
+  border-radius: 20px;
+}
+.cont-btn{
+  margin:5% 25%;
+  
+}
