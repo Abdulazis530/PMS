@@ -47,7 +47,7 @@ module.exports = (db) => {
         if (req.query.fiturBrowser === "yes" || req.query.pageBrowse) {
             let currentPage = req.query.pageBrowse || 1
             let page = "pageBrowse"
-            
+            if(req.query.fiturBrowser) condition=[]
             if (req.query.checkboxId === "on" && req.query.projectid.length !== 0) condition.push(`projects.projectid = ${Number(req.query.projectid)}`)
             if (req.query.checkboxName === "on" && req.query.projectname.length !== 0) condition.push(`projects.name ILIKE '%${req.query.projectname}%'`)
             if (req.query.checkboxMember === "on" && req.query.member.length !== 0 && req.query.member !== 'Open this select menu') condition.push(`CONCAT(users.firstname, ' ', users.lastname) ILIKE '%${req.query.member}%'`)

@@ -11,12 +11,10 @@ const optionCheckBox = {
   checkboxPosition: true,
   checkboxTypeJob: true,
   checkboxStatus: true
-
 }
 module.exports = (db) => {
   const tab = 'users'
   let conditionUser = []
-  console.log(conditionUser)
 
   router.get('/', helpers.isLogIn, async (req, res, next) => {
 
@@ -54,7 +52,7 @@ module.exports = (db) => {
 
         const conditions = conditionUser.join(" OR ")
       
-       
+      
         try {
           const queryGetTotalRow = `SELECT COUNT(userid) FROM users WHERE ${conditions}`
           const getTotalRow = await db.query(queryGetTotalRow)
@@ -66,7 +64,6 @@ module.exports = (db) => {
 
           let totalPage = Math.ceil(totalRow / limit)
 
-          console.log(currentPage)
           res.render('users/view', {
             tab,
             currentPage,
@@ -117,7 +114,34 @@ module.exports = (db) => {
       }
     }
   });
+  router.post('/', helpers.isLogIn, async (req, res, next) => {
+    
+    const{optionUser,checkboxName,checkboxId,checkboxEmail,checkboxPosition,checkboxTypeJob,checkboxStatus}=req.body
+   
+    console.log(checkboxStatus)
+    if (optionUser) {
+        typeof checkboxId === "undefined" ? optionCheckBox.checkboxIdUser = false : optionCheckBox.checkboxIdUser = true
+        typeof checkboxName === "undefined" ? optionCheckBox.checkboxNameUser = false : optionCheckBox.checkboxNameUser = true
+        typeof checkboxEmail === "undefined" ? optionCheckBox.checkboxEmail = false : optionCheckBox.checkboxEmail = true
+        typeof checkboxPosition === "undefined" ? optionCheckBox.checkboxPosition = false : optionCheckBox.checkboxPosition = true
+        typeof checkboxTypeJob === "undefined" ? optionCheckBox.checkboxTypeJob = false : optionCheckBox.checkboxTypeJob = true
+        typeof checkboxStatus ==="undefined" ? optionCheckBox.checkboxStatus=false: optionCheckBox.checkboxStatus=true
+        res.redirect('/users')
+    } 
+    // else {
+    //     const delDataMembers = 'DELETE FROM members WHERE projectid=$1'
+    //     const delDataProject = 'DELETE FROM projects WHERE projectid=$1'
+    //     try {
+    //         await db.query(delDataMembers, [req.body.delete])
+    //         await db.query(delDataProject, [req.body.delete])
+    //         res.redirect('/projects')
+    //     } catch (error) {
+    //         console.log(error)
+    //         res.status(500).json({ error: true, message: error })
+    //     }
 
+    // }
+})
 
 
   return router;
