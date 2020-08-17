@@ -18,9 +18,7 @@ let optionCheckBox = {
     checkSubjectIssue: true,
     checkPriorityIssue: true,
     checkEstimatedTimeIssue: true,
-    checkAuthorIssue: true,
     checkTrackerIssue: true,
-    checkAssigneIssue: true,
     checkSpentTimeIssue: true,
     checkCreatedDateIssue: true,
     checkDescriptionIssue: true,
@@ -41,7 +39,7 @@ module.exports = (db) => {
     const tab = "projects"
 
     router.get('/', helpers.isLogIn, async (req, res, next) => {
-        console.log(optionCheckBox)
+
         const limit = 5
 
         if (req.query.fiturBrowser === "yes" || req.query.pageBrowse) {
@@ -66,7 +64,15 @@ module.exports = (db) => {
                     const getData = await db.query(queryGetData)
                     const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users")
                     let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
-                    res.render('projects/view', { currentPage, totalPage, data: getData.rows, nameOfPage: page, fullnames: fullname.rows, optionCheckBox, tab })
+                    res.render('projects/view', {
+                        currentPage,
+                        totalPage,
+                        data: getData.rows,
+                        nameOfPage: page,
+                        fullnames: fullname.rows,
+                        optionCheckBox,
+                        tab
+                    })
 
                 } catch (error) {
                     console.log(error)
@@ -263,18 +269,18 @@ module.exports = (db) => {
 
                         bug.openBug += openTracker
                         bug.totalBug += totalTracker
-                        console.log(bug)
+
                     }
                     if (tracker == 'feature') {
                         feature.openFeature += openTracker
                         feature.totalFeature += totalTracker
-                        console.log(feature)
+
 
                     }
                     if (tracker == 'support') {
                         support.openSupport += openTracker
                         support.totalSupport += totalTracker
-                        console.log(support)
+
 
                     }
                 } catch (error) {
@@ -288,7 +294,7 @@ module.exports = (db) => {
 
             const queryGetMembers = "SELECT CONCAT(users.firstname, ' ', users.lastname) AS fullname,members.role FROM users JOIN members ON users.userid = members.userid WHERE members.projectid =$1"
             const members = await db.query(queryGetMembers, [Number(projectid)])
-            console.log(members)
+
 
             const sqlGetProjectName = 'SELECT name FROM projects WHERE projectid=$1'
             const getProjectName = await db.query(sqlGetProjectName, [Number(projectid)])
@@ -316,11 +322,11 @@ module.exports = (db) => {
         if (req.query.fiturBrowserUsers === "yes" || req.query.pageBrowseUsers) {
             let currentPage = req.query.pageBrowseUsers || 1
             let page = "pageBrowseUsers"
-            console.log(req.params.projectid)
+
             if (req.query.checkboxIdUsers === "on" && req.query.inputIdUsers.length !== 0) conditionUser.push(`members.id = ${Number(req.query.inputIdUsers)}`)
             if (req.query.checkboxNameUsers === "on" && req.query.inputNameUsers.length !== 0) conditionUser.push(`CONCAT(firstname, ' ', lastname) ILIKE '%${req.query.inputNameUsers}%'`)
             if (req.query.checkboxRoleUsers === "on" && req.query.inputRoleUsers.length !== 0 && req.query.inputRoleUsers !== 'Open this select menu') conditionUser.push(`members.role= '${req.query.inputRoleUsers}'`)
-            console.log(conditionUser)
+
             if (conditionUser.length == 0) {
                 res.redirect(req.params.projectid) //you need to make sure it is right redirect link!
             } else {
@@ -384,8 +390,7 @@ module.exports = (db) => {
         else {
 
             const delDataMembers = 'DELETE FROM members WHERE projectid=$1 AND id=$2'
-            console.log(typeof Number(req.body.delete))
-            console.log(typeof Number(req.params.projectid))
+
 
             try {
                 await db.query(delDataMembers, [Number(req.params.projectid), Number(req.body.delete)])
@@ -462,7 +467,7 @@ module.exports = (db) => {
             let queryPosition = `SELECT DISTINCT role as Position FROM members`
             const optionRole = await db.query(queryPosition)
             const selectRoles = optionRole.rows
-            console.log(users)
+
             res.render('projects/members/edit', { url, data: users, selectRoles, tab })
         } catch (error) {
             console.log(error)
@@ -496,16 +501,16 @@ module.exports = (db) => {
             let currentPage = req.query.pageBrowseIssue || 1
             let page = "pageBrowseIssue"
 
-            console.log(req.query)
+
             if (req.query.checkboxIdIssues === "on" && req.query.inputIdIssues.length !== 0) conditionIssues.push(`issues.issueid = ${Number(req.query.inputIdIssues)}`)
             if (req.query.checkboxSubjectIssues === "on" && req.query.inputSubjectIssue.length !== 0) conditionIssues.push(`issues.subject ILIKE '%${req.query.inputSubjectIssue}%'`)
             if (req.query.checkboxTracker === "on" && req.query.inputTracker.length !== 0 && req.query.inputTracker !== 'Open this select menu') conditionIssues.push(`issues.tracker ILIKE '%${req.query.inputTracker}%'`)
-            console.log(conditionIssues)
+
             if (conditionIssues.length == 0) {
                 res.redirect(url)
             }
             else {
-                console.log('here too')
+
                 const conditions = conditionIssues.join(" OR ")
                 conditionIssues = []
                 try {
@@ -513,14 +518,6 @@ module.exports = (db) => {
                     const getIssues = await db.query(issuesQuery, [url])
                     const issues = getIssues.rows
 
-                    const queryAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS assigneName FROM users JOIN issues ON users.userid = issues.assignee WHERE projectid=$1 AND (${conditions}) ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
-                    const getAssigneeUsers = await db.query(queryAssignee, [url])
-                    const assigneeUsers = getAssigneeUsers.rows
-
-
-                    const queryAuthor = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS authorName FROM users JOIN issues ON users.userid =issues.author WHERE projectid=$1 AND (${conditions}) ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit} `
-                    const getAuthor = await db.query(queryAuthor, [url])
-                    const authorUsers = getAuthor.rows
 
                     const queryTotal = `SELECT COUNT(*) FROM issues WHERE projectid=$1 AND (${conditions})`
                     const total = await db.query(queryTotal, [url])
@@ -539,8 +536,7 @@ module.exports = (db) => {
                         issue.crateddate = createdDate
                         issue.updateddate = updateDate
                         issue.closeddate = closeDate
-                        issue.assignee = assigneeUsers[i].assignename
-                        issue.author = authorUsers[i].authorname
+
                     })
                     res.render('projects/issues/view', {
                         url,
@@ -562,28 +558,14 @@ module.exports = (db) => {
             }
 
         } else {
-
+            console.log(optionCheckBox)
             try {
                 let currentPage = req.query.pageIssue || 1
                 let page = "pageIssue"
 
-
-
                 const issuesQuery = `SELECT *FROM issues WHERE projectid=$1 ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
                 const getIssues = await db.query(issuesQuery, [url])
                 const issues = getIssues.rows
-                console.log(issues)
-
-                const queryAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS assigneName FROM users JOIN issues ON users.userid = issues.assignee WHERE projectid=$1 ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
-                const getAssigneeUsers = await db.query(queryAssignee, [url])
-                const assigneeUsers = getAssigneeUsers.rows
-
-
-                const queryAuthor = `SELECT CONCAT(users.firstname, ' ', users.lastname) AS authorName FROM users JOIN issues ON users.userid =issues.author WHERE projectid=$1  ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
-                const getAuthor = await db.query(queryAuthor, [url])
-                const authorUsers = getAuthor.rows
-
-
 
                 let queryTotal = `SELECT COUNT(*) FROM issues WHERE projectid=$1`
                 const total = await db.query(queryTotal, [url])
@@ -602,8 +584,7 @@ module.exports = (db) => {
                     issue.crateddate = createdDate
                     issue.updateddate = updateDate
                     issue.closeddate = closeDate
-                    issue.assignee = assigneeUsers[i].assignename
-                    issue.author = authorUsers[i].authorname
+
                 })
 
                 res.render('projects/issues/view', {
@@ -625,16 +606,16 @@ module.exports = (db) => {
     });
     router.post('/issues/:projectid', helpers.isLogIn, async (req, res, next) => {
         if (req.body.option) {
+
+
             typeof req.body.checkIdIssue === "undefined" ? optionCheckBox.checkIdIssue = false : optionCheckBox.checkIdIssue = true
             typeof req.body.checkStatusIssue === "undefined" ? optionCheckBox.checkStatusIssue = false : optionCheckBox.checkStatusIssue = true
             typeof req.body.checkDueDateIssue === "undefined" ? optionCheckBox.checkDueDateIssue = false : optionCheckBox.checkDueDateIssue = true
             typeof req.body.checkTargetVersionIssue === "undefined" ? optionCheckBox.checkTargetVersionIssue = false : optionCheckBox.checkTargetVersionIssue = true
             typeof req.body.checkSubjectIssue === "undefined" ? optionCheckBox.checkSubjectIssue = false : optionCheckBox.checkSubjectIssue = true
             typeof req.body.checkPriorityIssue === "undefined" ? optionCheckBox.checkPriorityIssue = false : optionCheckBox.checkPriorityIssue = true
-            typeof req.body.checkEstimatedTimeIssue === "undefined" ? optionCheckBox.checkEstimatedTimeIssue = false : optionCheckBox.checkPriorityIssue = true
-            typeof req.body.checkAuthorIssue === "undefined" ? optionCheckBox.checkAuthorIssue = false : optionCheckBox.checkAuthorIssue = true
+            typeof req.body.checkEstimatedTimeIssue === "undefined" ? optionCheckBox.checkEstimatedTimeIssue = false : optionCheckBox.checkEstimatedTimeIssue = true
             typeof req.body.checkTrackerIssue === "undefined" ? optionCheckBox.checkTrackerIssue = false : optionCheckBox.checkTrackerIssue = true
-            typeof req.body.checkAssigneIssue === "undefined" ? optionCheckBox.checkAssigneIssue = false : optionCheckBox.checkAssigneIssue = true
             typeof req.body.checkSpentTimeIssue === "undefined" ? optionCheckBox.checkSpentTimeIssue = false : optionCheckBox.checkSpentTimeIssue = true
             typeof req.body.checkCreatedDateIssue === "undefined" ? optionCheckBox.checkCreatedDateIssue = false : optionCheckBox.checkCreatedDateIssue = true
             typeof req.body.checkDescriptionIssue === "undefined" ? optionCheckBox.checkDescriptionIssue = false : optionCheckBox.checkDescriptionIssue = true

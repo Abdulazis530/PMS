@@ -111,7 +111,7 @@
                     <div class="container card-body">
                         <form class="form-filter" method="POST">
                             <!-- id -->
-                            <% const{checkDoneIssue,checkIdIssue,checkStatusIssue,checkDueDateIssue,checkTargetVersionIssue,checkUpdateDateIssue,checkStartDateIssue,checkSubjectIssue,checkPriorityIssue,checkEstimatedTimeIssue,checkTrackerIssue,checkAssigneIssue,checkSpentTimeIssue,checkCreatedDateIssue,checkDescriptionIssue,checkClosedIssue,checkFileIssue,checkAuthorIssue}=optionCheckBox %>
+                            <% const{checkDoneIssue,checkIdIssue,checkStatusIssue,checkDueDateIssue,checkTargetVersionIssue,checkUpdateDateIssue,checkStartDateIssue,checkSubjectIssue,checkPriorityIssue,checkEstimatedTimeIssue,checkTrackerIssue,checkSpentTimeIssue,checkCreatedDateIssue,checkDescriptionIssue,checkClosedIssue,checkFileIssue}=optionCheckBox %>
     
                             <div class="checkboxIssue row">
                                 <div class="col-md-3">
@@ -134,11 +134,13 @@
     
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-check-input" name="checkTargetVersionIssue" type="checkbox" id="gridCheck"  <%=checkTargetVersionIssue ?  "checked" : " "%>>
+                                    <input class="form-check-input" name="checkUpdateDateIssue" type="checkbox"
+                                        id="gridCheck"  <%= checkUpdateDateIssue ? "checked" : " " %> >
                                     <label class="form-check-label" for="gridCheck">
-                                        Target version
+                                        Updated Date
                                     </label>
                                 </div>
+                                
                             </div>
     
                             <div class="checkboxIssue row">
@@ -162,13 +164,13 @@
                                         Estimated Time
                                     </label>
                                 </div>
-    
                                 <div class="col-md-3">
-                                    <input class="form-check-input" name="checkAuthorIssue" type="checkbox" id="gridCheck" <%=checkAuthorIssue ? "checked" : " " %> >
+                                    <input class="form-check-input" name="checkClosedIssue" type="checkbox" id="gridCheck" <%= checkClosedIssue ? "checked" : " " %> >
                                     <label class="form-check-label" for="gridCheck">
-                                        Author
+                                        Closed Data
                                     </label>
                                 </div>
+                             
     
                             </div>
                             <div class="checkboxIssue row">
@@ -181,12 +183,6 @@
                                     </label>
                                 </div>
     
-                                <div class="col-md-3">
-                                    <input class="form-check-input" name="checkAssigneIssue" type="checkbox" id="gridCheck" <%= checkAssigneIssue ? "checked" : " " %>  >
-                                    <label class="form-check-label" for="gridCheck">
-                                        Assigne
-                                    </label>
-                                </div>
     
                                 <div class="col-md-3">
                                     <input class="form-check-input" name="checkSpentTimeIssue" type="checkbox" <%=checkSpentTimeIssue ? "checked" : " " %>
@@ -202,7 +198,12 @@
                                         Created Date
                                     </label>
                                 </div>
-    
+                                <div class="col-md-3">
+                                    <input class="form-check-input" name="checkFileIssue" type="checkbox" id="gridCheck" <%= checkFileIssue ? "checked" : " " %> >
+                                    <label class="form-check-label" for="gridCheck">
+                                        File
+                                    </label>
+                                </div>
                             </div>
                             <div class="checkboxIssue row">
     
@@ -227,30 +228,16 @@
                                         Done
                                     </label>
                                 </div>
-                                
                                 <div class="col-md-3">
-                                    <input class="form-check-input" name="checkUpdateDateIssue" type="checkbox"
-                                        id="gridCheck"  <%= checkUpdateDateIssue ? "checked" : " " %> >
+                                    <input class="form-check-input" name="checkTargetVersionIssue" type="checkbox" id="gridCheck"  <%=checkTargetVersionIssue ?  "checked" : " "%>>
                                     <label class="form-check-label" for="gridCheck">
-                                        Updated Date
+                                        Target version
                                     </label>
                                 </div>
+                                
                             </div>
     
-                            <div class="checkboxIssue row">
-                                <div class="col-md-3">
-                                    <input class="form-check-input" name="checkClosedIssue" type="checkbox" id="gridCheck" <%= checkClosedIssue ? "checked" : " " %> >
-                                    <label class="form-check-label" for="gridCheck">
-                                        Closed Data
-                                    </label>
-                                </div>
-                                <div class="col-md-3">
-                                    <input class="form-check-input" name="checkFileIssue" type="checkbox" id="gridCheck" <%= checkFileIssue ? "checked" : " " %> >
-                                    <label class="form-check-label" for="gridCheck">
-                                        File
-                                    </label>
-                                </div>
-                            </div>
+                          
     
                             <button type="submit" name="option" value="clicked"
                                 class="btn-apply btn btn-primary btn-optional">Apply</button>
@@ -278,7 +265,6 @@
                                             <th scope="col" <%=checkDescriptionIssue ?  "" : "hidden" %>>Description</th>
                                             <th scope="col" <%=checkStatusIssue ?  "" : "hidden"%>  >Status</th>
                                             <th scope="col" <%=checkPriorityIssue ?   "" : "hidden" %>>Priority</th>
-                                            <th scope="col" <%=checkAssigneIssue ? "" : "hidden" %>>Assignee</th>
                                             <th scope="col" <%=checkStartDateIssue ? "" : "hidden" %>>Start Date</th>
                                             <th scope="col"<%=checkDueDateIssue ?  "" : "hidden"%>>Due Date</th>
                                             <th scope="col" <%=checkEstimatedTimeIssue ?   "" : "hidden"%>>Estimated Time
@@ -287,14 +273,12 @@
                                             <th scope="col" <%=checkDoneIssue ? "" : "hidden" %>>Done</th>
                                             <th scope="col"  <%=checkTargetVersionIssue ? "" : "hidden"%>>Target Version
                                             </th>
-                                            <th scope="col"  <%=checkAuthorIssue ? "" : "hidden" %>>Author</th>
                                             <th scope="col" <%=checkCreatedDateIssue ?  "" : "hidden" %>>Created Date
                                             </th>
                                             <th scope="col"  <%=checkUpdateDateIssue ? "" : "hidden" %>>Updated Date
                                             </th>
                                             <th scope="col" <%=checkClosedIssue ? "" : "hidden" %>>Closed Date</th>
                                             <th scope="col"<%=checkFileIssue ? "" : "hidden" %>>File</th>
-                                           
         
                                             <th scope="col">Action</th>
                                         </tr>
@@ -309,7 +293,6 @@
                                             <td <%=checkDescriptionIssue ?  "" : "hidden" %>><%=description%></td>
                                             <td <%=checkStatusIssue ?  "" : "hidden"%>  > <%=status %> </td>
                                             <td  <%=checkPriorityIssue ?   "" : "hidden" %>> <%=priority%></td>
-                                            <td  <%=checkAssigneIssue ?"" : "hidden" %>> <%= assignee%></td>
                                             <td <%=checkStartDateIssue ? "" : "hidden" %>><%= startdate%></td>
                                             <td <%=checkDueDateIssue ?  "" : "hidden"%>> <%= duedate%></td>
                                             <td <%=checkEstimatedTimeIssue ?   "" : "hidden"%>><%=estimatedtime > 1 ? `${estimatedtime} Hours`: `${estimatedtime} Hour` %>
@@ -324,7 +307,6 @@
                                             </td>
                                             <td <%=checkDoneIssue ? "" : "hidden" %>><%=done%> %</td>
                                             <td <%=checkTargetVersionIssue ? "" : "hidden"%>><%=!targetversion ? "N/A" :targetversion %></td>
-                                            <td <%=checkAuthorIssue ? "" : "hidden"%>><%=author%></td>
                                             <td <%=checkCreatedDateIssue ?  "" : "hidden" %>> <%= crateddate  %></td>
                                             <td <%=checkUpdateDateIssue ? "" : "hidden" %>> <%=updateddate =="Invalid date" ? "N/A" : updateddate%></td>
                                             <td <%=checkClosedIssue ? "" : "hidden" %>> <%=closeddate =="Invalid date" ? "N/A" : closeddate %></td>

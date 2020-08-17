@@ -12,11 +12,13 @@ const optionCheckBox = {
   checkboxTypeJob: true,
   checkboxStatus: true
 }
+
 module.exports = (db) => {
   const tab = 'users'
   let conditionUser = []
   const saltRounds = 10
 
+  // START ROUTE USER
   router.get('/', helpers.isLogIn, async (req, res, next) => {
 
     const privilege = req.session.user.status
@@ -53,7 +55,6 @@ module.exports = (db) => {
 
         const conditions = conditionUser.join(" OR ")
 
-
         try {
           const queryGetTotalRow = `SELECT COUNT(userid) FROM users WHERE ${conditions}`
           const getTotalRow = await db.query(queryGetTotalRow)
@@ -65,7 +66,7 @@ module.exports = (db) => {
 
           let totalPage = Math.ceil(totalRow / limit)
 
-          res.render('users/view', {
+          res.render('users/list', {
             tab,
             currentPage,
             totalPage,
@@ -84,7 +85,6 @@ module.exports = (db) => {
 
     } else {
       try {
-
         let currentPage = pageUser || 1
         let page = "pageUser"
 
@@ -98,8 +98,7 @@ module.exports = (db) => {
 
         let totalPage = Math.ceil(totalRow / limit)
 
-
-        res.render('users/view', {
+        res.render('users/list', {
           tab,
           currentPage,
           totalPage,
@@ -115,10 +114,10 @@ module.exports = (db) => {
       }
     }
   });
+  
+  // OPTION ROUTE
   router.post('/', helpers.isLogIn, async (req, res, next) => {
-
     const { delUser, optionUser, checkboxName, checkboxId, checkboxEmail, checkboxPosition, checkboxTypeJob, checkboxStatus } = req.body
-
 
     if (optionUser) {
       typeof checkboxId === "undefined" ? optionCheckBox.checkboxIdUser = false : optionCheckBox.checkboxIdUser = true
@@ -129,28 +128,11 @@ module.exports = (db) => {
       typeof checkboxStatus === "undefined" ? optionCheckBox.checkboxStatus = false : optionCheckBox.checkboxStatus = true
       res.redirect('/users')
     }
-    if (delUser) {
-      console.log(delUser)
-      try {
-
-        const delMember = 'DELETE FROM members where userid=$1'
-        await db.query(delMember, [delUser])
-
-        const delDataUsers = 'DELETE FROM users WHERE userid=$1'
-        await db.query(delDataUsers, [delUser])
-
-        res.redirect('/users')
-      } catch (error) {
-        console.log(error)
-        res.status(500).json({ error: true, message: error })
-      }
-
-    }
-
-
-
+   
   })
+// END OF ROUTE /USER
 
+//START /USER/ADD
   router.get('/add', helpers.isLogIn, async (req, res, next) => {
     const add = "add"
     res.render('users/form', { add, tab, pesanKesalahan: req.flash('pesanKesalahan') })
@@ -192,45 +174,74 @@ module.exports = (db) => {
 
   });
 
+// END OF ROUTE /USER/ADD
+
+//DELETE 
+router.get('/delete/:userid', helpers.isLogIn, async (req, res, next) => {
+  
+  const delUser=req.params.userid
+
+  try {
+    const setIssueNull = 'UPDATE issues SET author = NULL, assignee=NULL WHERE author = $1 OR assignee =$2 '
+    await db.query(setIssueNull, [delUser, delUser])
+
+    const delMember = 'DELETE FROM members where userid=$1'
+    await db.query(delMember, [delUser])
+
+    const delDataUsers = 'DELETE FROM users WHERE userid=$1'
+    await db.query(delDataUsers, [delUser])
+
+    res.redirect('/users')
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: true, message: error })
+  }
+});
+
+//START OF ROUTE USER/EDIT/1
   router.get('/edit/:userid', helpers.isLogIn, async (req, res, next) => {
+
     const userid = req.params.userid
-    const href=`/users/edit/${userid}` 
+    const href = `/users/edit/${userid}`
+
     try {
       const sqlGetUserInfo = "SELECT*FROM users WHERE userid =$1"
       const getUserInfo = await db.query(sqlGetUserInfo, [userid])
       const userInfo = getUserInfo.rows[0]
 
-      res.render('users/form', { data: userInfo, tab, pesanKesalahan: req.flash('pesanKesalahan') ,href})
+      res.render('users/form', { data: userInfo, tab, pesanKesalahan: req.flash('pesanKesalahan'), href })
+
     } catch (error) {
       console.log(error)
       res.status(500).json({ error: true, message: error })
     }
 
   });
+
   router.post('/edit/:userid', helpers.isLogIn, async (req, res, next) => {
     const userid = req.params.userid
-    const { firstName, secondName, newPassword, rePassword, newPosition, newTypeJob,newStatus } = req.body
+    const { firstName, secondName, newPassword, rePassword, newPosition, newTypeJob, newStatus } = req.body
 
     try {
       if (newPassword != rePassword) {
         req.flash('pesanKesalahan', 'Password dan Re-type Password tidak cocok!')
         res.redirect(userid)
-      }else{
+      } else {
 
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds)
-        const sqlUpdateUsers='UPDATE users set firstname = $1, lastname = $2, password= $3, role =$4, worktype=$5, status=$6 WHERE userid =$7'
-        const value=[firstName,secondName,hashedPassword,newPosition,newTypeJob,newStatus,userid]
-        await db.query(sqlUpdateUsers,value)
+        const sqlUpdateUsers = 'UPDATE users set firstname = $1, lastname = $2, password= $3, role =$4, worktype=$5, status=$6 WHERE userid =$7'
+        const value = [firstName, secondName, hashedPassword, newPosition, newTypeJob, newStatus, userid]
+        await db.query(sqlUpdateUsers, value)
         res.redirect('/users')
       }
 
-    
+
     } catch (error) {
       console.log(error)
       res.status(500).json({ error: true, message: error })
 
     }
-    
+
   });
 
   return router;

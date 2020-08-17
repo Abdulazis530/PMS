@@ -135,8 +135,9 @@
         <div class="title-filter">
           <h5 class="pagi">LIST</h5>
         </div>
-        <div class="card-body">
-          <form class="form-add" method="POST">
+        <div class="card-body form-add">
+          
+         
             <table class="table table-striped" style="font-size: 1rem;">
               <thead>
                 <tr>
@@ -163,16 +164,17 @@
                   <td>
                     <a href="users/edit/<%=userid%>" name='button-edit' value='ok'
                       class="btn btn-success btn-sm">Edit</a>
-                    <button class=" btn btn-danger btn-sm" type="submit" name="delUser" value="<%=userid%>">Delete
-                    </button>
 
+                      <a href="users/delete/<%=userid%>" name='button-edit' value='ok'
+                        class="btn btn btn-danger btn-sm">delete</a>
+                   
                   </td>
                 </tr>
 
                 <%})%>
               </tbody>
             </table>
-          </form>
+      
         </div>
     </div>
   </div>
