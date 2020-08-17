@@ -15,6 +15,7 @@ const optionCheckBox = {
 module.exports = (db) => {
   const tab = 'users'
   let conditionUser = []
+  const saltRounds = 10
 
   router.get('/', helpers.isLogIn, async (req, res, next) => {
 
@@ -151,8 +152,8 @@ module.exports = (db) => {
   })
 
   router.get('/add', helpers.isLogIn, async (req, res, next) => {
-    const add="add"
-    res.render('users/form', { add,tab, pesanKesalahan: req.flash('pesanKesalahan') })
+    const add = "add"
+    res.render('users/form', { add, tab, pesanKesalahan: req.flash('pesanKesalahan') })
   });
 
   router.post('/add', helpers.isLogIn, async (req, res, next) => {
@@ -167,47 +168,70 @@ module.exports = (db) => {
     } = req.body
 
     try {
-      const sqlCheckEmail='SELECT COUNT(email) FROM users WHERE email = $1'
-      const checkEmail= await db.query(sqlCheckEmail,[newEmail])
-      const email=checkEmail.rows[0].count
+      const sqlCheckEmail = 'SELECT COUNT(email) FROM users WHERE email = $1'
+      const checkEmail = await db.query(sqlCheckEmail, [newEmail])
+      const email = checkEmail.rows[0].count
 
-      if(email>=1){
+      if (email >= 1) {
         req.flash('pesanKesalahan', 'Email Sudah digunakan!')
         res.redirect('add')
-      }else{
-        const saltRounds=10
-        const hashedPassword =await bcrypt.hash(newPassword, saltRounds)
-  
-        const sqlInsertNewUser='INSERT INTO users (email,password,firstname,lastname,status,worktype,role) VALUES ($1,$2,$3,$4,$5,$6,$7)'
-        const value=[newEmail,hashedPassword,firstName,secondName,newStatus,newTypeJob,newPosition]
-  
+      } else {
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds)
+
+        const sqlInsertNewUser = 'INSERT INTO users (email,password,firstname,lastname,status,worktype,role) VALUES ($1,$2,$3,$4,$5,$6,$7)'
+        const value = [newEmail, hashedPassword, firstName, secondName, newStatus, newTypeJob, newPosition]
+
         //insert into db
-        await db.query(sqlInsertNewUser,value)
+        await db.query(sqlInsertNewUser, value)
         res.redirect('/users')
       }
     } catch (error) {
       console.log(error)
       res.status(500).json({ error: true, message: error })
     }
-   
+
   });
 
   router.get('/edit/:userid', helpers.isLogIn, async (req, res, next) => {
-    const userid=req.params.userid
-   
+    const userid = req.params.userid
+    const href=`/users/edit/${userid}` 
     try {
-      const sqlGetUserInfo="SELECT*FROM users WHERE userid =$1"
-      const getUserInfo = await db.query(sqlGetUserInfo,[userid])
-      const userInfo=getUserInfo.rows[0]
-      
-      res.render('users/form',{data:userInfo,tab,pesanKesalahan: req.flash('pesanKesalahan')})
+      const sqlGetUserInfo = "SELECT*FROM users WHERE userid =$1"
+      const getUserInfo = await db.query(sqlGetUserInfo, [userid])
+      const userInfo = getUserInfo.rows[0]
+
+      res.render('users/form', { data: userInfo, tab, pesanKesalahan: req.flash('pesanKesalahan') ,href})
     } catch (error) {
       console.log(error)
       res.status(500).json({ error: true, message: error })
     }
-   
-  });
 
+  });
+  router.post('/edit/:userid', helpers.isLogIn, async (req, res, next) => {
+    const userid = req.params.userid
+    const { firstName, secondName, newPassword, rePassword, newPosition, newTypeJob,newStatus } = req.body
+
+    try {
+      if (newPassword != rePassword) {
+        req.flash('pesanKesalahan', 'Password dan Re-type Password tidak cocok!')
+        res.redirect(userid)
+      }else{
+
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds)
+        const sqlUpdateUsers='UPDATE users set firstname = $1, lastname = $2, password= $3, role =$4, worktype=$5, status=$6 WHERE userid =$7'
+        const value=[firstName,secondName,hashedPassword,newPosition,newTypeJob,newStatus,userid]
+        await db.query(sqlUpdateUsers,value)
+        res.redirect('/users')
+      }
+
+    
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ error: true, message: error })
+
+    }
+    
+  });
 
   return router;
 }

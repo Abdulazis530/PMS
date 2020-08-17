@@ -7,7 +7,7 @@
 <% if(pesanKesalahan.length>0){%>
     <div class="container container-alertsc">
         <div class="alert-bad alert-good alert alert-danger" role="alert">
-            <a class="btn-bad btn-bad" href="/users/add">X</a>
+            <a class="btn-bad btn-bad" href= <%= typeof data==="undefined" ? "/users/add" : href   %> >X</a>
             <h4 class="alert-heading">Something went wrong!</h4>
             <%=pesanKesalahan %>
         </div>
@@ -34,10 +34,10 @@
 
                     <!-- Second Name -->
                     <div class="form-group row">
-                        <label for="secondName" class="col-sm-3 col-form-label ">Second Name</label>
+                        <label for="secondName" class="col-sm-3 col-form-label ">Last Name</label>
                         <div class="col-sm-8 ">
                             <input type="text" id="secondName" class="form-control form-control-lg" name="secondName"
-                                placeholder=<%=typeof data==="undefined" ? "Second Name" : data.firstname %>>
+                                placeholder=<%=typeof data==="undefined" ? "Last Name" : data.lastname %>>
                         </div>
                     </div>
 
@@ -90,7 +90,7 @@
                         <div class="col-sm-8 radios">
                             <div class="form-check ">
                                 <input class="form-check-input cbx-add " type="radio" name="newTypeJob"
-                                    value="Fulltime" <%=typeof data!=="undefined" && data.worktype === "Fulltime" ? "checked" : " "   %>>
+                                    value="Fulltime" <%=typeof data!=="undefined" && data.worktype.toLowerCase() === "Fulltime".toLowerCase() ? "checked" : " "   %>>
                                 <label class="form-check-label label-add" for="gridCheck1">
                                     Fulltime
                                 </label>
@@ -98,7 +98,7 @@
 
                             <div class="form-check container-cbx">
                                 <input class="form-check-input cbx-add " type="radio" name="newTypeJob"
-                                    value="Part-time" <%=typeof data!=="undefined" && data.worktype === "Part-time" ? "checked" : " "%> >
+                                    value="Part-time" <%=typeof data!=="undefined" && data.worktype.toLowerCase() === "Part-time".toLowerCase() ? "checked" : " "%> >
                                 <label class="form-check-label label-add" for="gridCheck1">
                                     Part-time
                                 </label>
