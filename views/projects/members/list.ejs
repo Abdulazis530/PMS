@@ -1,0 +1,247 @@
+<%- include('../../partials/header'); -%>
+
+
+<div class="sidebar-custom container-fluid">
+  <div class="row">
+    <nav class="box-sidebar col-md-2 d-none d-md-block bg-light sidebar">
+      <div class="sidebar-sticky">
+        <ul class="nav flex-column">
+
+          <li class="nav-item ">
+            <a class="text-sidebar nav-link " href="/projects/overview/<%= url %>">
+              <span data-feather="shopping-cart"></span>
+              Overview
+            </a>
+          </li>
+          <li class="nav-item ">
+            <a class=" text-sidebar nav-link" href="/projects/activity/<%= url %>">
+              <span data-feather="users"></span>
+              Activity
+            </a>
+          </li>
+          <li class="nav-item active-custom">
+            <a class=" text-sidebar nav-link" href="/projects/members/<%= url %>">
+              <span data-feather="bar-chart-2"></span>
+              Members
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class=" text-sidebar nav-link" href="/projects/issues/<%= url %>">
+              <span data-feather="layers"></span>
+              Issue
+            </a>
+          </li>
+        </ul>
+
+
+
+      </div>
+    </nav>
+    <div class="col-md-9 col-md-9 ml-sm-auto col-lg-10">
+
+      <main role="main" class=" filter-members  pt-3 px-4">
+        <section id="filter">
+          <h1 class="title-filter-members">Members</h1>
+
+          <div class="container container-card container-members-filter">
+            <div class="card card-filter mx-auto">
+              <h5 class="card-header card-header-filter">
+                <div class="title-filter">
+                  <h5>Filter</h5>
+                </div>
+                <div class="card-body card-member">
+                  <form class="form-filter" method="GET">
+                    <!-- id -->
+                    <div class="form-group row">
+                      <label for="inputIdUsers" class="col-sm-2 col-form-label"><input type="checkbox"
+                          name="checkboxIdUsers" class="form-check-input" />ID</label>
+                      <div class="col-sm-8">
+                        <input type="text" id="inputIdUsers" name="inputIdUsers" class="form-control" placeholder="ID">
+                      </div>
+                    </div>
+
+                    <!-- name -->
+                    <div class="form-group row">
+                      <label for="inputNameUsers" class="col-sm-2 col-form-label"><input type="checkbox"
+                          name="checkboxNameUsers" class="form-check-input" />Name</label>
+                      <div class="col-sm-8">
+                        <input type="text" id="inputNameUsers" name="inputNameUsers" class="form-control"
+                          placeholder="Name">
+                      </div>
+                    </div>
+
+                    <!-- Position -->
+                    <div class="form-group row">
+                      <label for="inputRoleUsers" class="col-sm-2 col-form-label"><input type="checkbox"
+                          name="checkboxRoleUsers" class="form-check-input" />Position</label>
+                      <div class="col-sm-8">
+                        <select name="inputRoleUsers" class="custom-select" id="inputRoleUsers">
+                          <option selected>Open this select menu</option>
+
+                          <% selectRoles.forEach(selectRole=>{ %>
+                          <option value="<%= selectRole.position %>"><%= selectRole.position %></option>
+
+                          <%})%>
+
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="form-group row container-search">
+                      <button type="submit" name="fiturBrowserUsers" value="yes"
+                        class=" btn btn-success btn-lg btn-search">Search</button>
+                    </div>
+
+                  </form>
+
+                </div>
+            </div>
+          </div>
+
+        </section>
+
+        <section id="optional-users">
+          <form method="POST">
+            <div class="container container-optional">
+              <div class="row optional-row ">
+                <div class="col-sm-12">
+                  <button class="btn btn-lg btn-success btn-title" type="button">Option</button>
+                </div>
+                <div class="optional-col col-sm-12">
+                  <p>Column</p>
+                </div>
+                <% const{checkIdMembers,checkNameUsers,checkRoleUsers}=optionCheckBox %>
+                <div class="col-sm-12">
+                  <label class=" col-form-label"><input type="checkbox" name="checkOptionIdUsers"
+                      <%= checkIdMembers ? "checked" : " "%> />ID</label>
+                </div>
+                <div class="col-sm-12">
+                  <label class=" col-form-label"><input type="checkbox" name="checkOptionNameUsers"
+                      <%= checkNameUsers? "checked" : " "%> />Name</label>
+                </div>
+                <div class="col-sm-12">
+                  <label class=" col-form-label"><input type="checkbox" name="checkOptionRoleUsers"
+                      <%= checkRoleUsers? "checked" : " "%> />Position</label>
+                </div>
+                <div class="col-sm-12">
+                  <button type="submit" name="optionUsers" value="<%= url %>"
+                    class="btn-apply btn btn-primary btn-optional">Apply</button>
+                </div>
+
+              </div>
+            </div>
+          </form>
+        </section>
+
+      </main>
+      <main role="main" class=" filter-members pt-3 px-4">
+        <div class="container">
+          <div class="card card-tables mx-auto">
+            <h5 class="card-header">
+              <div class="title-filter">
+                <h5 class="pagi">LIST</h5>
+              </div>
+              <div class=" form-add card-body">
+
+                <table class=" table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col" <%= checkIdMembers ? " " : "hidden"%>>ID</th>
+                      <th scope="col" <%= checkNameUsers? " " : "hidden"%>>Name</th>
+                      <th scope="col" <%= checkRoleUsers ? " " : "hidden"%>>Position</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%  data.forEach(e=>{ %>
+                    <% let {id,fullname,position}= e  %>
+
+                    <tr>
+                      <th scope="row" <%= checkIdMembers ? " " : "hidden"%>><a class="to-overview"><%= id %></a></th>
+                      <td <%= checkNameUsers? " " : "hidden"%>><%= fullname %></td>
+                      <td <%= checkRoleUsers ? " " : "hidden"%>><%= position %></td>
+
+                      <td>
+                        <a href="<%=url%>/edit/<%=id%>" name='button-edit' value='ok'
+                          class="btn-edit btn btn-success btn-sm">Edit</a>
+                        <a href="<%=url%>/delete/<%=id%>" name='delete' value='ok'
+                          class="btn-delete btn btn-danger btn-sm">Delete</a>
+                      </td>
+                    </tr>
+                    <%  }) %>
+
+
+                  </tbody>
+                </table>
+
+              </div>
+          </div>
+        </div>
+
+        <section id="paginations">
+          <form action="/projects/members/<%=url%>" method="GET">
+            <div class="container container-pagi">
+              <nav aria-label="Page navigation ">
+                <ul class="pagination">
+
+                  <% if(currentPage==1) { %>
+                  <li class="page-item  disabled">
+                    <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)-1 %>"
+                      class="page-link ">Previous</button>
+                  </li>
+                  <% }else{ %>
+                  <li class="page-item">
+                    <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)-1 %>"
+                      class="page-link ">Previous</button>
+                  </li>
+                  <%}%>
+  
+              <% for(let index=1; index<= totalPage;index++){ %>
+
+                  <%  if(currentPage == index){ %>
+                  <li class="page-item active">
+                    <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
+                      class="page-link "><%= index %></button>
+                  </li>
+                  <% } else { %>
+                  <li i class="page-item">
+                    <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
+                      class="page-link "><%= index %></button>
+                  </li>
+                  <% } %>
+
+
+                  <!-- <a class="page-link bg-dark" href="#"><%= index %></a> -->
+
+                  <% } %>
+                  <% if(currentPage == totalPage){ %>
+                  <li class="page-item  disabled">
+                    <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)+1 %>"
+                      class="page-link ">Next</button>
+
+                  </li>
+                  <% } else { %>
+                  <li class="page-item">
+                    <button type="submit" name="<%= nameOfPage %>" value="<%= Number(currentPage)+1 %>"
+                      class="page-link ">Next</button>
+
+                  </li>
+                  <% } %>
+                </ul>
+              </nav>
+            </div>
+          </form>
+
+        </section>
+        <a href="<%= url %>/add" name="search" value="clicked" class="btn-members-add btn btn-success btn-lg ">
+          Add</a>
+      </main>
+    </div>
+
+
+
+  </div>
+</div>
+
+
+<%- include('../../partials/footer'); -%>

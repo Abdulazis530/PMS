@@ -114,10 +114,10 @@ module.exports = (db) => {
       }
     }
   });
-  
+
   // OPTION ROUTE
   router.post('/', helpers.isLogIn, async (req, res, next) => {
-    const { delUser, optionUser, checkboxName, checkboxId, checkboxEmail, checkboxPosition, checkboxTypeJob, checkboxStatus } = req.body
+    const { optionUser, checkboxName, checkboxId, checkboxEmail, checkboxPosition, checkboxTypeJob, checkboxStatus } = req.body
 
     if (optionUser) {
       typeof checkboxId === "undefined" ? optionCheckBox.checkboxIdUser = false : optionCheckBox.checkboxIdUser = true
@@ -128,11 +128,11 @@ module.exports = (db) => {
       typeof checkboxStatus === "undefined" ? optionCheckBox.checkboxStatus = false : optionCheckBox.checkboxStatus = true
       res.redirect('/users')
     }
-   
-  })
-// END OF ROUTE /USER
 
-//START /USER/ADD
+  })
+  // END OF ROUTE /USER
+
+  //START /USER/ADD
   router.get('/add', helpers.isLogIn, async (req, res, next) => {
     const add = "add"
     res.render('users/form', { add, tab, pesanKesalahan: req.flash('pesanKesalahan') })
@@ -174,31 +174,35 @@ module.exports = (db) => {
 
   });
 
-// END OF ROUTE /USER/ADD
+  // END OF ROUTE /USER/ADD
 
-//DELETE 
-router.get('/delete/:userid', helpers.isLogIn, async (req, res, next) => {
-  
-  const delUser=req.params.userid
+  //DELETE 
+  router.get('/delete/:userid', helpers.isLogIn, async (req, res, next) => {
 
-  try {
-    const setIssueNull = 'UPDATE issues SET author = NULL, assignee=NULL WHERE author = $1 OR assignee =$2 '
-    await db.query(setIssueNull, [delUser, delUser])
+    const delUser = req.params.userid
 
-    const delMember = 'DELETE FROM members where userid=$1'
-    await db.query(delMember, [delUser])
+    try {
 
-    const delDataUsers = 'DELETE FROM users WHERE userid=$1'
-    await db.query(delDataUsers, [delUser])
+      const sqlDelAuthorActivity = `DELETE FROM activity WHERE author =$1`
+      await db.query(sqlDelAuthorActivity, [delUser])
 
-    res.redirect('/users')
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({ error: true, message: error })
-  }
-});
+      const setIssueNull = 'UPDATE issues SET author = NULL, assignee=NULL WHERE author = $1 OR assignee =$2 '
+      await db.query(setIssueNull, [delUser, delUser])
 
-//START OF ROUTE USER/EDIT/1
+      const delMember = 'DELETE FROM members where userid=$1'
+      await db.query(delMember, [delUser])
+
+      const delDataUsers = 'DELETE FROM users WHERE userid=$1'
+      await db.query(delDataUsers, [delUser])
+
+      res.redirect('/users')
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ error: true, message: error })
+    }
+  });
+
+  //START OF ROUTE USER/EDIT/1
   router.get('/edit/:userid', helpers.isLogIn, async (req, res, next) => {
 
     const userid = req.params.userid
