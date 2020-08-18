@@ -8,4 +8,4 @@ Stack technologies :
 - NPM (others package)
 - Bootstrap 4.0 (View)
 
-check it out :(abdlazis-pms.herokuapp.com)
+check it out :[abdlazis-pms.herokuapp.com]
