@@ -14,6 +14,8 @@ module.exports = (db) => {
     const email = req.session.user.email
     const userid = req.session.user.userid
 
+    const status = req.session.user.status
+
     const result =await db.query('SELECT role,worktype as type FROM users WHERE userid=$1',[userid])
     const role = result.rows[0].role
     const type = result.rows[0].type
@@ -23,7 +25,8 @@ module.exports = (db) => {
       role,
       type,
       pesanKesalahan: req.flash('pesanKesalahan'),
-      tab
+      tab,
+      status
     })
 
   });

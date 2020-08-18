@@ -33,7 +33,7 @@
         <li class="nav-item <%=tab=='profile' ? 'active' : ''%>" >
           <a class="nav-link" href="/profile">Profile</a>
         </li>
-        <li class="nav-item <%=tab=='users' ? 'active' : ''%>" >
+        <li class="nav-item <%=tab=='users' ? 'active' : ''%>" <%=status =="admin" ? " " : "hidden" %> >
           <a class="nav-link" href="/users">user</a>
         </li>
   
