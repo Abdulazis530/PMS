@@ -570,7 +570,9 @@ main {
 }
 
 .checkboxIssue {
-  margin-left: 12%
+  margin-left: 12%;
+  font-size:0.8rem
+  
 }
 
 .option-col-issue {

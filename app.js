@@ -17,6 +17,8 @@ const pool = new Pool({
   port: 5432,
 })
 
+
+
 const indexRouter = require('./routes/index')(pool);
 var profileRouter = require('./routes/profile')(pool);
 const usersRouter = require('./routes/users')(pool);
