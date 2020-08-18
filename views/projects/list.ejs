@@ -123,7 +123,7 @@
 
                   <td>
                     <a href="projects/edit/<%=projectid%>" name='button-edit' value='ok' class="btn-edit btn btn-success btn-sm">Edit</a>
-                    <a href="projects/delete/<%=projectid%>" name='button-edit' value='ok' class="btn-delete btn btn-danger btn-sm" <%=status==="admin" ?" " : "hidden" %> >Delete</a>
+                    <a href="projects/delete/<%=projectid%>" name='button-edit' value='ok' class="btn-delete btn btn-danger btn-sm" <%=status.toLowerCase()==="admin" ?" " : "hidden" %> >Delete</a>
                   
                   </td>
                 </tr>

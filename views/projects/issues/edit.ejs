@@ -206,7 +206,6 @@
                                 <option value="<%=member.userid %>"> <%= member.assignee%> </option>
                                 <%}%>
                                <% }) %>
-
                             </select>
                         </div>
                     </div>
@@ -270,9 +269,6 @@
                                     (<%=parentTask.tracker %>)
                                 </option>
                                 <% }) %>
-
-
-
                             </select>
                         </div>
                     </div>
@@ -304,10 +300,22 @@
                         <label class="col-sm-2 col-form-label">
                             Author
                         </label>
+
+                      <%  if(author.author.length!=0){ %>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="targetVersion" value="<%=author.author %>"
+                            <input type="text" class="form-control" name="targetVersion" value="<%= author.author %>"
                                 disabled>
                         </div>
+                   <% }else{ %>
+                        <div class="form-group col-sm-8 edit-input-issue">
+                            <select class="form-control edit-width" name="author" required>
+                                <option selected value="">Choose author </option>
+                                <%  members.forEach(member=>{ %>
+                                <option value="<%=member.userid %>"> <%= member.assignee%> </option>
+                               <% }) %>
+                            </select>
+                        </div>
+                    <% } %>
                     </div>
 
                     <div class="form-group row">

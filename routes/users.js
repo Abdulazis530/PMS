@@ -20,8 +20,8 @@ module.exports = (db) => {
 
   // START ROUTE USER
   router.get('/', helpers.isLogIn, async (req, res, next) => {
+    const status = req.session.user.status
 
-    const privilege = req.session.user.status
     const limit = 5
     const {
       idUser,
@@ -73,7 +73,7 @@ module.exports = (db) => {
             data: allUser,
             nameOfPage: page,
             optionCheckBox,
-            privilege
+            status
           })
 
         } catch (error) {
@@ -105,7 +105,7 @@ module.exports = (db) => {
           data: allUser,
           nameOfPage: page,
           optionCheckBox,
-          privilege
+          status
         })
 
       } catch (error) {
@@ -134,8 +134,9 @@ module.exports = (db) => {
 
   //START /USER/ADD
   router.get('/add', helpers.isLogIn, async (req, res, next) => {
+    const status = req.session.user.status
     const add = "add"
-    res.render('users/form', { add, tab, pesanKesalahan: req.flash('pesanKesalahan') })
+    res.render('users/form', { add,status, tab, pesanKesalahan: req.flash('pesanKesalahan') })
   });
 
   router.post('/add', helpers.isLogIn, async (req, res, next) => {
@@ -186,8 +187,12 @@ module.exports = (db) => {
       const sqlDelAuthorActivity = `DELETE FROM activity WHERE author =$1`
       await db.query(sqlDelAuthorActivity, [delUser])
 
-      const setIssueNull = 'UPDATE issues SET author = NULL, assignee=NULL WHERE author = $1 OR assignee =$2 '
-      await db.query(setIssueNull, [delUser, delUser])
+      const setAuthorIssueNull = 'UPDATE issues SET author = NULL WHERE author = $1 '
+      await db.query(setAuthorIssueNull, [delUser])
+
+      const setAssigneeIssueNull = 'UPDATE issues SET assignee = NULL WHERE assignee = $1 '
+      await db.query(setAssigneeIssueNull, [delUser])
+
 
       const delMember = 'DELETE FROM members where userid=$1'
       await db.query(delMember, [delUser])
@@ -204,7 +209,7 @@ module.exports = (db) => {
 
   //START OF ROUTE USER/EDIT/1
   router.get('/edit/:userid', helpers.isLogIn, async (req, res, next) => {
-
+    const status = req.session.user.status
     const userid = req.params.userid
     const href = `/users/edit/${userid}`
 
@@ -213,7 +218,7 @@ module.exports = (db) => {
       const getUserInfo = await db.query(sqlGetUserInfo, [userid])
       const userInfo = getUserInfo.rows[0]
 
-      res.render('users/form', { data: userInfo, tab, pesanKesalahan: req.flash('pesanKesalahan'), href })
+      res.render('users/form', { data: userInfo, tab,status, pesanKesalahan: req.flash('pesanKesalahan'), href })
 
     } catch (error) {
       console.log(error)

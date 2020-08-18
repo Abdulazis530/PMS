@@ -872,13 +872,27 @@ module.exports = (db) => {
             // currentAssigne
             const sqlCurrentAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) as assignee,users.userid FROM users JOIN issues ON users.userid =issues.assignee WHERE issueid=$1`
             const getCurrentAssignee = await db.query(sqlCurrentAssignee, [issueid])
-            const currentAssigne = getCurrentAssignee.rows[0]
+            let currentAssigne = getCurrentAssignee.rows[0]
+            if (typeof currentAssigne === "undefined") {
+                currentAssigne = {
+                    assignee: "Select User",
+                    userid: ""
 
-            //author
+                }
+            }
+
+            //author    
             const sqlGetAuthor = "SELECT CONCAT(users.firstname, ' ', users.lastname) as author, users.userid FROM users JOIN issues ON users.userid=issues.author WHERE issueid=$1"
             const getAuthor = await db.query(sqlGetAuthor, [issueid])
-            const author = getAuthor.rows[0]
+            let author = getAuthor.rows[0]
+            if (typeof author === "undefined") {
+                author = {
+                    author: "",
+                    userid: ""
 
+                }
+            }
+            console.log(author)
             //getParentask
             const sqlParentTasks = `SELECT issueid as parenttask, subject,tracker FROM issues WHERE projectid = $1`
             const getParentTasks = await db.query(sqlParentTasks, [url])
@@ -919,9 +933,16 @@ module.exports = (db) => {
             let values = [titleActivity, descActivity, user, Number(projectid), previousDone, Number(done)]
             let sqltUpdateIssue
 
+            //handling if user deleted from database and author become null,this purpose is to added new author into list
+            let addAuthor = `UPDATE issues SET author = $1 WHERE issueid =$2`
+
+
             if (req.files) {
                 const file = req.files.inputFile
                 const fileName = file.name.toLowerCase().replace("", Date.now()).split(' ').join('-')
+                if (req.body.author) {
+                    await db.query(addAuthor, [req.body.author, issueid])
+                }
                 if (status == "closed") {
                     sqltUpdateIssue = "UPDATE issues SET updateddate = NOW(),closeddate= NOW(),tracker=$1, subject =$2, description=$3, status=$4, priority=$5, duedate=$6,done=$7,parenttask =$8, spenttime =$9, targetversion =$10,files=$11 WHERE issueid= $12"
                 } else {
@@ -947,7 +968,12 @@ module.exports = (db) => {
                 await db.query(sqltUpdateIssue, valQuery)
                 await file.mv(path.join(__dirname, "..", "public", "upload", fileName))
 
+
+
             } else {
+                if (req.body.author) {
+                    await db.query(addAuthor, [req.body.author, issueid])
+                }
                 if (status == "closed") {
                     sqltUpdateIssue = "UPDATE issues SET updateddate = NOW(),closeddate= NOW(),tracker=$1, subject =$2, description=$3, status=$4, priority=$5, duedate=$6,done=$7,parenttask =$8, spenttime =$9, targetversion =$10 WHERE issueid= $11"
                 } else {
