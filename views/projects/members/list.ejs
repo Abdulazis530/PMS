@@ -52,31 +52,34 @@
                 <div class="card-body card-member" style="font-size: 0.9rem;">
                   <form class="form-filter" method="GET">
                     <!-- id -->
+                    <%const{searchMemberId,searchMemberName,searchPosition,cbSMemberId,cbSMemberName,cbSMemberPosition}=takeValueSearch %>
+
+       
                     <div class="form-group row">
                       <label for="inputIdUsers" class="col-sm-2 col-form-label"><input type="checkbox"
-                          name="checkboxIdUsers" class="form-check-input" />ID</label>
+                          name="checkboxIdUsers" class="form-check-input" <%= cbSMemberId ? cbSMemberId :'' %> />ID</label>
                       <div class="col-sm-8">
-                        <input type="text" id="inputIdUsers" name="inputIdUsers" class="form-control" placeholder="ID">
+                        <input type="text" id="inputIdUsers" name="inputIdUsers" class="form-control" placeholder="ID" value="<%= searchMemberId ? searchMemberId :'' %>"" >
                       </div>
                     </div>
 
                     <!-- name -->
                     <div class="form-group row">
                       <label for="inputNameUsers" class="col-sm-2 col-form-label"><input type="checkbox"
-                          name="checkboxNameUsers" class="form-check-input" />Name</label>
+                          name="checkboxNameUsers" class="form-check-input" <%= cbSMemberName ? cbSMemberName :'' %> />Name</label>
                       <div class="col-sm-8">
                         <input type="text" id="inputNameUsers" name="inputNameUsers" class="form-control"
-                          placeholder="Name">
+                          placeholder="Name"  value="<%= searchMemberName ? searchMemberName :'' %>" >
                       </div>
                     </div>
 
                     <!-- Position -->
                     <div class="form-group row">
                       <label for="inputRoleUsers" class="col-sm-2 col-form-label"><input type="checkbox"
-                          name="checkboxRoleUsers" class="form-check-input" />Position</label>
+                          name="checkboxRoleUsers" class="form-check-input"  <%= cbSMemberPosition ? cbSMemberPosition :'' %> />Position</label>
                       <div class="col-sm-8">
                         <select name="inputRoleUsers" class="custom-select" id="inputRoleUsers">
-                          <option selected>Open this select menu</option>
+                          <option selected><%= searchPosition ? searchPosition :'Open this select menu'%></option>
 
                           <% selectRoles.forEach(selectRole=>{ %>
                           <option value="<%= selectRole.position %>"><%= selectRole.position %></option>

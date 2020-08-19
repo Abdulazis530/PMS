@@ -32,7 +32,7 @@
                   class="form-check-input" <%= cbSProjectName ? cbSProjectName :'' %> />Name</label>
               <div class="col-sm-8">
                 <input type="text" id="inputName" name="projectname" class="form-control"
-                  value="<%=searchProjectName!=='undefined'? searchProjectName :'' %>" placeholder="Name">
+                  value="<%=searchProjectName ? searchProjectName :'' %>" placeholder="Name">
               </div>
             </div>
 
@@ -42,7 +42,7 @@
                   class="form-check-input" cbSMember <%= cbSMember ? cbSMember :'' %> />Member</label>
               <div class="col-sm-8">
                 <select name="member" class="custom-select" id="inputMember">
-                  <option selected><%=typeof searchMember !=='undefined'? searchMember :'Open this select menu' %>
+                  <option selected><%=searchMember ? searchMember :'Open this select menu' %>
                   </option>
 
                   <% fullnames.forEach(obj=>{ %>

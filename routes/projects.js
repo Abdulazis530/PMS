@@ -35,7 +35,19 @@ let takeValueSearch = {
     searchMember: "",
     cbSprojectId: "",
     cbSProjectName: "",
-    cbSMember: ""
+    cbSMember: "",
+    searchMemberId: "",
+    searchMemberName: "",
+    searchPosition: "",
+    cbSMemberId: "",
+    cbSMemberName: "",
+    cbSMemberPosition: "",
+    searchIdIssues:"",
+    searchSubjectIssue:"",
+    searchInputTracker:"",
+    cbSissueId:"",
+    cbSsubjectIssue:"",
+    cbSinputTracker:""   
 }
 
 module.exports = (db) => {
@@ -51,83 +63,81 @@ module.exports = (db) => {
 
     //localhost:3000/projects
     router.get('/', helpers.isLogIn, async (req, res, next) => {
-        const {refresh, fiturBrowser, pageBrowse, checkboxId, checkboxName, checkboxMember, projectid, projectname, member, pageDisplay } = req.query
+        const { refresh, fiturBrowser, pageBrowse, checkboxId, checkboxName, checkboxMember, projectid, projectname, member, pageDisplay } = req.query
         const limit = 5
         const status = req.session.user.status
-            
+
         if (fiturBrowser === "yes" || pageBrowse) {
             let currentPage = pageBrowse || 1
             let page = "pageBrowse"
             if (fiturBrowser) condition = []
             if (checkboxId === "on" && projectid.length !== 0) {
-                
+
                 condition.push(`projects.projectid = ${Number(projectid)}`)
                 takeValueSearch.searchProjectId = projectid
-                takeValueSearch.cbSprojectId="checked"
-   
+                takeValueSearch.cbSprojectId = "checked"
+
             }
             if (checkboxName === "on" && projectname.length !== 0) {
-               
+
                 condition.push(`projects.name ILIKE '%${projectname}%'`)
                 takeValueSearch.searchProjectName = projectname
-                takeValueSearch.cbSProjectName="checked"
-                
+                takeValueSearch.cbSProjectName = "checked"
+
             }
             if (checkboxMember === "on" && member.length !== 0 && member !== 'Open this select menu') {
-               
+
                 condition.push(`CONCAT(users.firstname, ' ', users.lastname) ILIKE '%${member}%'`)
                 takeValueSearch.searchMember = member
-                takeValueSearch.cbSMember="checked"
+                takeValueSearch.cbSMember = "checked"
             }
 
-            if (condition.length == 0) {    
-                res.redirect('/projects')
-            } else {
+            if (condition.length == 0) {
+                return res.redirect('/projects')
+            }
 
-                const conditions = condition.join(" OR ")
+            const conditions = condition.join(" OR ")
 
-                try {
-                    
-                    let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE ${conditions}`
-                    let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', ' ORDER BY users.firstname, users.lastname) AS members FROM ((users JOIN members ON users.userid=members.userid) JOIN projects ON projects.projectid = members.projectid) WHERE ${conditions} GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+            try {
 
-                    const total = await db.query(queryTotal)
-                    const getData = await db.query(queryGetData)
-                    const data=getData.rows
-                    const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users")
-                    let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
+                let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE ${conditions}`
+                let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', ' ORDER BY users.firstname, users.lastname) AS members FROM ((users JOIN members ON users.userid=members.userid) JOIN projects ON projects.projectid = members.projectid) WHERE ${conditions} GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
 
-                    
-                    console.log(takeValueSearch)
-                    res.render('projects/list', {
-                        currentPage,
-                        totalPage,
-                        data,
-                        nameOfPage: page,
-                        fullnames: fullname.rows,
-                        optionCheckBox,
-                        tab,
-                        status,
-                        takeValueSearch
-                    })
+                const total = await db.query(queryTotal)
+                const getData = await db.query(queryGetData)
+                const data = getData.rows
+                const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users")
+                let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
 
-                } catch (error) {
-                    console.log(error)
-                    res.status(500).json({ error: true, message: error })
 
-                }
+                console.log(takeValueSearch)
+                res.render('projects/list', {
+                    currentPage,
+                    totalPage,
+                    data,
+                    nameOfPage: page,
+                    fullnames: fullname.rows,
+                    optionCheckBox,
+                    tab,
+                    status,
+                    takeValueSearch
+                })
+
+            } catch (error) {
+                console.log(error)
+                res.status(500).json({ error: true, message: error })
 
             }
 
         } else {
             try {
                 //erase browse history 
-                takeValueSearch={}
+                takeValueSearch = {}
                 let currentPage = pageDisplay || 1
                 let page = "pageDisplay"
                 let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid)`
                 let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', 'ORDER BY users.firstname,users.lastname) members FROM((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit};`
-                
+
                 const total = await db.query(queryTotal)
                 const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users")
                 const getData = await db.query(queryGetData)
@@ -143,8 +153,7 @@ module.exports = (db) => {
                     optionCheckBox,
                     tab,
                     takeValueSearch
-                    
-    
+
                 });
             } catch (error) {
                 console.log(error)
@@ -275,7 +284,7 @@ module.exports = (db) => {
         console.log(project)
         console.log(newProjectMembers)
         const id = Number(req.params.id)
-       
+
         if (project.length === 0 || typeof newProjectMembers === 'undefined') {
             req.flash('pesanKesalahan', 'Update tidak dapat dilakukan')
             res.redirect(req.params.id)
@@ -289,16 +298,16 @@ module.exports = (db) => {
                 await db.query(queryUpdate, [project, id])
                 await db.query(queryDelete, [id])
 
-                if(typeof newProjectMembers != 'object'){
+                if (typeof newProjectMembers != 'object') {
 
-                    await db.query(queryInsert, ['belum ditentukan',newProjectMembers, id])
+                    await db.query(queryInsert, ['belum ditentukan', newProjectMembers, id])
 
-                }else{
+                } else {
                     newProjectMembers.forEach(async (newMember) => {
                         await db.query(queryInsert, ['belum ditentukan', newMember, id])
                     })
                 }
-               
+
 
                 req.flash('pesanKeberhasilan', 'Project have been edited succesfully!')
 
@@ -435,64 +444,76 @@ module.exports = (db) => {
             inputNameUsers,
             inputRoleUsers,
             pageMember,
-            reset
         } = req.query
+
 
         const limit = 3
         const projectId = Number(req.params.projectid)
 
-        if(reset){  
-            res.redirect(`/projects/members/${projectId}`)
-
-        }
 
         if (fiturBrowserUsers === "yes" || pageBrowseUsers) {
+
             let currentPage = pageBrowseUsers || 1
             let page = "pageBrowseUsers"
 
-            if (checkboxIdUsers === "on" && inputIdUsers.length !== 0) conditionUser.push(`members.id = ${Number(inputIdUsers)}`)
-            if (checkboxNameUsers === "on" && inputNameUsers.length !== 0) conditionUser.push(`CONCAT(firstname, ' ', lastname) ILIKE '%${inputNameUsers}%'`)
-            if (checkboxRoleUsers === "on" && inputRoleUsers.length !== 0 && inputRoleUsers !== 'Open this select menu') conditionUser.push(`members.role= '${inputRoleUsers}'`)
+            if (fiturBrowserUsers) conditionUser = []
+            if (checkboxIdUsers === "on" && inputIdUsers.length !== 0) {
+                conditionUser.push(`members.id = ${Number(inputIdUsers)}`)
+                takeValueSearch.searchMemberId = inputIdUsers
+                takeValueSearch.cbSMemberId = "checked"
+
+            }
+            if (checkboxNameUsers === "on" && inputNameUsers.length !== 0) {
+                conditionUser.push(`CONCAT(firstname, ' ', lastname) ILIKE '%${inputNameUsers}%'`)
+                takeValueSearch.searchMemberName = inputNameUsers
+                takeValueSearch.cbSMemberName = "checked"
+            }
+            if (checkboxRoleUsers === "on" && inputRoleUsers.length !== 0 && inputRoleUsers !== 'Open this select menu') {
+                conditionUser.push(`members.role= '${inputRoleUsers}'`)
+                takeValueSearch.searchPosition = inputRoleUsers
+                takeValueSearch.cbSMemberPosition = "checked"
+            }
 
             if (conditionUser.length == 0) {
-                res.redirect(`/projects/members/${projectId}`)
-            } else {
-                const conditionsUser = conditionUser.join(" OR ")
-                conditionUser = []
-                try {
-                    let queryPosition = `SELECT DISTINCT role as Position FROM members `
-                    const numberOfusers = `SELECT COUNT(users.userid) FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 AND (${conditionsUser})`
-                    const getNumberOfUsers = await db.query(numberOfusers, [projectId])
-                    const totalData = getNumberOfUsers.rows[0].count
-                    const totalPage = Math.ceil(Number(totalData) / limit)
-
-                    const members = `SELECT members.id, CONCAT(firstname, ' ', lastname) AS fullname, members.role AS position FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 AND (${conditionsUser})  ORDER BY members.id LIMIT ${limit} OFFSET ${currentPage * limit - limit}`
-                    const getMembers = await db.query(members, [projectId])
-                    const data = getMembers.rows
-
-                    const optionRole = await db.query(queryPosition)
-                    const selectRoles = optionRole.rows
-
-
-                    res.render('projects/members/list', {
-                        url: projectId,
-                        data,
-                        currentPage,
-                        totalPage,
-                        nameOfPage: page,
-                        selectRoles,
-                        optionCheckBox,
-                        tab,
-                        status
-                    })
-
-                } catch (error) {
-                    console.log(error)
-                    res.status(500).json({ error: true, message: error })
-                }
+                return res.redirect(`/projects/members/${projectId}`)
             }
-        } else {
 
+            const conditionsUser = conditionUser.join(" OR ")
+
+            try {
+                let queryPosition = `SELECT DISTINCT role as Position FROM members `
+                const numberOfusers = `SELECT COUNT(users.userid) FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 AND (${conditionsUser})`
+                const getNumberOfUsers = await db.query(numberOfusers, [projectId])
+                const totalData = getNumberOfUsers.rows[0].count
+                const totalPage = Math.ceil(Number(totalData) / limit)
+
+                const members = `SELECT members.id, CONCAT(firstname, ' ', lastname) AS fullname, members.role AS position FROM ((projects JOIN members ON projects.projectid = members.projectid)JOIN users ON users.userid = members.userid) WHERE members.projectid=$1 AND (${conditionsUser})  ORDER BY members.id LIMIT ${limit} OFFSET ${currentPage * limit - limit}`
+                const getMembers = await db.query(members, [projectId])
+                const data = getMembers.rows
+
+                const optionRole = await db.query(queryPosition)
+                const selectRoles = optionRole.rows
+
+                res.render('projects/members/list', {
+                    url: projectId,
+                    data,
+                    currentPage,
+                    totalPage,
+                    nameOfPage: page,
+                    selectRoles,
+                    optionCheckBox,
+                    tab,
+                    status,
+                    takeValueSearch
+                })
+
+            } catch (error) {
+                console.log(error)
+                res.status(500).json({ error: true, message: error })
+            }
+
+        } else {
+            takeValueSearch = {}
             let currentPage = pageMember || 1
             let page = "pageMember"
             try {
@@ -518,7 +539,8 @@ module.exports = (db) => {
                     selectRoles,
                     optionCheckBox,
                     tab,
-                    status
+                    status,
+                    takeValueSearch
                 })
             } catch (error) {
                 console.log(error)
@@ -598,7 +620,7 @@ module.exports = (db) => {
         const inputRole = req.body.inputRoleMembers
 
         if (idUser == NaN || inputRole == 'Open this select menu') {
-            res.redirect('add')
+            return res.redirect('add')
         }
 
         try {
@@ -684,60 +706,73 @@ module.exports = (db) => {
             let currentPage = pageBrowseIssue || 1
             let page = "pageBrowseIssue"
 
-
-            if (checkboxIdIssues === "on" && inputIdIssues.length !== 0) conditionIssues.push(`issues.issueid = ${Number(inputIdIssues)}`)
-            if (checkboxSubjectIssues === "on" && inputSubjectIssue.length !== 0) conditionIssues.push(`issues.subject ILIKE '%${inputSubjectIssue}%'`)
-            if (checkboxTracker === "on" && inputTracker.length !== 0 && inputTracker !== 'Open this select menu') conditionIssues.push(`issues.tracker ILIKE '%${inputTracker}%'`)
+           
+            if(fiturBrowseIssue) conditionIssues = []
+            if (checkboxIdIssues === "on" && inputIdIssues.length !== 0) {
+                conditionIssues.push(`issues.issueid = ${Number(inputIdIssues)}`)
+                takeValueSearch.searchIdIssues = inputIdIssues
+                takeValueSearch.cbSissueId = "checked"
+            }
+            if (checkboxSubjectIssues === "on" && inputSubjectIssue.length !== 0){
+                conditionIssues.push(`issues.subject ILIKE '%${inputSubjectIssue}%'`)
+                takeValueSearch.searchSubjectIssue = inputSubjectIssue
+                takeValueSearch.cbSsubjectIssue = "checked"
+            } 
+            if (checkboxTracker === "on" && inputTracker.length !== 0 && inputTracker !== 'Open this select menu') {
+                conditionIssues.push(`issues.tracker ILIKE '%${inputTracker}%'`)
+                takeValueSearch.searchInputTracker = inputTracker
+                takeValueSearch.cbSinputTracker = "checked"
+    
+            }
 
             if (conditionIssues.length == 0) {
-                res.redirect(`/projects/issues/${url}`)
+                return res.redirect(`/projects/issues/${url}`)
             }
-            else {
 
-                const conditions = conditionIssues.join(" OR ")
-                conditionIssues = []
-                try {
-                    const issuesQuery = `SELECT issueid,projectid,tracker,subject,description,status,priority,startdate,duedate,estimatedtime,done,files,spenttime,targetversion,crateddate,updateddate,closeddate,parenttask FROM issues WHERE projectid=$1 AND (${conditions}) ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit} `
-                    const getIssues = await db.query(issuesQuery, [url])
-                    const issues = getIssues.rows
+            const conditions = conditionIssues.join(" OR ")
+            
+            try {
+                const issuesQuery = `SELECT issueid,projectid,tracker,subject,description,status,priority,startdate,duedate,estimatedtime,done,files,spenttime,targetversion,crateddate,updateddate,closeddate,parenttask FROM issues WHERE projectid=$1 AND (${conditions}) ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit} `
+                const getIssues = await db.query(issuesQuery, [url])
+                const issues = getIssues.rows
 
 
-                    const queryTotal = `SELECT COUNT(*) FROM issues WHERE projectid=$1 AND (${conditions})`
-                    const total = await db.query(queryTotal, [url])
-                    const totalPage = Math.ceil(Number(total.rows[0].count) / limit)
+                const queryTotal = `SELECT COUNT(*) FROM issues WHERE projectid=$1 AND (${conditions})`
+                const total = await db.query(queryTotal, [url])
+                const totalPage = Math.ceil(Number(total.rows[0].count) / limit)
 
-                    issues.forEach((issue) => {
-                        let startDate = moment(issue.startdate).format('YYYY-MM-DD')
-                        let dueDate = moment(issue.duedate).format('YYYY-MM-DD')
-                        let createdDate = moment(issue.crateddate).format('YYYY-MM-DD')
+                issues.forEach((issue) => {
+                    let startDate = moment(issue.startdate).format('YYYY-MM-DD')
+                    let dueDate = moment(issue.duedate).format('YYYY-MM-DD')
+                    let createdDate = moment(issue.crateddate).format('YYYY-MM-DD')
 
-                        let updateDate = moment(issue.updateddate).format('YYYY-MM-DD')
-                        let closeDate = moment(issue.closeddate).format('YYYY-MM-DD')
+                    let updateDate = moment(issue.updateddate).format('YYYY-MM-DD')
+                    let closeDate = moment(issue.closeddate).format('YYYY-MM-DD')
 
-                        issue.startdate = startDate
-                        issue.duedate = dueDate
-                        issue.crateddate = createdDate
-                        issue.updateddate = updateDate
-                        issue.closeddate = closeDate
+                    issue.startdate = startDate
+                    issue.duedate = dueDate
+                    issue.crateddate = createdDate
+                    issue.updateddate = updateDate
+                    issue.closeddate = closeDate
 
-                    })
-                    res.render('projects/issues/list', {
-                        url,
-                        currentPage,
-                        totalPage,
-                        data: issues,
-                        nameOfPage: page,
-                        optionCheckBox,
-                        tab,
-                        status
-                    })
-                }
-                catch (error) {
-                    console.log(error)
-                    res.status(500).json({ error: true, message: error })
-                }
-
+                })
+                res.render('projects/issues/list', {
+                    url,
+                    currentPage,
+                    totalPage,
+                    data: issues,
+                    nameOfPage: page,
+                    optionCheckBox,
+                    tab,
+                    status
+                })
             }
+            catch (error) {
+                console.log(error)
+                res.status(500).json({ error: true, message: error })
+            }
+
+
 
         } else {
 
@@ -806,6 +841,7 @@ module.exports = (db) => {
             checkUpdateDateIssue,
             checkClosedIssue,
             checkFileIssue } = req.body
+
         const projectId = req.params.projectid
 
         if (option) {
@@ -975,6 +1011,7 @@ module.exports = (db) => {
     // localhost:3000/projects/issues/1/edit/2 method:post
     router.post('/issues/:projectid/edit/:issueid', helpers.isLogIn, async (req, res, next) => {
 
+     
         const { tracker, subject, description, status, priority, dueDate, done, parentTask, spentTime, targetVersion, previousDone, previousSpent } = req.body
         const issueid = req.params.issueid
         const titleActivity = `${subject} #${issueid} (${tracker}) -[${status}]`
