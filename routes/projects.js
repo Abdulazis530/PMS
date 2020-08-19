@@ -29,6 +29,14 @@ let optionCheckBox = {
     checkStartDateIssue: true
 
 }
+let takeValueSearch = {
+    searchProjectId: "",
+    searchProjectName: "",
+    searchMember: "",
+    cbSprojectId:"",
+    cbSProjectName:"",
+    cbSMember:""
+}
 
 module.exports = (db) => {
 
@@ -51,9 +59,26 @@ module.exports = (db) => {
             let currentPage = pageBrowse || 1
             let page = "pageBrowse"
             if (fiturBrowser) condition = []
-            if (checkboxId === "on" && projectid.length !== 0) condition.push(`projects.projectid = ${Number(projectid)}`)
-            if (checkboxName === "on" && projectname.length !== 0) condition.push(`projects.name ILIKE '%${projectname}%'`)
-            if (checkboxMember === "on" && member.length !== 0 && member !== 'Open this select menu') condition.push(`CONCAT(users.firstname, ' ', users.lastname) ILIKE '%${member}%'`)
+            if (checkboxId === "on" && projectid.length !== 0) {
+                
+                condition.push(`projects.projectid = ${Number(projectid)}`)
+                takeValueSearch.searchProjectId = projectid
+                takeValueSearch.cbSprojectId="checked"
+   
+            }
+            if (checkboxName === "on" && projectname.length !== 0) {
+               
+                condition.push(`projects.name ILIKE '%${projectname}%'`)
+                takeValueSearch.searchProjectName = projectname
+                takeValueSearch.cbSProjectName="checked"
+                
+            }
+            if (checkboxMember === "on" && member.length !== 0 && member !== 'Open this select menu') {
+               
+                condition.push(`CONCAT(users.firstname, ' ', users.lastname) ILIKE '%${member}%'`)
+                takeValueSearch.searchMember = member
+                takeValueSearch.cbSMember="checked"
+            }
 
             if (condition.length == 0) {
                 res.redirect('/projects')
@@ -62,22 +87,28 @@ module.exports = (db) => {
                 const conditions = condition.join(" OR ")
 
                 try {
+                    
                     let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE ${conditions}`
                     let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', ' ORDER BY users.firstname, users.lastname) AS members FROM ((users JOIN members ON users.userid=members.userid) JOIN projects ON projects.projectid = members.projectid) WHERE ${conditions} GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
 
                     const total = await db.query(queryTotal)
                     const getData = await db.query(queryGetData)
+                    const data=getData.rows
                     const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users")
                     let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
+
+                    
+                    console.log(takeValueSearch)
                     res.render('projects/list', {
                         currentPage,
                         totalPage,
-                        data: getData.rows,
+                        data,
                         nameOfPage: page,
                         fullnames: fullname.rows,
                         optionCheckBox,
                         tab,
-                        status
+                        status,
+                        takeValueSearch
                     })
 
                 } catch (error) {
@@ -90,11 +121,13 @@ module.exports = (db) => {
 
         } else {
             try {
+                //erase browse history 
+                takeValueSearch={}
                 let currentPage = pageDisplay || 1
                 let page = "pageDisplay"
                 let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid)`
                 let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', 'ORDER BY users.firstname,users.lastname) members FROM((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit};`
-
+                
                 const total = await db.query(queryTotal)
                 const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users")
                 const getData = await db.query(queryGetData)
@@ -108,7 +141,10 @@ module.exports = (db) => {
                     nameOfPage: page,
                     fullnames: fullname.rows,
                     optionCheckBox,
-                    tab
+                    tab,
+                    takeValueSearch
+                    
+    
                 });
             } catch (error) {
                 console.log(error)
@@ -136,7 +172,7 @@ module.exports = (db) => {
         try {
             const queryGetusers = "SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users;"
             const getUsers = await db.query(queryGetusers)
-            const users = result.rows
+            const users = getUsers.rows
             res.render('projects/form', {
                 data: users,
                 pesanKesalahan: req.flash('pesanKesalahan'),
