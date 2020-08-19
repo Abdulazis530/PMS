@@ -33,9 +33,9 @@ let takeValueSearch = {
     searchProjectId: "",
     searchProjectName: "",
     searchMember: "",
-    cbSprojectId:"",
-    cbSProjectName:"",
-    cbSMember:""
+    cbSprojectId: "",
+    cbSProjectName: "",
+    cbSMember: ""
 }
 
 module.exports = (db) => {
@@ -51,10 +51,10 @@ module.exports = (db) => {
 
     //localhost:3000/projects
     router.get('/', helpers.isLogIn, async (req, res, next) => {
-        const { fiturBrowser, pageBrowse, checkboxId, checkboxName, checkboxMember, projectid, projectname, member, pageDisplay } = req.query
+        const {refresh, fiturBrowser, pageBrowse, checkboxId, checkboxName, checkboxMember, projectid, projectname, member, pageDisplay } = req.query
         const limit = 5
         const status = req.session.user.status
-
+            
         if (fiturBrowser === "yes" || pageBrowse) {
             let currentPage = pageBrowse || 1
             let page = "pageBrowse"
@@ -80,7 +80,7 @@ module.exports = (db) => {
                 takeValueSearch.cbSMember="checked"
             }
 
-            if (condition.length == 0) {
+            if (condition.length == 0) {    
                 res.redirect('/projects')
             } else {
 
@@ -272,7 +272,10 @@ module.exports = (db) => {
     router.post('/edit/:id', helpers.isLogIn, async (req, res, next) => {
         const project = req.body.project
         const newProjectMembers = req.body.cb
+        console.log(project)
+        console.log(newProjectMembers)
         const id = Number(req.params.id)
+       
         if (project.length === 0 || typeof newProjectMembers === 'undefined') {
             req.flash('pesanKesalahan', 'Update tidak dapat dilakukan')
             res.redirect(req.params.id)
@@ -285,9 +288,18 @@ module.exports = (db) => {
 
                 await db.query(queryUpdate, [project, id])
                 await db.query(queryDelete, [id])
-                newProjectMembers.forEach(async (newMember) => {
-                    await db.query(queryInsert, ['belum ditentukan', newMember, id])
-                })
+
+                if(typeof newProjectMembers != 'object'){
+
+                    await db.query(queryInsert, ['belum ditentukan',newProjectMembers, id])
+
+                }else{
+                    newProjectMembers.forEach(async (newMember) => {
+                        await db.query(queryInsert, ['belum ditentukan', newMember, id])
+                    })
+                }
+               
+
                 req.flash('pesanKeberhasilan', 'Project have been edited succesfully!')
 
                 res.redirect(id)
@@ -422,11 +434,17 @@ module.exports = (db) => {
             inputIdUsers,
             inputNameUsers,
             inputRoleUsers,
-            pageMember
+            pageMember,
+            reset
         } = req.query
 
         const limit = 3
         const projectId = Number(req.params.projectid)
+
+        if(reset){  
+            res.redirect(`/projects/members/${projectId}`)
+
+        }
 
         if (fiturBrowserUsers === "yes" || pageBrowseUsers) {
             let currentPage = pageBrowseUsers || 1

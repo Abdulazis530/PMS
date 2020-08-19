@@ -8,7 +8,7 @@
     <div class="container container-alertsc">
         <div class="alert-bad alert-good alert alert-danger" role="alert">
             <a class="btn-bad btn-bad" href="/projects/<%= typeof projectName !='undefined' ? page : 'add' %>">X</a>
-            <h4 class="alert-heading">Something went wrong!</h4>
+            <h4 class="alert-heading">Input tidak boleh kosong!</h4>
             <%=pesanKesalahan %>
         </div>
     </div>
@@ -36,8 +36,8 @@
                         <div class="form-group row">
                             <label for="newProject" class="col-sm-2 col-form-label col-form-label-lg">Name</label>
                             <div class="col-sm-8 ">
-                                <input type="text" id="newProject" class="form-control form-control-lg" name="project"
-                                    placeholder=" <%= typeof members !='undefined' ? projectName :'Project Name'%>">
+                                <input type="text" id="newProject" class="form-control form-control-lg" name="project" value="<%= typeof members !='undefined' ? projectName :''%>"
+                                    placeholder="Project Name">
                             </div>
                         </div>
 

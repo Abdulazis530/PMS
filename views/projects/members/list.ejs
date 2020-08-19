@@ -49,7 +49,7 @@
                 <div class="title-filter">
                   <h5>Filter</h5>
                 </div>
-                <div class="card-body card-member">
+                <div class="card-body card-member" style="font-size: 0.9rem;">
                   <form class="form-filter" method="GET">
                     <!-- id -->
                     <div class="form-group row">
@@ -90,6 +90,8 @@
                     <div class="form-group row container-search">
                       <button type="submit" name="fiturBrowserUsers" value="yes"
                         class=" btn btn-success btn-lg btn-search">Search</button>
+                      <a href="<%=url%>" style ="margin-left:5%" 
+                        class=" btn btn-primary btn-lg btn-search">reset</a>
                     </div>
 
                   </form>
@@ -165,7 +167,8 @@
                         <a href="<%=url%>/edit/<%=id%>" name='button-edit' value='ok'
                           class="btn-edit btn btn-success btn-sm">Edit</a>
                         <a href="<%=url%>/delete/<%=id%>" name='delete' value='ok'
-                          class="btn-delete btn btn-danger btn-sm">Delete</a>
+                          class="btn-delete btn btn-danger btn-sm"
+                          onclick="javascript: return confirm(`Are you sure delete this member`)">Delete</a>
                       </td>
                     </tr>
                     <%  }) %>

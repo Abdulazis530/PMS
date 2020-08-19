@@ -75,8 +75,12 @@
 
     <!-- button -->
     <div class="form-group row container-search">
+     
       <button type="submit" name="fiturBrowserUser" value="yes" class=" btn btn-success btn-lg btn-search">Search</button>
+      <a href="/users" style ="margin-left: 5%;" class=" btn btn-primary btn-lg btn-search">Reset</a>
+
     </div>
+    
   </form>
   </div>
 
@@ -166,7 +170,7 @@
                       class="btn btn-success btn-sm">Edit</a>
 
                       <a href="users/delete/<%=userid%>" name='button-edit' value='ok'
-                        class="btn btn btn-danger btn-sm">delete</a>
+                        class="btn btn btn-danger btn-sm"  onclick="javascript: return confirm(`Are you sure delete this user`)">delete</a>
                    
                   </td>
                 </tr>

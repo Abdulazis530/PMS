@@ -3,7 +3,7 @@
 
 <section id="filter">
 
-  <h1 class="title">PROJECTS  </h1>
+  <h1 class="title">PROJECTS </h1>
 
   <div class="container container-card">
     <div class="card card-filter mx-auto">
@@ -14,35 +14,36 @@
         <div class="card-body">
           <form class="form-filter" action="/projects" method="GET">
             <!-- id -->
-            
-        
-            <%const{cbSprojectId,cbSProjectName,cbSMember,searchProjectId,searchProjectMember,searchProjectName}=takeValueSearch %>
+
+
+            <%const{cbSprojectId,cbSProjectName,cbSMember,searchProjectId,searchMember,searchProjectName}=takeValueSearch %>
             <div class="form-group row">
-              <label for="inputId" class="col-sm-2 col-form-label"><input type="checkbox"  name="checkboxId"
+              <label for="inputId" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxId"
                   class="form-check-input" <%= cbSprojectId ? cbSprojectId :'' %> />ID</label>
               <div class="col-sm-8">
                 <input type="text" id="inpuId" name="projectid" class="form-control"
-                  value="<%= searchProjectId ? searchProjectId :'' %>"
-                  placeholder="ID">
+                  value="<%= searchProjectId ? searchProjectId :'' %>" placeholder="ID">
               </div>
             </div>
 
             <!-- name -->
             <div class="form-group row">
               <label for="inputName" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxName"
-                  class="form-check-input"  <%= cbSProjectName ? cbSProjectName :'' %> />Name</label>
+                  class="form-check-input" <%= cbSProjectName ? cbSProjectName :'' %> />Name</label>
               <div class="col-sm-8">
-                <input type="text" id="inputName" name="projectname" class="form-control" value="<%=searchProjectName!=='undefined'? searchProjectName :'' %>" placeholder="Name">
+                <input type="text" id="inputName" name="projectname" class="form-control"
+                  value="<%=searchProjectName!=='undefined'? searchProjectName :'' %>" placeholder="Name">
               </div>
             </div>
 
             <!-- member -->
             <div class="form-group row">
               <label for="inputMember" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxMember"
-                  class="form-check-input" cbSMember <%= cbSMember ? cbSMember :'' %>/>Member</label>
+                  class="form-check-input" cbSMember <%= cbSMember ? cbSMember :'' %> />Member</label>
               <div class="col-sm-8">
                 <select name="member" class="custom-select" id="inputMember">
-                  <option selected><%=typeof searchProjectMember !=='undefined'? searchProjectMember :'Open this select menu' %></option>
+                  <option selected><%=typeof searchMember !=='undefined'? searchMember :'Open this select menu' %>
+                  </option>
 
                   <% fullnames.forEach(obj=>{ %>
                   <option value="<%= obj.fullname %>"><%= obj.fullname %></option>
@@ -56,7 +57,10 @@
             <div class="form-group row container-search">
               <button type="submit" name="fiturBrowser" value="yes"
                 class=" btn btn-success btn-lg btn-search">Search</button>
+
+              <a href="/projects" style="margin-left:5%" class=" btn btn-primary btn-lg btn-search">Reset</a>
             </div>
+
 
           </form>
 
@@ -134,8 +138,8 @@
                   <a href="projects/edit/<%=projectid%>" name='button-edit' value='ok'
                     class="btn-edit btn btn-success btn-sm">Edit</a>
                   <a href="projects/delete/<%=projectid%>" name='button-edit' value='ok'
-                    class="btn-delete btn btn-danger btn-sm"
-                    <%=status.toLowerCase()==="admin" ?" " : "hidden" %>>Delete</a>
+                    class="btn-delete btn btn-danger btn-sm" <%=status.toLowerCase()==="admin" ?" " : "hidden" %>
+                    onclick="javascript: return confirm(`Are you sure delete this project`)">Delete</a>
 
                 </td>
               </tr>
