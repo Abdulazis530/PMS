@@ -55,30 +55,29 @@
                         <!-- id -->
                         <div class="form-group row">
                             <label for="inputIdIssues" class="col-sm-2 col-form-label"><input type="checkbox"
-                                    name="checkboxIdIssues" class="form-check-input" />ID</label>
+                                    name="checkboxIdIssues" class="form-check-input" <%= cbSissueId ? cbSissueId :'' %>/>ID</label>
                             <div class="col-sm-8">
-                                <input type="text" id="inputIdIssues" name="inputIdIssues" class="form-control"
-                                    placeholder="ID">
+                                <input type="text" id="inputIdIssues" name="inputIdIssues" class="form-control" placeholder="ID" value="<%= searchIdIssues ? searchIdIssues :'' %>"  >
                             </div>
                         </div>
 
                         <!-- name -->
                         <div class="form-group row">
                             <label for="inputSubjectIssue" class="col-sm-2 col-form-label"><input type="checkbox"
-                                    name="checkboxSubjectIssues" class="form-check-input" />Subject</label>
+                                    name="checkboxSubjectIssues" class="form-check-input" <%= cbSsubjectIssue ? cbSsubjectIssue :'' %> />Subject</label>
                             <div class="col-sm-8">
                                 <input type="text" id="inputSubjectIssue" name="inputSubjectIssue" class="form-control"
-                                    placeholder="Subject">
+                                    placeholder="Subject" value="<%= searchSubjectIssue ? searchSubjectIssue :'' %>" >
                             </div>
                         </div>
 
                         <!-- Position -->
                         <div class="form-group row">
                             <label for="inputTracker" class="col-sm-2 col-form-label"><input type="checkbox"
-                                    name="checkboxTracker" class="form-check-input" />Tracker</label>
+                                    name="checkboxTracker" class="form-check-input" <%= cbSinputTracker ? cbSinputTracker :'' %> />Tracker</label>
                             <div class="col-sm-8">
                                 <select name="inputTracker" class="custom-select" id="inputTracker">
-                                    <option selected>Open this select menu</option>
+                                    <option disabled > <%= searchInputTracker ? searchInputTracker :'Open this select menu' %></option>
                                     <option value="Bug">Bug</option>
                                     <option value="Feature">Feature</option>
                                     <option value="Support">Support</option>

@@ -764,7 +764,8 @@ module.exports = (db) => {
                     nameOfPage: page,
                     optionCheckBox,
                     tab,
-                    status
+                    status,
+                    takeValueSearch
                 })
             }
             catch (error) {
@@ -775,7 +776,7 @@ module.exports = (db) => {
 
 
         } else {
-
+            takeValueSearch={}
             try {
                 let currentPage = pageIssue || 1
                 let page = "pageIssue"
@@ -812,7 +813,8 @@ module.exports = (db) => {
                     nameOfPage: page,
                     optionCheckBox,
                     tab,
-                    status
+                    status,
+                    takeValueSearch
                 })
             } catch (error) {
                 console.log(error)

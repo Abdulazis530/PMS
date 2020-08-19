@@ -3,48 +3,54 @@
 <section id="filter">
   <h1 class="title">USERS</h1>
 
+  <% const{ searchIdAdUser, searchNameAdUser, searchEmailAdUser, searchPositionAdUser, searchTypejobAdUser, cbIdAdUser, cbNameAdUser, cbEmailAdUser, cbPositionAdUser, cbTypejobAdUser } =takeValueSearch %>
+
   <div class="container container-card">
     <div class="card card-filter mx-auto">
       <h5 class="card-header card-header-filter">
         <div class="title-filter">
           <h5>Filter</h5>
         </div>
-        
+
         <div class="card-body ">
           <form class="form-filter" method="GET">
             <!-- id -->
             <div class="form-group row">
               <label for="idUser" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxIdUser"
-                  class="form-check-input" />ID</label>
+                  <%= cbIdAdUser ? cbIdAdUser :'' %> class="form-check-input" />ID</label>
               <div class="col-sm-8">
-                <input type="text" id="idUser" name="idUser" class="form-control" placeholder="ID">
+                <input type="text" id="idUser" name="idUser" class="form-control"
+                  value="<%=searchIdAdUser ? searchIdAdUser :'' %>" placeholder="ID">
               </div>
             </div>
 
             <!-- name -->
             <div class="form-group row">
               <label for="nameUser" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxNameUser"
-                  class="form-check-input" />Name</label>
+                  class="form-check-input" <%= cbNameAdUser ? cbNameAdUser :'' %> />Name</label>
               <div class="col-sm-8">
-                <input type="text" id="nameUser" name="nameUser" class="form-control" placeholder="Name">
+                <input type="text" id="nameUser" name="nameUser" class="form-control"
+                  value="<%=searchNameAdUser ? searchNameAdUser :'' %>" placeholder="Name">
               </div>
             </div>
 
             <!-- email -->
             <div class="form-group row">
               <label for="email" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxEmail"
-                  class="form-check-input" />Email</label>
+                  class="form-check-input" <%= cbEmailAdUser ? cbEmailAdUser :'' %> />Email</label>
               <div class="col-sm-8">
-                <input type="email" id="email" name="email" class="form-control" placeholder="Email">
+                <input type="email" id="email" name="email" class="form-control"
+                  value="<%=searchEmailAdUser ? searchEmailAdUser :'' %>" placeholder="Email">
               </div>
             </div>
             <!-- position -->
             <div class="form-group row">
               <label for="position" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxPosition"
-                  class="form-check-input" />Position</label>
+                  class="form-check-input" <%= cbPositionAdUser ? cbPositionAdUser :'' %> />Position</label>
               <div class="col-sm-8">
                 <select name="position" class="custom-select" id="position">
-                  <option selected>Choose position</option>
+                  <option selected> <%=searchPositionAdUser ? searchPositionAdUser :'Choose position' %>
+                  </option>
                   <option value="Software Developer">Software Developer</option>
                   <option value="Manager">Manager</option>
                   <option value="Quality Assurance">Quality Assurance</option>
@@ -54,72 +60,79 @@
             <!-- typejob -->
             <div class="form-group row">
               <label for="typeJob" class="col-sm-2 col-form-label"><input type="checkbox" name="checkboxTypeJob"
-                  class="form-check-input" />Type job</label>
+                  class="form-check-input" <%= cbTypejobAdUser ? cbTypejobAdUser :'' %> />Type job</label>
               <div class="col-sm-10 radios">
                 <div class="form-check container-cbx">
-                  <input class="form-check-input cbx-add " type="radio" name="typeJob" value="Fulltime">
+                  <input class="form-check-input cbx-add " type="radio" name="typeJob" value="Fulltime" <%=searchTypejobAdUser ==='Fulltime' ? 'checked' :'' %>>
                   <label class="form-check-label label-add" for="gridCheck1">
                     Fulltime
                   </label>
                 </div>
 
                 <div class="form-check container-cbx">
-                  <input class="form-check-input cbx-add " type="radio" name="typeJob" value="Part-time">
+                  <input class="form-check-input cbx-add " type="radio" name="typeJob" value="Part-time"  <%=searchTypejobAdUser ==='Part-time' ? 'checked' :'' %> >
                   <label class="form-check-label label-add" for="gridCheck1">
                     Part-time
                   </label>
                 </div>
+              </div>
             </div>
-          </div>
-          
 
-    <!-- button -->
-    <div class="form-group row container-search">
-     
-      <button type="submit" name="fiturBrowserUser" value="yes" class=" btn btn-success btn-lg btn-search">Search</button>
-      <a href="/users" style ="margin-left: 5%;" class=" btn btn-primary btn-lg btn-search">Reset</a>
 
-    </div>
-    
-  </form>
-  </div>
+            <!-- button -->
+            <div class="form-group row container-search">
+
+              <button type="submit" name="fiturBrowserUser" value="yes"
+                class=" btn btn-success btn-lg btn-search">Search</button>
+              <a href="/users" style="margin-left: 5%;" class=" btn btn-primary btn-lg btn-search">Reset</a>
+
+            </div>
+
+          </form>
+        </div>
 
 </section>
 
 
-<section id="optional" >
-  <form  method="POST" >
+<section id="optional">
+  <form method="POST">
     <div class="container container-optional user-card">
       <div class="row">
         <div class="col-sm-12">
           <button class="btn btn-lg btn-success btn-title" type="button">Option</button>
         </div>
-        
+
         <br>
         <br>
         <% const{ checkboxIdUser, checkboxNameUser, checkboxEmail,checkboxPosition, checkboxTypeJob,checkboxStatus}=optionCheckBox %>
-    </div>
+      </div>
 
       <div class="row">
         <div class="col-sm-12">
-          <label class=" col-form-label"><input type="checkbox" name="checkboxId" <%= checkboxIdUser ? "checked" : " "%>/>ID</label>
+          <label class=" col-form-label"><input type="checkbox" name="checkboxId"
+              <%= checkboxIdUser ? "checked" : " "%> />ID</label>
         </div>
         <div class="col-sm-12">
-          <label class=" col-form-label"><input type="checkbox" name="checkboxName"<%= checkboxNameUser ? "checked" : " "%>/>Name</label>
+          <label class=" col-form-label"><input type="checkbox" name="checkboxName"
+              <%= checkboxNameUser ? "checked" : " "%> />Name</label>
         </div>
         <div class="col-sm-12">
-          <label class=" col-form-label"><input type="checkbox" name="checkboxEmail" <%= checkboxEmail ? "checked" : " "%> />Email</label>
+          <label class=" col-form-label"><input type="checkbox" name="checkboxEmail"
+              <%= checkboxEmail ? "checked" : " "%> />Email</label>
         </div>
         <div class="col-sm-12">
-          <label class=" col-form-label"><input type="checkbox" name="checkboxPosition" <%= checkboxPosition ? "checked" : " "%>/>Position</label>
+          <label class=" col-form-label"><input type="checkbox" name="checkboxPosition"
+              <%= checkboxPosition ? "checked" : " "%> />Position</label>
         </div>
         <div class="col-sm-12">
-          <label class=" col-form-label"><input type="checkbox" name="checkboxTypeJob" <%= checkboxTypeJob ? "checked" : " "%> />Type</label>
+          <label class=" col-form-label"><input type="checkbox" name="checkboxTypeJob"
+              <%= checkboxTypeJob ? "checked" : " "%> />Type</label>
         </div>
         <div class="col-sm-12">
-          <label class=" col-form-label"><input type="checkbox" name="checkboxStatus" <%= checkboxStatus ? "checked" : " "%> />Status</label>
+          <label class=" col-form-label"><input type="checkbox" name="checkboxStatus"
+              <%= checkboxStatus ? "checked" : " "%> />Status</label>
         </div>
-        
+
         <div class="col-sm-12">
           <button type="submit" name="optionUser" value="clicked"
             class="btn-apply btn btn-primary btn-optional">Apply</button>
@@ -131,7 +144,7 @@
 </section>
 
 
-<section id="table-pagi-user" >
+<section id="table-pagi-user">
 
   <div class="container">
     <div class="card card-tables mx-auto">
@@ -140,45 +153,44 @@
           <h5 class="pagi">LIST</h5>
         </div>
         <div class="card-body form-add">
-          
-         
-            <table class="table table-striped" style="font-size: 1rem;">
-              <thead>
-                <tr>
-                  <th scope="col" <%= checkboxIdUser ? " " : "hidden"%>>ID</th>
-                  <th scope="col" <%= checkboxNameUser ? " " : "hidden"%>>Name</th>
-                  <th scope="col" <%= checkboxEmail ? " " : "hidden"%>>Email</th>
-                  <th scope="col" <%= checkboxPosition ? " " : "hidden"%>>Position</th> 
-                  <th scope="col" <%= checkboxTypeJob ? " " : "hidden"%>>Type job</th>
-                  <th scope="col" <%= checkboxStatus ? " " : "hidden"%>>Status</th>
-                  <th scope="col">Action</th>
-                </tr>
-              </thead>
-              <tbody>
 
-                <%data.forEach(e=>{ %>
-                  <% const{userid,email,fullname,status,worktype,role}=e%>
-                <tr>
-                  <th scope="row" <%= checkboxIdUser ? " " : "hidden"%>> <%=userid%></th>
-                  <td <%= checkboxNameUser ? " " : "hidden"%>> <%=fullname%></td>
-                  <td <%= checkboxEmail ? " " : "hidden"%>> <%=email%></td>
-                  <td <%= checkboxPosition ? " " : "hidden"%>> <%=role%></td>
-                  <td <%= checkboxTypeJob ? " " : "hidden"%>> <%=worktype%></td>
-                  <td <%= checkboxStatus ? " " : "hidden"%>><%=status%></td>
-                  <td>
-                    <a href="users/edit/<%=userid%>" name='button-edit' value='ok'
-                      class="btn btn-success btn-sm">Edit</a>
 
-                      <a href="users/delete/<%=userid%>" name='button-edit' value='ok'
-                        class="btn btn btn-danger btn-sm"  onclick="javascript: return confirm(`Are you sure delete this user`)">delete</a>
-                   
-                  </td>
-                </tr>
+          <table class="table table-striped" style="font-size: 1rem;">
+            <thead>
+              <tr>
+                <th scope="col" <%= checkboxIdUser ? " " : "hidden"%>>ID</th>
+                <th scope="col" <%= checkboxNameUser ? " " : "hidden"%>>Name</th>
+                <th scope="col" <%= checkboxEmail ? " " : "hidden"%>>Email</th>
+                <th scope="col" <%= checkboxPosition ? " " : "hidden"%>>Position</th>
+                <th scope="col" <%= checkboxTypeJob ? " " : "hidden"%>>Type job</th>
+                <th scope="col" <%= checkboxStatus ? " " : "hidden"%>>Status</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
 
-                <%})%>
-              </tbody>
-            </table>
-      
+              <%data.forEach(e=>{ %>
+              <% const{userid,email,fullname,status,worktype,role}=e%>
+              <tr>
+                <th scope="row" <%= checkboxIdUser ? " " : "hidden"%>> <%=userid%></th>
+                <td <%= checkboxNameUser ? " " : "hidden"%>> <%=fullname%></td>
+                <td <%= checkboxEmail ? " " : "hidden"%>> <%=email%></td>
+                <td <%= checkboxPosition ? " " : "hidden"%>> <%=role%></td>
+                <td <%= checkboxTypeJob ? " " : "hidden"%>> <%=worktype%></td>
+                <td <%= checkboxStatus ? " " : "hidden"%>><%=status%></td>
+                <td>
+                  <a href="users/edit/<%=userid%>" name='button-edit' value='ok' class="btn btn-success btn-sm">Edit</a>
+
+                  <a href="users/delete/<%=userid%>" name='button-edit' value='ok' class="btn btn btn-danger btn-sm"
+                    onclick="javascript: return confirm(`Are you sure delete this user`)">delete</a>
+
+                </td>
+              </tr>
+
+              <%})%>
+            </tbody>
+          </table>
+
         </div>
     </div>
   </div>
@@ -206,13 +218,11 @@
 
           <%  if(currentPage == index){ %>
           <li class="page-item active">
-            <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
-              class="page-link "><%= index %></button>
+            <button type="submit" name="<%= nameOfPage %>" value="<%= index %>" class="page-link "><%= index %></button>
           </li>
           <% } else { %>
           <li class="page-item">
-            <button type="submit" name="<%= nameOfPage %>" value="<%= index %>"
-              class="page-link "><%= index %></button>
+            <button type="submit" name="<%= nameOfPage %>" value="<%= index %>" class="page-link "><%= index %></button>
           </li>
           <% } %>
 

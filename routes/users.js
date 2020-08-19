@@ -12,6 +12,19 @@ const optionCheckBox = {
   checkboxTypeJob: true,
   checkboxStatus: true
 }
+takeValueSearch = {
+  searchIdAdUser: "",
+  searchNameAdUser: "",
+  searchEmailAdUser: "",
+  searchPositionAdUser: "",
+  searchTypejobAdUser: "",
+  cbIdAdUser: "",
+  cbNameAdUser: "",
+  cbEmailAdUser: "",
+  cbPositionAdUser: "",
+  cbTypejobAdUser: "",
+
+}
 
 module.exports = (db) => {
   const tab = 'users'
@@ -42,16 +55,41 @@ module.exports = (db) => {
     if (fiturBrowserUser || userBrowse) {
       let currentPage = userBrowse || 1
       let page = "userBrowse"
-      if (fiturBrowserUser) conditionUser = []
-      if (checkboxIdUser && idUser.length !== 0) conditionUser.push(`userid = ${Number(idUser)}`)
-      if (checkboxNameUser && nameUser.length !== 0) conditionUser.push(`CONCAT(firstname, ' ', lastname) ILIKE '%${nameUser}%'`)
-      if (checkboxEmail && email.length !== 0) conditionUser.push(`email ILIKE '%${email}%'`)
-      if (checkboxPosition && position.length !== 0 && position !== 'Choose position') conditionUser.push(`role ILIKE '%${position}%'`)
-      if (checkboxTypeJob && typeJob) conditionUser.push(`worktype ILIKE '%${typeJob}%'`)
 
+      if (fiturBrowserUser) conditionUser = []
+
+      if (checkboxIdUser && idUser.length !== 0){
+        conditionUser.push(`userid = ${Number(idUser)}`)
+        takeValueSearch.searchIdAdUser=idUser
+        takeValueSearch.cbIdAdUser="checked"
+      } 
+      if (checkboxNameUser && nameUser.length !== 0){
+        conditionUser.push(`CONCAT(firstname, ' ', lastname) ILIKE '%${nameUser}%'`)
+        takeValueSearch.searchNameAdUser=nameUser
+        takeValueSearch.cbNameAdUser="checked"
+
+      } 
+      if (checkboxEmail && email.length !== 0){
+        conditionUser.push(`email ILIKE '%${email}%'`)
+        takeValueSearch.searchEmailAdUser=email
+        takeValueSearch.cbEmailAdUser="checked"
+       
+      }
+      if (checkboxPosition && position.length !== 0 && position !== 'Choose position'){
+        conditionUser.push(`role ILIKE '%${position}%'`)
+        takeValueSearch.searchPositionAdUser=position
+        takeValueSearch.cbPositionAdUser="checked"
+      
+      } 
+      if (checkboxTypeJob && typeJob){
+        conditionUser.push(`worktype ILIKE '%${typeJob}%'`)
+        takeValueSearch.searchTypejobAdUser=typeJob
+        takeValueSearch.cbTypejobAdUser="checked"
+       
+      } 
       if (conditionUser.length == 0) {
-        res.redirect('/users')
-      } else {
+        return res.redirect('/users')
+      } 
 
         const conditions = conditionUser.join(" OR ")
 
@@ -73,7 +111,8 @@ module.exports = (db) => {
             data: allUser,
             nameOfPage: page,
             optionCheckBox,
-            status
+            status,
+            takeValueSearch
           })
 
         } catch (error) {
@@ -81,9 +120,10 @@ module.exports = (db) => {
           res.status(500).json({ error: true, message: error })
 
         }
-      }
+      
 
     } else {
+      takeValueSearch={}
       try {
         let currentPage = pageUser || 1
         let page = "pageUser"
@@ -105,7 +145,8 @@ module.exports = (db) => {
           data: allUser,
           nameOfPage: page,
           optionCheckBox,
-          status
+          status,
+          takeValueSearch
         })
 
       } catch (error) {
@@ -136,7 +177,7 @@ module.exports = (db) => {
   router.get('/add', helpers.isLogIn, async (req, res, next) => {
     const status = req.session.user.status
     const add = "add"
-    res.render('users/form', { add,status, tab, pesanKesalahan: req.flash('pesanKesalahan') })
+    res.render('users/form', { add, status, tab, pesanKesalahan: req.flash('pesanKesalahan') })
   });
 
   router.post('/add', helpers.isLogIn, async (req, res, next) => {
@@ -218,7 +259,7 @@ module.exports = (db) => {
       const getUserInfo = await db.query(sqlGetUserInfo, [userid])
       const userInfo = getUserInfo.rows[0]
 
-      res.render('users/form', { data: userInfo, tab,status, pesanKesalahan: req.flash('pesanKesalahan'), href })
+      res.render('users/form', { data: userInfo, tab, status, pesanKesalahan: req.flash('pesanKesalahan'), href })
 
     } catch (error) {
       console.log(error)
