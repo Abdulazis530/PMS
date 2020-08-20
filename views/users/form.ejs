@@ -8,7 +8,7 @@
     <div class="container container-alertsc">
         <div class="alert-bad alert-good alert alert-danger" role="alert">
             <a class="btn-bad btn-bad" href= <%= typeof data==="undefined" ? "/users/add" : href   %> >X</a>
-            <h4 class="alert-heading">Something went wrong!</h4>
+            <h4 class="alert-heading">gagal!</h4>
             <%=pesanKesalahan %>
         </div>
     </div>
@@ -29,7 +29,7 @@
                         <label for="firstName" class="col-sm-3 col-form-label col-form-label-lg">First Name</label>
                         <div class="col-sm-8 ">
                             <input type="text" id="firstName" class="form-control form-control-lg" name="firstName"
-                                placeholder= <%=typeof data==="undefined" ? "First Name" : data.firstname %> >
+                            placeholder="First Name"  value= "<%=typeof data==="undefined" ? "" : data.firstname %>" placeholder="First name" >
                         </div>
                     </div>
 
@@ -37,8 +37,7 @@
                     <div class="form-group row">
                         <label for="secondName" class="col-sm-3 col-form-label ">Last Name</label>
                         <div class="col-sm-8 ">
-                            <input type="text" id="secondName" class="form-control form-control-lg" name="secondName"
-                                placeholder=<%=typeof data==="undefined" ? "Last Name" : data.lastname %>>
+                            <input type="text" id="secondName" class="form-control form-control-lg" name="secondName" placeholder="Last Name"  value="<%=typeof data==="undefined" ? "" : data.lastname %>" >
                         </div>
                     </div>
 
@@ -58,21 +57,20 @@
                         <label for="newPassword" class="col-sm-3 col-form-label">Password</label>
                         <div class="col-sm-8">
                             <input type="password" id="newPassword" name="newPassword"
-                                class="form-control form-control-lg" placeholder="Password">
+                                class="form-control form-control-lg" placeholder="Password" >
                         </div>
                     </div>
 
-                    <% if(typeof data!="undefined") {%>
-
+                
                         <div class="form-group row">
                             <label for="rePassword" class="col-sm-3 col-form-label">Retype Password</label>
                             <div class="col-sm-8">
                                 <input type="password" id="rePassword" name="rePassword"
-                                    class="form-control form-control-lg" placeholder="Retype Password">
+                                    class="form-control form-control-lg" placeholder="Retype Password" >
                             </div>
                         </div>
 
-                   <% }%>
+             
                     <!-- position -->
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label">Position</label>

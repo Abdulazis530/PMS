@@ -94,11 +94,11 @@ module.exports = (db) => {
         const conditions = conditionUser.join(" OR ")
 
         try {
-          const queryGetTotalRow = `SELECT COUNT(userid) FROM users WHERE ${conditions}`
+          const queryGetTotalRow = `SELECT COUNT(userid) FROM users WHERE isactive =true AND (${conditions})`
           const getTotalRow = await db.query(queryGetTotalRow)
           const totalRow = getTotalRow.rows[0].count
 
-          const queryGetAllUser = `SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname ,email,worktype,status,role FROM users WHERE ${conditions} ORDER BY userid Limit ${limit} OFFSET ${limit * currentPage - limit}`
+          const queryGetAllUser = `SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname ,email,worktype,status,role FROM users WHERE isactive =true AND (${conditions}) ORDER BY userid Limit ${limit} OFFSET ${limit * currentPage - limit}`
           const getAllUser = await db.query(queryGetAllUser)
           const allUser = getAllUser.rows
 
@@ -128,11 +128,11 @@ module.exports = (db) => {
         let currentPage = pageUser || 1
         let page = "pageUser"
 
-        const queryGetTotalRow = `SELECT COUNT(userid) FROM users`
+        const queryGetTotalRow = `SELECT COUNT(userid) FROM users WHERE isactive =true`
         const getTotalRow = await db.query(queryGetTotalRow)
         const totalRow = getTotalRow.rows[0].count
 
-        const queryGetAllUser = `SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname ,email,worktype,status,role FROM users  ORDER BY userid Limit ${limit} OFFSET ${limit * currentPage - limit}`
+        const queryGetAllUser = `SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname ,email,worktype,status,role FROM users WHERE isactive =true ORDER BY userid Limit ${limit} OFFSET ${limit * currentPage - limit}`
         const getAllUser = await db.query(queryGetAllUser)
         const allUser = getAllUser.rows
 
@@ -188,27 +188,33 @@ module.exports = (db) => {
       newPassword,
       newPosition,
       newTypeJob,
-      newStatus
+      newStatus,
+      rePassword
     } = req.body
 
     try {
+      if (newPassword != rePassword) {
+        req.flash('pesanKesalahan', 'Password dan Re-type Password tidak cocok!')
+        return res.redirect('/users/add')
+      } 
       const sqlCheckEmail = 'SELECT COUNT(email) FROM users WHERE email = $1'
       const checkEmail = await db.query(sqlCheckEmail, [newEmail])
       const email = checkEmail.rows[0].count
 
       if (email >= 1) {
         req.flash('pesanKesalahan', 'Email Sudah digunakan!')
-        res.redirect('add')
-      } else {
+        return res.redirect('add')
+      } 
+
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds)
 
-        const sqlInsertNewUser = 'INSERT INTO users (email,password,firstname,lastname,status,worktype,role) VALUES ($1,$2,$3,$4,$5,$6,$7)'
-        const value = [newEmail, hashedPassword, firstName, secondName, newStatus, newTypeJob, newPosition]
+        const sqlInsertNewUser = 'INSERT INTO users (email,password,firstname,lastname,status,worktype,role,isactive) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)'
+        const value = [newEmail, hashedPassword, firstName, secondName, newStatus, newTypeJob, newPosition,true]
 
         //insert into db
         await db.query(sqlInsertNewUser, value)
         res.redirect('/users')
-      }
+      
     } catch (error) {
       console.log(error)
       res.status(500).json({ error: true, message: error })
@@ -225,20 +231,11 @@ module.exports = (db) => {
 
     try {
 
-      const sqlDelAuthorActivity = `DELETE FROM activity WHERE author =$1`
-      await db.query(sqlDelAuthorActivity, [delUser])
-
-      const setAuthorIssueNull = 'UPDATE issues SET author = NULL WHERE author = $1 '
-      await db.query(setAuthorIssueNull, [delUser])
-
-      const setAssigneeIssueNull = 'UPDATE issues SET assignee = NULL WHERE assignee = $1 '
-      await db.query(setAssigneeIssueNull, [delUser])
-
-
+     //its not realy delete user from database instead its only update the status user from active into inactive(due to resign etc)
       const delMember = 'DELETE FROM members where userid=$1'
       await db.query(delMember, [delUser])
 
-      const delDataUsers = 'DELETE FROM users WHERE userid=$1'
+      const delDataUsers = 'UPDATE users SET isactive=false WHERE userid=$1'
       await db.query(delDataUsers, [delUser])
 
       res.redirect('/users')
@@ -273,18 +270,23 @@ module.exports = (db) => {
     const { firstName, secondName, newPassword, rePassword, newPosition, newTypeJob, newStatus } = req.body
 
     try {
-      if (newPassword != rePassword) {
-        req.flash('pesanKesalahan', 'Password dan Re-type Password tidak cocok!')
-        res.redirect(userid)
-      } else {
-
+      if(newPassword){
+        if (newPassword != rePassword) {
+          req.flash('pesanKesalahan', 'Password dan Re-type Password tidak cocok!')
+          return res.redirect(userid)
+        } 
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds)
         const sqlUpdateUsers = 'UPDATE users set firstname = $1, lastname = $2, password= $3, role =$4, worktype=$5, status=$6 WHERE userid =$7'
         const value = [firstName, secondName, hashedPassword, newPosition, newTypeJob, newStatus, userid]
         await db.query(sqlUpdateUsers, value)
-        res.redirect('/users')
-      }
+        return res.redirect('/users')
 
+      }
+        const sqlUpdateUsers = 'UPDATE users set firstname = $1, lastname = $2, role =$3, worktype=$4, status=$5 WHERE userid =$6'
+        const value = [firstName, secondName, newPosition, newTypeJob, newStatus, userid]
+        await db.query(sqlUpdateUsers, value)
+        res.redirect('/users')
+      
 
     } catch (error) {
       console.log(error)
