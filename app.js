@@ -9,20 +9,21 @@ const session = require('express-session')
 const flash = require('connect-flash');
 const fileUpload = require('express-fileupload');
 
-// const pool = new Pool({
-//   user: 'fgmvegallqrdff',
-//   host: 'ec2-3-215-207-12.compute-1.amazonaws.com',
-//   database: 'd24a8tv4horung',
-//   password: '574be3936dd5551c5a0447b7845703570400b44b7ba568b407cd6b28fd75a66f',
-//   port: 5432,
-// })
 const pool = new Pool({
-  user: 'azis',
-  host: 'localhost',
-  database: 'Project Management System',
-  password: 'azis',
+  user: 'fgmvegallqrdff',
+  host: 'ec2-3-215-207-12.compute-1.amazonaws.com',
+  database: 'd24a8tv4horung',
+  password: '574be3936dd5551c5a0447b7845703570400b44b7ba568b407cd6b28fd75a66f',
   port: 5432,
 })
+
+// const pool = new Pool({
+//   user: 'azis',
+//   host: 'localhost',
+//   database: 'Project Management System',
+//   password: 'azis',
+//   port: 5432,
+// })
 
 
 const indexRouter = require('./routes/index')(pool);
