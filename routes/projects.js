@@ -63,7 +63,7 @@ module.exports = (db) => {
 
     //localhost:3000/projects
     router.get('/', helpers.isLogIn, async (req, res, next) => {
-        const { refresh, fiturBrowser, pageBrowse, checkboxId, checkboxName, checkboxMember, projectid, projectname, member, pageDisplay } = req.query
+        const { fiturBrowser, pageBrowse, checkboxId, checkboxName, checkboxMember, projectid, projectname, member, pageDisplay } = req.query
         const limit = 5
         const status = req.session.user.status
 
@@ -97,17 +97,17 @@ module.exports = (db) => {
             }
 
             const conditions = condition.join(" OR ")
-
+          
             try {
 
-                let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE users.isactive=true OR ${conditions}`
+                let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE users.isactive=true AND (${conditions})`
                 const total = await db.query(queryTotal)
                 let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
 
-                let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', ' ORDER BY users.firstname, users.lastname) AS members FROM ((users JOIN members ON users.userid=members.userid) JOIN projects ON projects.projectid = members.projectid) WHERE users.isactive=true OR ${conditions} GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', ' ORDER BY users.firstname, users.lastname) AS members FROM ((users JOIN members ON users.userid=members.userid) JOIN projects ON projects.projectid = members.projectid) WHERE users.isactive=true AND (${conditions}) GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
                 const getData = await db.query(queryGetData)
                 const data = getData.rows
-
+                console.log(data)
                 const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE isactive=true")
 
                 res.render('projects/list', {
