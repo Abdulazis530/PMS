@@ -87,7 +87,7 @@
                             Subject
                         </label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="subject" placeholder="<%= subject%>" required>
+                            <input type="text" class="form-control" name="subject" value="<%= subject%>" required>
                         </div>
                     </div>
 
@@ -96,8 +96,8 @@
                             Description
                         </label>
                         <div class="col-sm-8">
-                            <textarea class="form-control" name="description" placeholder="<%=description %>" rows="4"
-                                required></textarea>
+                            <textarea class="form-control" name="description" rows="4"
+                                required><%=description %> </textarea>
                         </div>
                     </div>
 
@@ -301,21 +301,23 @@
                             Author
                         </label>
 
-                      <%  if(author.author.length!=0){ %>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" name="targetVersion" value="<%= author.author %>"
                                 disabled>
                         </div>
-                   <% }else{ %>
+
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="file-upload">Demo File</label>
                         <div class="form-group col-sm-8 edit-input-issue">
-                            <select class="form-control edit-width" name="author" required>
-                                <option selected value="">Choose author </option>
-                                <%  members.forEach(member=>{ %>
-                                <option value="<%=member.userid %>"> <%= member.assignee%> </option>
-                               <% }) %>
-                            </select>
+                          
+                            <% if(issueData.files){ %>
+                                 <a style="margin-top: 1%;" href="/upload/<%= issueData.files %>" class="btn btn-warning" target="_blank" > Show File</a> 
+                           <% }else{ %>
+                                <a  class="btn btn-danger" disabled>No File Attached</a>  %>
+                           <% } %>
                         </div>
-                    <% } %>
                     </div>
 
                     <div class="form-group row">
@@ -339,25 +341,7 @@
 </div>
 
 
-</div>
-
-</div>
 
 
 
-</body>
-<footer>
-    <section class="overview ">
-        <div class="footer-container container-fluid">
-            <p class="copy-right text-center text-md-center">
-                Projects System Management 2020 ©
-            </p>
-            <i class="social-icon fab fa-facebook-f"></i>
-            <i class="social-icon fab fa-twitter"></i>
-            <i class="social-icon fab fa-instagram"></i>
-            <i class="social-icon fas fa-envelope"></i>
-        </div>
-    </section>
-</footer>
-
-</html>
+<%- include('../../partials/footer'); -%>

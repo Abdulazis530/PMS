@@ -42,12 +42,12 @@ let takeValueSearch = {
     cbSMemberId: "",
     cbSMemberName: "",
     cbSMemberPosition: "",
-    searchIdIssues:"",
-    searchSubjectIssue:"",
-    searchInputTracker:"",
-    cbSissueId:"",
-    cbSsubjectIssue:"",
-    cbSinputTracker:""   
+    searchIdIssues: "",
+    searchSubjectIssue: "",
+    searchInputTracker: "",
+    cbSissueId: "",
+    cbSsubjectIssue: "",
+    cbSinputTracker: ""
 }
 
 module.exports = (db) => {
@@ -100,17 +100,16 @@ module.exports = (db) => {
 
             try {
 
-                let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE ${conditions}`
-                let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', ' ORDER BY users.firstname, users.lastname) AS members FROM ((users JOIN members ON users.userid=members.userid) JOIN projects ON projects.projectid = members.projectid) WHERE ${conditions} GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
-
+                let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE users.isactive=true OR ${conditions}`
                 const total = await db.query(queryTotal)
-                const getData = await db.query(queryGetData)
-                const data = getData.rows
-                const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users")
                 let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
 
+                let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', ' ORDER BY users.firstname, users.lastname) AS members FROM ((users JOIN members ON users.userid=members.userid) JOIN projects ON projects.projectid = members.projectid) WHERE users.isactive=true OR ${conditions} GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                const getData = await db.query(queryGetData)
+                const data = getData.rows
 
-                console.log(takeValueSearch)
+                const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE isactive=true")
+
                 res.render('projects/list', {
                     currentPage,
                     totalPage,
@@ -135,11 +134,11 @@ module.exports = (db) => {
                 takeValueSearch = {}
                 let currentPage = pageDisplay || 1
                 let page = "pageDisplay"
-                let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid)`
-                let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', 'ORDER BY users.firstname,users.lastname) members FROM((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit};`
+                let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE users.isactive=true`
+                let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', 'ORDER BY users.firstname,users.lastname) members FROM((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE users.isactive=true GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit};`
 
                 const total = await db.query(queryTotal)
-                const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users")
+                const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE isactive=true")
                 const getData = await db.query(queryGetData)
                 let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
 
@@ -179,9 +178,10 @@ module.exports = (db) => {
         const status = req.session.user.status
 
         try {
-            const queryGetusers = "SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users;"
+            const queryGetusers = "SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE isactive =true;"
             const getUsers = await db.query(queryGetusers)
             const users = getUsers.rows
+
             res.render('projects/form', {
                 data: users,
                 pesanKesalahan: req.flash('pesanKesalahan'),
@@ -241,7 +241,7 @@ module.exports = (db) => {
         let members = []
 
         try {
-            const queryGetusers = "SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users;"
+            const queryGetusers = "SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE isactive =true;"
             const alluser = await db.query(queryGetusers)
             let data = alluser.rows
 
@@ -585,9 +585,6 @@ module.exports = (db) => {
         const status = req.session.user.status
         const url = req.params.projectid
         try {
-            let queryPosition = `SELECT DISTINCT role as Position FROM members`
-            const optionRole = await db.query(queryPosition)
-            const selectRoles = optionRole.rows
 
             const userInmember = `SELECT userid FROM members WHERE projectid =$1`
             const alreadyMember = await db.query(userInmember, [Number(req.params.projectid)])
@@ -598,13 +595,12 @@ module.exports = (db) => {
             })
 
             const conditionsAddMembers = conditionAddMembers.join(" AND ")
-            let getUser = `SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE ${conditionsAddMembers} `
+            let getUser = `SELECT userid, CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE isactive =true AND ( ${conditionsAddMembers} )`
             const users = await db.query(getUser)
 
             res.render('projects/members/add', {
                 url,
                 data: users.rows,
-                selectRoles,
                 tab,
                 status
             })
@@ -643,15 +639,9 @@ module.exports = (db) => {
             const sqlGetUser = "SELECT CONCAT(users.firstname, ' ', users.lastname) as fullname,members.id FROM members JOIN users on members.userid=users.userid WHERE members.id=$1"
             const getUsers = await db.query(sqlGetUser, [req.params.memberid])
             const data = getUsers.rows[0]
-
-            let queryPosition = `SELECT DISTINCT role as Position FROM members`
-            const optionRole = await db.query(queryPosition)
-            const selectRoles = optionRole.rows
-
             res.render('projects/members/edit', {
                 url,
                 data,
-                selectRoles,
                 tab,
                 status
             })
@@ -706,23 +696,23 @@ module.exports = (db) => {
             let currentPage = pageBrowseIssue || 1
             let page = "pageBrowseIssue"
 
-           
-            if(fiturBrowseIssue) conditionIssues = []
+
+            if (fiturBrowseIssue) conditionIssues = []
             if (checkboxIdIssues === "on" && inputIdIssues.length !== 0) {
                 conditionIssues.push(`issues.issueid = ${Number(inputIdIssues)}`)
                 takeValueSearch.searchIdIssues = inputIdIssues
                 takeValueSearch.cbSissueId = "checked"
             }
-            if (checkboxSubjectIssues === "on" && inputSubjectIssue.length !== 0){
+            if (checkboxSubjectIssues === "on" && inputSubjectIssue.length !== 0) {
                 conditionIssues.push(`issues.subject ILIKE '%${inputSubjectIssue}%'`)
                 takeValueSearch.searchSubjectIssue = inputSubjectIssue
                 takeValueSearch.cbSsubjectIssue = "checked"
-            } 
+            }
             if (checkboxTracker === "on" && inputTracker.length !== 0 && inputTracker !== 'Open this select menu') {
                 conditionIssues.push(`issues.tracker ILIKE '%${inputTracker}%'`)
                 takeValueSearch.searchInputTracker = inputTracker
                 takeValueSearch.cbSinputTracker = "checked"
-    
+
             }
 
             if (conditionIssues.length == 0) {
@@ -730,7 +720,7 @@ module.exports = (db) => {
             }
 
             const conditions = conditionIssues.join(" OR ")
-            
+
             try {
                 const issuesQuery = `SELECT issueid,projectid,tracker,subject,description,status,priority,startdate,duedate,estimatedtime,done,files,spenttime,targetversion,crateddate,updateddate,closeddate,parenttask FROM issues WHERE projectid=$1 AND (${conditions}) ORDER by issueid LIMIT ${limit} OFFSET ${limit * currentPage - limit} `
                 const getIssues = await db.query(issuesQuery, [url])
@@ -776,7 +766,7 @@ module.exports = (db) => {
 
 
         } else {
-            takeValueSearch={}
+            takeValueSearch = {}
             try {
                 let currentPage = pageIssue || 1
                 let page = "pageIssue"
@@ -876,6 +866,10 @@ module.exports = (db) => {
         const projectId = req.params.projectid
         const issueId = Number(req.params.issueid)
         try {
+
+            const sqlUpdtParentToNull = 'UPDATE issues SET parenttask=null WHERE issueid=$1'
+            await db.query(sqlUpdtParentToNull, [issueId])
+
             const sqlDelete = 'DELETE FROM issues WHERE issueid=$1'
             await db.query(sqlDelete, [issueId])
             res.redirect(`/projects/issues/${projectId}`)
@@ -914,7 +908,9 @@ module.exports = (db) => {
     router.post('/issues/:projectid/add', helpers.isLogIn, async (req, res, next) => {
         const projectId = req.params.projectid
         const author = req.session.user.userid
+
         const { tracker, subject, description, status, priority, assignee, startDate, dueDate, estimatedTime, done } = req.body
+
 
         try {
             if (req.files) {
@@ -945,11 +941,9 @@ module.exports = (db) => {
 
     // localhost:3000/projects/issues/1/edit/2
     router.get('/issues/:projectid/edit/:issueid', helpers.isLogIn, async (req, res, next) => {
-
         const status = req.session.user.status
         const url = req.params.projectid
         const issueid = req.params.issueid
-
         try {
             //get all member of projectid to be showed in the select input
             const sqlGetMembers = `SELECT CONCAT(users.firstname, ' ', users.lastname) as assignee,users.userid FROM users JOIN members ON users.userid =members.userid WHERE projectid=$1 `
@@ -961,30 +955,19 @@ module.exports = (db) => {
             const getAll = await db.query(sqlGetAll, [issueid])
             const issueData = getAll.rows[0]
 
+            console.log(issueData)
             // currentAssigne
             const sqlCurrentAssignee = `SELECT CONCAT(users.firstname, ' ', users.lastname) as assignee,users.userid FROM users JOIN issues ON users.userid =issues.assignee WHERE issueid=$1`
             const getCurrentAssignee = await db.query(sqlCurrentAssignee, [issueid])
             let currentAssigne = getCurrentAssignee.rows[0]
-            if (typeof currentAssigne === "undefined") {
-                currentAssigne = {
-                    assignee: "Select User",
-                    userid: ""
 
-                }
-            }
 
             //author    
             const sqlGetAuthor = "SELECT CONCAT(users.firstname, ' ', users.lastname) as author, users.userid FROM users JOIN issues ON users.userid=issues.author WHERE issueid=$1"
             const getAuthor = await db.query(sqlGetAuthor, [issueid])
             let author = getAuthor.rows[0]
-            if (typeof author === "undefined") {
-                author = {
-                    author: "",
-                    userid: ""
 
-                }
-            }
-            console.log(author)
+
             //getParentask
             const sqlParentTasks = `SELECT issueid as parenttask, subject,tracker FROM issues WHERE projectid = $1`
             const getParentTasks = await db.query(sqlParentTasks, [url])
@@ -1013,7 +996,7 @@ module.exports = (db) => {
     // localhost:3000/projects/issues/1/edit/2 method:post
     router.post('/issues/:projectid/edit/:issueid', helpers.isLogIn, async (req, res, next) => {
 
-     
+
         const { tracker, subject, description, status, priority, dueDate, done, parentTask, spentTime, targetVersion, previousDone, previousSpent } = req.body
         const issueid = req.params.issueid
         const titleActivity = `${subject} #${issueid} (${tracker}) -[${status}]`
@@ -1026,16 +1009,10 @@ module.exports = (db) => {
             let values = [titleActivity, descActivity, user, Number(projectid), previousDone, Number(done)]
             let sqltUpdateIssue
 
-            //handling if user deleted from database and author become null,this purpose is to added new author into list
-            let addAuthor = `UPDATE issues SET author = $1 WHERE issueid =$2`
-
-
             if (req.files) {
                 const file = req.files.inputFile
                 const fileName = file.name.toLowerCase().replace("", Date.now()).split(' ').join('-')
-                if (req.body.author) {
-                    await db.query(addAuthor, [req.body.author, issueid])
-                }
+
                 if (status == "closed") {
                     sqltUpdateIssue = "UPDATE issues SET updateddate = NOW(),closeddate= NOW(),tracker=$1, subject =$2, description=$3, status=$4, priority=$5, duedate=$6,done=$7,parenttask =$8, spenttime =$9, targetversion =$10,files=$11 WHERE issueid= $12"
                 } else {
@@ -1061,12 +1038,8 @@ module.exports = (db) => {
                 await db.query(sqltUpdateIssue, valQuery)
                 await file.mv(path.join(__dirname, "..", "public", "upload", fileName))
 
-
-
             } else {
-                if (req.body.author) {
-                    await db.query(addAuthor, [req.body.author, issueid])
-                }
+
                 if (status == "closed") {
                     sqltUpdateIssue = "UPDATE issues SET updateddate = NOW(),closeddate= NOW(),tracker=$1, subject =$2, description=$3, status=$4, priority=$5, duedate=$6,done=$7,parenttask =$8, spenttime =$9, targetversion =$10 WHERE issueid= $11"
                 } else {
@@ -1130,11 +1103,11 @@ module.exports = (db) => {
                 activity.timeactivity = moment(activity.timeactivity, 'HH:mm:ss.SSS').format('HH:mm:ss');
 
                 if (activity.dateactivity == moment().format('YYYY-MM-DD')) {
-                    activity.dateactivity = 'Today'
+                    activity.dateactivity = `Today (${moment(activity.dateactivity).format("dddd, MMMM Do, YYYY")})`
                 } else if (activity.dateactivity == moment().subtract(1, 'days').format('YYYY-MM-DD')) {
-                    activity.dateactivity = 'Yesterday'
+                    activity.dateactivity = `Yesterday (${moment(activity.dateactivity).format("dddd, MMMM Do, YYYY")})`
                 } else {
-                    activity.dateactivity = moment(activity.dateactivity).format("MMMM Do, YYYY")
+                    activity.dateactivity = moment(activity.dateactivity).format("dddd, MMMM Do, YYYY")
                 }
             })
             res.render(`projects/activity/view`, {
