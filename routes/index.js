@@ -17,6 +17,7 @@ module.exports = (db) => {
       }
       bcrypt.compare(req.body.password, result.rows[0].password, function (err, found) {
         if (err) {
+          
           req.flash('pesanKesalahan', 'Terjadi Error Hubungi Administrator')
           return res.redirect('/')
         }
@@ -34,6 +35,7 @@ module.exports = (db) => {
       });
 
     } catch (error) {
+      console.log(error)
       req.flash('pesanKesalahan', 'Terjadi Error Hubungi Administrator')
       return res.redirect('/')
     }

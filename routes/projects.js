@@ -86,8 +86,20 @@ module.exports = (db) => {
 
             }
             if (checkboxMember === "on" && member.length !== 0 && member !== 'Open this select menu') {
+                try {
+                    const sqlGetUserId = `SELECT userid FROM users WHERE CONCAT(firstname, ' ', lastname) ILIKE $1`
+                    const getUserId = await db.query(sqlGetUserId, [member])
+                    const userQueryId = getUserId.rows[0].userid
+                    condition.push(`users.userid IN ( SELECT userid FROM members WHERE projectid IN (SELECT projectid FROM members WHERE userid=${userQueryId}))
+                    AND projects.projectid IN ( SELECT projectid FROM members WHERE userid=${userQueryId} )`)
 
-                condition.push(`CONCAT(users.firstname, ' ', users.lastname) ILIKE '%${member}%'`)
+
+                } catch (error) {
+                    console.log(error)
+                    res.status(500).json({ error: true, message: error })
+                }
+
+
                 takeValueSearch.searchMember = member
                 takeValueSearch.cbSMember = "checked"
             }
@@ -97,17 +109,26 @@ module.exports = (db) => {
             }
 
             const conditions = condition.join(" OR ")
-          
+
             try {
 
-                let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE users.isactive=true AND (${conditions})`
+                let queryTotal =
+                    `SELECT COUNT(DISTINCT projects.projectid) 
+                FROM ((users JOIN members ON users.userid=members.userid) JOIN
+                projects ON projects.projectid = members.projectid) 
+                WHERE users.isactive=true AND (${conditions})`
+
                 const total = await db.query(queryTotal)
                 let totalPage = Math.ceil(Number(total.rows[0].count) / limit)
 
-                let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', ' ORDER BY users.firstname, users.lastname) AS members FROM ((users JOIN members ON users.userid=members.userid) JOIN projects ON projects.projectid = members.projectid) WHERE users.isactive=true AND (${conditions}) GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+                let queryGetData = `SELECT projects.projectid, projects.name,
+                 STRING_AGG (users.firstname || ' ' || users.lastname,', ' ORDER BY users.firstname, users.lastname) 
+                 AS members FROM ((users JOIN members ON users.userid=members.userid) JOIN projects ON projects.projectid = members.projectid) 
+                 WHERE users.isactive=true AND (${conditions}) GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit}`
+
                 const getData = await db.query(queryGetData)
                 const data = getData.rows
-                console.log(data)
+
                 const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE isactive=true")
 
                 res.render('projects/list', {
@@ -134,8 +155,15 @@ module.exports = (db) => {
                 takeValueSearch = {}
                 let currentPage = pageDisplay || 1
                 let page = "pageDisplay"
-                let queryTotal = `SELECT COUNT(DISTINCT projects.projectid) FROM ((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE users.isactive=true`
-                let queryGetData = `SELECT projects.projectid, projects.name, STRING_AGG (users.firstname || ' ' || users.lastname,', 'ORDER BY users.firstname,users.lastname) members FROM((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) WHERE users.isactive=true GROUP BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit};`
+                let queryTotal = `SELECT COUNT(DISTINCT projects.projectid)
+                 FROM ((users JOIN members ON users.userid=members.userid)
+                 JOIN projects ON projects.projectid = members.projectid) 
+                 WHERE users.isactive=true`
+
+                let queryGetData = `SELECT projects.projectid, projects.name,
+                 STRING_AGG (users.firstname || ' ' || users.lastname,', 'ORDER BY users.firstname,users.lastname) 
+                 members FROM((users JOIN members ON users.userid=members.userid)JOIN projects ON projects.projectid = members.projectid) 
+                 WHERE users.isactive=true GROUP BY projects.projectid ORDER BY projects.projectid LIMIT ${limit} OFFSET ${limit * currentPage - limit};`
 
                 const total = await db.query(queryTotal)
                 const fullname = await db.query("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM users WHERE isactive=true")
